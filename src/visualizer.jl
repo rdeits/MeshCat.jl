@@ -17,7 +17,7 @@ end
 
 function Visualizer(;host=ip"127.0.0.1", open=false)
 	window = ViewerWindow(host=host, open=open)
-	Visualizer(CoreVisualizer(window), [:meshtv])
+	Visualizer(CoreVisualizer(window), [:meshcat])
 end
 
 url(v::Visualizer) = url(v.core)
