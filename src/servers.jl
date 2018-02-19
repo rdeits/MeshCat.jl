@@ -171,7 +171,7 @@ end
 
 
 function geturl(window::ViewerWindow)
-    url = url_with_query(string("http://", window.host, ":", window.port, "/meshtv.html"),
+    url = url_with_query(string("http://", window.host, ":", window.port, "/meshcat.html"),
                          host=window.host,
                          port=window.port)
 end
