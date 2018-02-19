@@ -1,0 +1,16 @@
+julia 0.6
+
+# Geometry
+GeometryTypes
+StaticArrays
+CoordinateTransformations
+Colors
+
+# Misc
+Parameters
+
+# Communication
+MsgPack
+WebSockets
+HttpServer
+URIParser
