@@ -53,6 +53,29 @@ function lower(box::HyperRectangle{3}, uuid=uuid1())
     )
 end
 
+function lower(c::HyperCylinder{3}, uuid=uuid1())
+    Dict{String, Any}(
+        "uuid" => string(uuid),
+        "type" => "CylinderGeometry",
+        "radiusTop" => c.radius,
+        "radiusBottom" => c.radius,
+        "height" => c.length,
+        "radialSegments" => 100,
+    )
+end
+
+function lower(s::HyperSphere{3}, uuid=uuid1())
+    Dict{String, Any}(
+        "uuid" => string(uuid),
+        "type" => "SphereGeometry",
+        "radius" => radius(s),
+        "widthSegments" => 20,
+        "heightSegments" => 20,
+    )
+end
+
+
+
 js_array_type(::Type{Float32}) = "Float32Array"
 js_array_type(::Type{UInt32}) = "Uint32Array"
 

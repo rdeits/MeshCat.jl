@@ -14,6 +14,9 @@ struct HyperCylinder{N, T} <: GeometryPrimitive{N, T}
     # origin is at center
 end
 
+HyperCylinder(length, radius) =
+    HyperCylinder{3, promote_type(typeof(length), typeof(radius))}(length, radius)
+
 length(geometry::HyperCylinder) = geometry.length
 radius(geometry::HyperCylinder) = geometry.radius
 origin(geometry::HyperCylinder{N, T}) where {N, T} = zeros(SVector{N, T})
@@ -39,7 +42,7 @@ intrinsic_transform(g) = IdentityTransformation()
 intrinsic_transform(g::HyperRectangle) = Translation(center(g)...)
 intrinsic_transform(g::HyperSphere) = Translation(center(g)...)
 intrinsic_transform(g::HyperEllipsoid) = Translation(center(g)...)
-intrinsic_transform(g::HyperCylinder) = Translation(center(g)...)
+intrinsic_transform(g::HyperCylinder{3}) = LinearMap(RotX(π/2)) ∘ Translation(center(g)...)
 intrinsic_transform(g::HyperCube) = Translation(center(g)...)
 
 

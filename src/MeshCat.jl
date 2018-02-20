@@ -16,6 +16,7 @@ using URIParser: escape
 
 import Base: delete!, length
 import MsgPack: pack, Ext
+import GeometryTypes: origin, radius
 
 export Visualizer,
 	   IJuliaCell,

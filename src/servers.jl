@@ -91,7 +91,7 @@ mutable struct ViewerWindow  # mutable so it can be finalized
 
 	function ViewerWindow(host::IPv4, pool::WebSocketPool, server::Server, port::Int)
 		w = new(host, pool, server, port)
-		finalizer(w, shutdown)
+		# finalizer(w, shutdown)
 		w
 	end
 end
