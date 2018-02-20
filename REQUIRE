@@ -4,7 +4,7 @@ julia 0.6
 GeometryTypes
 StaticArrays
 CoordinateTransformations
-Colors
+ColorTypes
 
 # Misc
 Parameters
