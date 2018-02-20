@@ -1,8 +1,11 @@
+__precompile__()
+
 module MeshCat
 
 import Base: delete!
 
 export Visualizer,
+	   IJuliaCell,
 	   setobject!,
 	   settransform!,
 	   delete!,
