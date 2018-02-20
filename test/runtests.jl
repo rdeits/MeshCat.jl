@@ -4,10 +4,12 @@ using GeometryTypes
 using CoordinateTransformations
 using Colors
 
-vis = open(Visualizer())
+vis = Visualizer()
 
 if get(ENV, "CI", nothing) == "true"
     proc, listener = open(`python3 $(joinpath(@__DIR__, "socket_client.py")) ws://$(vis.core.window.host):$(vis.core.window.port)`)
+else
+    open(vis)
 end
 
 @testset "shapes" begin
