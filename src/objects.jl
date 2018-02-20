@@ -24,7 +24,7 @@ PngImage(fname::AbstractString) = PngImage(open(read, fname))
     repeat::Tuple{Int, Int} = (1, 1)      # TODO: what does this mean?
 end
 
-@with_kw struct MeshMaterial <: AbstractMaterial
+@with_kw mutable struct MeshMaterial <: AbstractMaterial
 	_type::String
 	color::RGBA{Float32} = RGB(1., 1., 1.)
     map::Union{Texture, Void} = nothing
