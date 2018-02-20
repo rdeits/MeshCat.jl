@@ -1,5 +1,3 @@
-import MsgPack: pack, Ext
-
 extcode(v::PackedVector) = extcode(eltype(v.data))
 extcode(::Type{UInt8}) = 0x12
 extcode(::Type{Int32}) = 0x15

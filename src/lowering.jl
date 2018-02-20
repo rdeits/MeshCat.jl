@@ -1,5 +1,6 @@
 threejs_type(m::MeshMaterial) = m._type
-threejs_type(o::Mesh) = "Mesh"
+threejs_type(::Mesh) = "Mesh"
+threejs_type(::Points) = "Points"
 
 function lower(t::Transformation)
     H = [transform_deriv(t, Vec(0., 0, 0)) t(Vec(0., 0, 0));
@@ -9,7 +10,7 @@ end
 
 function lower(obj::AbstractObject, uuid=uuid1())
     data = Dict{String, Any}(
-        "metadata" => Dict{String, Any}("version" => 4.5, "type" => "Object", "generator" => "Object3D.toJSON"),
+        "metadata" => Dict{String, Any}("version" => 4.5, "type" => "Object"),
         "object" => Dict{String, Any}(
             "uuid" => string(uuid),
             "type" => threejs_type(obj),
@@ -75,7 +76,7 @@ lower(faces::Vector{<:Face}) = lower(to_zero_index.(faces))
 
 function lower(mesh::AbstractMesh, uuid=uuid1())
     attributes = Dict{String, Any}(
-        "position" => lower(vertices(mesh))
+        "position" => lower(convert(Vector{Point3f0}, vertices(mesh)))
     )
     if hastexturecoordinates(mesh)
         attributes["uv"] = lower(texturecoordinates(mesh))
@@ -89,6 +90,24 @@ function lower(mesh::AbstractMesh, uuid=uuid1())
         )
     )
 end
+
+function lower(cloud::PointCloud, uuid=uuid1())
+    attributes = Dict{String, Any}(
+        "position" => lower(convert(Vector{Point3f0}, cloud.position)),
+    )
+    if !isempty(cloud.color)
+        attributes["color"] = lower(cloud.color)
+    end
+    Dict{String, Any}(
+        "uuid" => string(uuid),
+        "type" => "BufferGeometry",
+        "data" => Dict(
+            "attributes" => attributes
+        )
+    )
+end
+
+
 
 function lower(material::MeshMaterial, uuid=uuid1())
     data = Dict{String, Any}(
@@ -122,6 +141,18 @@ function lower(img::PngImage, uuid=uuid1())
     Dict{String, Any}(
         "uuid" => string(uuid),
         "url" => string("data:image/png;base64,", base64encode(img.data))
+    )
+end
+
+function lower(material::PointsMaterial, uuid=uuid1())
+    Dict{String, Any}(
+        "uuid" => string(uuid),
+        "type" => "PointsMaterial",
+        "color" => string("0x", hex(convert(RGB, material.color))),
+        "transparent" => alpha(material.color) != 1,
+        "opacity" => alpha(material.color),
+        "size" => material.size,
+        "vertexColors" => material.vertexColors,
     )
 end
 

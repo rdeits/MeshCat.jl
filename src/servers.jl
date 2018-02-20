@@ -1,7 +1,3 @@
-using HttpServer
-using WebSockets
-using URIParser: escape
-
 const viewer_root = joinpath(@__DIR__, "..", "viewer", "static")
 const viewer_html = joinpath(viewer_root, "meshcat.html")
 
@@ -135,7 +131,7 @@ function find_available_port(get_handlers::Function, host=IPv4(127,0,0,1); defau
     for i in 1:max_attempts
         port = default + i - 1
         try
-            server = Server(get_handlers()...)
+            server = HttpServer.Server(get_handlers()...)
             listen(server, host, port)
             @async HttpServer.handle_http_request(server)
             return server, port
@@ -170,12 +166,11 @@ function ViewerWindow(; host::IPv4=ip"127.0.0.1", open=false)
 end
 
 
-function geturl(window::ViewerWindow)
-    url = url_with_query(string("http://", window.host, ":", window.port, "/meshcat.html"),
-                         host=window.host,
-                         port=window.port)
-end
+url(window::ViewerWindow) =
+    url_with_query(string("http://", window.host, ":", window.port, "/meshcat.html"),
+                        host=window.host,
+                        port=window.port)
 
-Base.open(window::ViewerWindow) = open_url(geturl(window))
+Base.open(window::ViewerWindow) = open_url(url(window))
 
 Base.send(window::ViewerWindow, msg) = send(window.pool, msg)

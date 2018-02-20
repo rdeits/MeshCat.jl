@@ -21,14 +21,21 @@ function Visualizer(;host=ip"127.0.0.1", open=false)
 end
 
 url(v::Visualizer) = url(v.core)
-Base.open(v::Visualizer) = open(v.core)
+
+Base.open(v::Visualizer) = (open(v.core); v)
+
+Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer at $(url(v))")
+
 IJuliaCell(v::Visualizer) = IJuliaCell(v.core)
+
+
 
 function setobject!(vis::Visualizer, obj::AbstractObject)
 	send(vis.core, SetObject(obj, vis.path))
 end
 
-setobject!(vis::Visualizer, geom::GeometryLike) = setobject!(vis, convert(Mesh, geom))
+setobject!(vis::Visualizer, geom::GeometryLike) = setobject!(vis, Mesh(geom))
+setobject!(vis::Visualizer, cloud::PointCloud) = setobject!(vis, Points(cloud))
 
 function settransform!(vis::Visualizer, tform::Transformation)
     send(vis.core, SetTransform(tform, vis.path))

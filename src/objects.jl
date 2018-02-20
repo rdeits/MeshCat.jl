@@ -10,7 +10,7 @@ end
 geometry(o::Mesh) = o.geometry
 material(o::Mesh) = o.material
 
-Base.convert(::Type{<:Mesh}, geometry::GeometryLike) = Mesh(geometry, MeshLambertMaterial())
+Mesh(geometry::GeometryLike) = Mesh(geometry, MeshLambertMaterial())
 
 struct PngImage
     data::Vector{UInt8}
@@ -26,7 +26,7 @@ end
 
 @with_kw struct MeshMaterial <: AbstractMaterial
 	_type::String
-	color::Colorant = RGB(1., 1., 1.)   # not a concrete type, but probably not a major performance problem
+	color::RGBA{Float32} = RGB(1., 1., 1.)
     map::Union{Texture, Void} = nothing
     depthFunc::Int = 3
     depthTest::Bool = true
@@ -37,6 +37,22 @@ end
 MeshBasicMaterial(;kw...) = MeshMaterial(_type="MeshBasicMaterial"; kw...)
 MeshLambertMaterial(;kw...) = MeshMaterial(_type="MeshLambertMaterial"; kw...)
 MeshPhongMaterial(;kw...) = MeshMaterial(_type="MeshPhongMaterial"; kw...)
+
+struct Points{G <: GeometryLike, M <: AbstractMaterial} <: AbstractObject
+    geometry::G
+    material::M
+end
+
+geometry(p::Points) = p.geometry
+material(p::Points) = p.material
+
+@with_kw struct PointsMaterial <: AbstractMaterial
+    color::RGBA{Float32}=RGB(1., 1., 1.)
+    size::Float32 = 0.002
+    vertexColors::Int = 2
+end
+
+Points(geometry::GeometryLike; kw...) = Points(geometry, PointsMaterial(kw...))
 
 
 quaternion_xyzw(::IdentityTransformation) = SVector(0., 0, 0, 1)
