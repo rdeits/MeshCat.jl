@@ -30,4 +30,10 @@ end
             MeshLambertMaterial(color=colorant"maroon")))
         settransform!(v[:sphere], Translation(0, 1, 0.15))
     end
+
+    @testset "ellipsoid" begin
+        setobject!(v[:ellipsoid], HyperEllipsoid(Point(0., 0, 0), Vec(0.3, 0.1, 0.1)))
+        settransform!(v[:ellipsoid], Translation(0, 1.5, 0.1))
+    end
+
 end

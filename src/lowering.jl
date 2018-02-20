@@ -74,7 +74,17 @@ function lower(s::HyperSphere{3}, uuid=uuid1())
     )
 end
 
-
+function lower(g::HyperEllipsoid{3}, uuid=uuid1())
+    # Radius is always 1 because we handle all the
+    # radii in intrinsic_transform
+    Dict{String, Any}(
+        "uuid" => string(uuid),
+        "type" => "SphereGeometry",
+        "radius" => 1,
+        "widthSegments" => 20,
+        "heightSegments" => 20,
+    )
+end
 
 js_array_type(::Type{Float32}) = "Float32Array"
 js_array_type(::Type{UInt32}) = "Uint32Array"
@@ -191,8 +201,7 @@ function lower(cmd::SetTransform)
     Dict{String, Any}(
         "type" => "set_transform",
         "path" => string.(cmd.path),
-        "position" => convert(Vector, translation(cmd.tform)),
-        "quaternion" => convert(Vector, quaternion_xyzw(cmd.tform))
+        "matrix" => PackedVector(Float32.(lower(cmd.tform))),
     )
 end
 

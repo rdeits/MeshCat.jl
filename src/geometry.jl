@@ -41,7 +41,7 @@ center(geometry::HyperSphere) = origin(geometry)
 intrinsic_transform(g) = IdentityTransformation()
 intrinsic_transform(g::HyperRectangle) = Translation(center(g)...)
 intrinsic_transform(g::HyperSphere) = Translation(center(g)...)
-intrinsic_transform(g::HyperEllipsoid) = Translation(center(g)...)
+intrinsic_transform(g::HyperEllipsoid) = LinearMap(SDiagonal(radii(g)...)) ∘ Translation(center(g)...)
 intrinsic_transform(g::HyperCylinder{3}) = LinearMap(RotX(π/2)) ∘ Translation(center(g)...)
 intrinsic_transform(g::HyperCube) = Translation(center(g)...)
 

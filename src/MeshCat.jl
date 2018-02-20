@@ -8,7 +8,7 @@ using WebSockets
 using HttpServer
 
 using Colors: Colorant, RGB, RGBA, alpha
-using StaticArrays: StaticVector, SVector
+using StaticArrays: StaticVector, SVector, SDiagonal
 using GeometryTypes: raw
 using Parameters: @with_kw
 using Base.Random: UUID, uuid1
