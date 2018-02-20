@@ -22,8 +22,8 @@ before_script: # homebrew for mac
 
 ## uncomment the following lines to override the default test script
 #script:
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("GIFTI"); Pkg.test("GIFTI"; coverage=true)'
+#  - julia -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
 after_success:
   # push coverage results to Coveralls
   # push coverage results to Codecov
-  - julia -e 'cd(Pkg.dir("GIFTI")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'cd(Pkg.dir("MeshCat")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
