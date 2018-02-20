@@ -14,9 +14,13 @@ function Base.show(io::IO, ::MIME"text/html", frame::IJuliaCell)
     end
 end
 
+const iframe_attrs = "height=\"100%\" width=\"100%\" style=\"min-height: 500px;\""
+
 function show_inline(io::IO, frame::IJuliaCell)
     print(io, """
-<iframe src="$(geturl(frame.window))" height=500 width=800></iframe>
+    <div style="height: 500px; width: 500px; overflow-x: auto; overflow-y: hidden; resize: both">
+    <iframe src="$(url(frame.window))" style="width: 100%; height: 100%; border: none"></iframe>
+    </div>
 """)
 end
 
@@ -25,8 +29,10 @@ srcdoc_escape(x) = replace(replace(x, "&", "&amp;"), "\"", "&quot;")
 function show_embed(io::IO, frame::IJuliaCell)
     id = Base.Random.uuid1()
     print(io, """
-    <iframe id="$id" srcdoc="$(srcdoc_escape(readstring(open(joinpath(@__DIR__, "..", "..", "viewer", "build", "inline.html")))))" height=500 width=800>
+    <div style="height: 500px; width: 500px; overflow-x: auto; overflow-y: auto; resize: both">
+    <iframe id="$id" srcdoc="$(srcdoc_escape(readstring(open(joinpath(@__DIR__, "..", "..", "viewer", "build", "inline.html")))))" style="width: 100%; height: 100%; border: none">
     </iframe>
+    </div>
     <script>
     function try_to_connect() {
         console.log("trying");
@@ -62,7 +68,7 @@ function Base.show(io::IO, ::MIME"text/html", snap::Snapshot)
 	"""
 	html = replace(content, "</body>", script)
 	print(io, """
-	<iframe srcdoc="$(srcdoc_escape(html))" height=500 width=800>
+	<iframe srcdoc="$(srcdoc_escape(html))" $iframe_attrs>
 	</iframe>
 	""")
 end

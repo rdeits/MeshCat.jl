@@ -7,7 +7,7 @@ using CoordinateTransformations
 using WebSockets
 using HttpServer
 
-using ColorTypes: Colorant, RGB, RGBA, alpha
+using Colors: Colorant, RGB, RGBA, alpha
 using StaticArrays: StaticVector, SVector, SDiagonal
 using GeometryTypes: raw
 using Parameters: @with_kw
