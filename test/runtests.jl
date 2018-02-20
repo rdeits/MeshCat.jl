@@ -3,11 +3,12 @@ using MeshCat
 using GeometryTypes
 using CoordinateTransformations
 using Colors
+using MeshIO, FileIO
 
 vis = Visualizer()
 
 if get(ENV, "CI", nothing) == "true"
-    proc, listener = open(`python3 $(joinpath(@__DIR__, "socket_client.py")) ws://$(vis.core.window.host):$(vis.core.window.port)`)
+    stream, proc = open(`julia $(joinpath(@__DIR__, "socket_client.jl")) ws://$(vis.core.window.host):$(vis.core.window.port)`)
 else
     open(vis)
 end
@@ -37,5 +38,17 @@ end
         setobject!(v[:ellipsoid], HyperEllipsoid(Point(0., 0, 0), Vec(0.3, 0.1, 0.1)))
         settransform!(v[:ellipsoid], Translation(0, 1.5, 0.1))
     end
-
 end
+
+@testset "meshes" begin
+    v = vis[:meshes]
+    @testset "cat" begin
+        mesh = load(joinpath(Pkg.dir("GeometryTypes"), "test", "data", "cat.obj"))
+        setobject!(v[:cat], mesh)
+        settransform!(vis[:cat], LinearMap(RotX(π/2)))
+    end
+end
+
+close(vis)
+
+# kill(proc)

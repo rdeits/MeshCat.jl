@@ -172,5 +172,6 @@ url(window::ViewerWindow) =
                         port=window.port)
 
 Base.open(window::ViewerWindow) = open_url(url(window))
+Base.close(window::ViewerWindow) = close(window.server)
 
 Base.send(window::ViewerWindow, msg) = send(window.pool, msg)

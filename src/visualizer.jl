@@ -4,6 +4,7 @@ end
 
 url(c::CoreVisualizer) = url(c.window)
 Base.open(c::CoreVisualizer) = open(c.window)
+Base.close(c::CoreVisualizer) = close(c.window)
 IJuliaCell(c::CoreVisualizer) = IJuliaCell(c.window)
 
 function Base.send(c::CoreVisualizer, cmd::AbstractCommand)
@@ -23,6 +24,7 @@ end
 url(v::Visualizer) = url(v.core)
 
 Base.open(v::Visualizer) = (open(v.core); v)
+Base.close(v::Visualizer) = (close(v.core); v)
 
 Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer at $(url(v))")
 

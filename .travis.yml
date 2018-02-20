@@ -17,13 +17,8 @@ matrix:
  allow_failures:
  - julia: nightly
 
-# uncomment and modify the following lines to manually install system packages
-addons:
- apt: # apt-get for linux
-   packages:
-   - python3-websockets
-#before_script: # homebrew for mac
-#  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
+before_script: # homebrew for mac
+  - julia -e 'Pkg.add("DandelionWebSockets")'
 
 ## uncomment the following lines to override the default test script
 #script:
