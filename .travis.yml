@@ -11,6 +11,10 @@ notifications:
 git:
   depth: 99999999
 
+branches:
+  only:
+    - master
+
 # uncomment the following lines to allow failures on nightly julia
 # (tests will run but not make your overall status red)
 matrix:
