@@ -14,3 +14,4 @@ MsgPack
 WebSockets
 HttpServer
 URIParser
+ZMQ

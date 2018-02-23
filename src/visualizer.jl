@@ -1,51 +1,93 @@
-struct CoreVisualizer
-	window::ViewerWindow
+mutable struct ViewerWindow
+	context::ZMQ.Context
+	socket::ZMQ.Socket
+	web_url::String
+	zmq_url::String
+	bridge::Union{ZMQWebSocketBridge, Void}
+
+	function ViewerWindow(bridge::ZMQWebSocketBridge)
+		context = ZMQ.Context()
+		socket = ZMQ.Socket(context, ZMQ.REQ)
+		ZMQ.connect(socket, zmq_url(bridge))
+		new(context, socket, web_url(bridge), zmq_url(bridge), bridge)
+	end
+
+	function ViewerWindow(zmq_url::String)
+		context = ZMQ.Context
+		socket = ZMQ.Socket(context, ZMQ.REQ)
+		ZMQ.connect(socket, zmq_url)
+		web_url = request_zmq_url(socket)
+		ViewerWindow(context, socket, web_url, zmq_url, nothing)
+	end
+
+	function ViewerWindow()
+		bridge = ZMQWebSocketBridge()
+		@async run(bridge)
+		ViewerWindow(bridge)
+	end
 end
 
-url(c::CoreVisualizer) = url(c.window)
-Base.open(c::CoreVisualizer) = open(c.window)
-Base.close(c::CoreVisualizer) = close(c.window)
-IJuliaCell(c::CoreVisualizer) = IJuliaCell(c.window)
+function request_zmq_url(socket::ZMQ.Socket)
+	ZMQ.send(socket, "")
+	zmq_url = copy(unsafe_string(ZMQ.recv(socket)))
+end
 
-function Base.send(c::CoreVisualizer, cmd::AbstractCommand)
-	send(c.window, pack(Dict("commands" => [lower(cmd)])))
+url(c::ViewerWindow) = c.web_url
+Base.open(c::ViewerWindow) = open_url(url(c))
+function Base.close(c::ViewerWindow)
+	close(c.socket)
+	close(c.context)
+end
+
+function Base.send(c::ViewerWindow, cmd::AbstractCommand)
+	ZMQ.send(c.socket, pack(Dict("commands" => [lower(cmd)])))
+	ZMQ.recv(c.socket)
+	nothing
+end
+
+function open_url(url)
+	@show url
+	try
+		@static if is_windows()
+			run(`start $url`)
+		elseif is_apple()
+			run(`open $url`)
+		elseif is_linux()
+			run(`xdg-open $url`)
+		end
+	catch e
+		println("Could not open browser automatically: $e")
+		println("Please open the following URL in your browser:")
+		println(url)
+	end
 end
 
 struct Visualizer
-	core::CoreVisualizer
+	window::ViewerWindow
 	path::Vector{Symbol}
 end
 
-function Visualizer(;host=ip"127.0.0.1", open=false)
-	window = ViewerWindow(host=host, open=open)
-	Visualizer(CoreVisualizer(window), [:meshcat])
-end
+Visualizer() = Visualizer(ViewerWindow(), [:meshcat])
 
-url(v::Visualizer) = url(v.core)
-
-Base.open(v::Visualizer) = (open(v.core); v)
-Base.close(v::Visualizer) = (close(v.core); v)
-
+url(v::Visualizer) = url(v.window)
+Base.open(v::Visualizer) = (open(v.window); v)
+Base.close(v::Visualizer) = close(v.window)
 Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer at $(url(v))")
 
-IJuliaCell(v::Visualizer) = IJuliaCell(v.core)
-
-
-
 function setobject!(vis::Visualizer, obj::AbstractObject)
-	send(vis.core, SetObject(obj, vis.path))
+	send(vis.window, SetObject(obj, vis.path))
 end
 
 setobject!(vis::Visualizer, geom::GeometryLike) = setobject!(vis, Mesh(geom))
 setobject!(vis::Visualizer, cloud::PointCloud) = setobject!(vis, Points(cloud))
 
 function settransform!(vis::Visualizer, tform::Transformation)
-    send(vis.core, SetTransform(tform, vis.path))
+    send(vis.window, SetTransform(tform, vis.path))
 end
 
 function delete!(vis::Visualizer)
-    send(vis.core, Delete(vis.path))
+    send(vis.window, Delete(vis.path))
 end
 
-Base.getindex(vis::Visualizer, path::Symbol...) = Visualizer(vis.core, vcat(vis.path, path...))
+Base.getindex(vis::Visualizer, path::Symbol...) = Visualizer(vis.window, vcat(vis.path, path...))
 

@@ -8,7 +8,9 @@ using MeshIO, FileIO
 vis = Visualizer()
 
 if get(ENV, "CI", nothing) == "true"
-    stream, proc = open(`julia $(joinpath(@__DIR__, "socket_client.jl")) ws://$(vis.core.window.host):$(vis.core.window.port)`)
+    port = split(split(url(vis), ':')[end], '/')[1]
+    @show port
+    stream, proc = open(`julia $(joinpath(@__DIR__, "socket_client.jl")) $port`)
 else
     open(vis)
 end
@@ -50,10 +52,10 @@ end
 
         @testset "textured valkyrie" begin
             head = Mesh(
-                load(joinpath(MeshCat.viewer_root, "data", "head_multisense.obj"), GLUVMesh),
+                load(joinpath(MeshCat.VIEWER_ROOT, "data", "head_multisense.obj"), GLUVMesh),
                 MeshLambertMaterial(
                     map=Texture(
-                        image=PngImage(joinpath(MeshCat.viewer_root, "data", "HeadTextureMultisense.png"))
+                        image=PngImage(joinpath(MeshCat.VIEWER_ROOT, "data", "HeadTextureMultisense.png"))
                     )
                 ))
             setobject!(v[:valkyrie, :head], head)

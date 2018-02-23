@@ -19,7 +19,8 @@ import MsgPack: pack, Ext
 import GeometryTypes: origin, radius
 
 export Visualizer,
-	   IJuliaCell,
+       ViewerWindow,
+	IJuliaCell,
        HyperEllipsoid,
        HyperCylinder,
        PointCloud,
@@ -31,19 +32,20 @@ export Visualizer,
        PngImage,
        Mesh,
        Points,
-	   setobject!,
-	   settransform!,
-	   delete!,
-	   url
+	setobject!,
+	settransform!,
+	delete!,
+	url
 
 
-include("servers.jl")
-include("ijulia.jl")
+# include("servers.jl")
+include("zmqserver.jl")
 include("geometry.jl")
 include("objects.jl")
 include("commands.jl")
 include("lowering.jl")
 include("msgpack.jl")
 include("visualizer.jl")
+include("ijulia.jl")
 
 end
