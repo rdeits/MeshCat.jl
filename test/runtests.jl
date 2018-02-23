@@ -8,7 +8,9 @@ using MeshIO, FileIO
 vis = Visualizer()
 
 if get(ENV, "CI", nothing) == "true"
-    stream, proc = open(`julia $(joinpath(@__DIR__, "socket_client.jl")) ws://$(url(vis))`)
+    port = split(split(url(vis), ':')[end], '/')[1]
+    @show port
+    stream, proc = open(`julia $(joinpath(@__DIR__, "socket_client.jl")) $port`)
 else
     open(vis)
 end

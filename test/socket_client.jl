@@ -31,7 +31,7 @@ stop_chan = Channel{Any}(1)
 client = WSClient()
 handler = MockHandler(client, stop_chan)
 
-uri = URI(ARGS[1])
+uri = URI("ws://localhost:$(ARGS[1])")
 println("Connecting to $uri... ")
 
 wsconnect(client, uri, handler)
