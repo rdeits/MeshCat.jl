@@ -1,10 +1,15 @@
 
 struct IJuliaCell
+
 	window::ViewerWindow
     embed::Bool
 
     IJuliaCell(window, embed=false) = new(window, embed)
 end
+
+IJuliaCell(v::Visualizer) = IJuliaCell(v.window)
+
+url(c::IJuliaCell) = url(c.window)
 
 function Base.show(io::IO, ::MIME"text/html", frame::IJuliaCell)
     if frame.embed
@@ -19,7 +24,7 @@ const iframe_attrs = "height=\"100%\" width=\"100%\" style=\"min-height: 500px;\
 function show_inline(io::IO, frame::IJuliaCell)
     print(io, """
     <div style="height: 500px; width: 500px; overflow-x: auto; overflow-y: hidden; resize: both">
-    <iframe src="$(url(frame.window))" style="width: 100%; height: 100%; border: none"></iframe>
+    <iframe src="$(url(frame))" style="width: 100%; height: 100%; border: none"></iframe>
     </div>
 """)
 end
@@ -38,7 +43,7 @@ function show_embed(io::IO, frame::IJuliaCell)
         console.log("trying");
         let frame = document.getElementById("$id");
         if (frame && frame.contentWindow !== undefined && frame.contentWindow.connect !== undefined) {
-            frame.contentWindow.connect("$(frame.window.host)", $(frame.window.port));
+            frame.contentWindow.connect("$(url(frame))");
         } else {
             console.log("could not connect");
           setTimeout(try_to_connect, 100);
@@ -49,42 +54,42 @@ function show_embed(io::IO, frame::IJuliaCell)
     """)
 end
 
-struct Snapshot
-	json::String
+# struct Snapshot
+# 	json::String
 
-    Snapshot(fname::AbstractString) = new(open(readstring, fname))
-    Snapshot(io::IO) = new(readstring(io))
-end
+#     Snapshot(fname::AbstractString) = new(open(readstring, fname))
+#     Snapshot(io::IO) = new(readstring(io))
+# end
 
-function Base.show(io::IO, ::MIME"text/html", snap::Snapshot)
-	content = readstring(open(joinpath(viewer_root, "build", "inline.html")))
-	# TODO: there has to be a better way than doing a replace() on the html.
-	script = """
-	<script>
-	scene = new THREE.ObjectLoader().parse(JSON.parse(`$(snap.json)`));
-	update_gui();
-	</script>
-	</body>
-	"""
-	html = replace(content, "</body>", script)
-	print(io, """
-	<iframe srcdoc="$(srcdoc_escape(html))" $iframe_attrs>
-	</iframe>
-	""")
-end
+# function Base.show(io::IO, ::MIME"text/html", snap::Snapshot)
+# 	content = readstring(open(joinpath(viewer_root, "build", "inline.html")))
+# 	# TODO: there has to be a better way than doing a replace() on the html.
+# 	script = """
+# 	<script>
+# 	scene = new THREE.ObjectLoader().parse(JSON.parse(`$(snap.json)`));
+# 	update_gui();
+# 	</script>
+# 	</body>
+# 	"""
+# 	html = replace(content, "</body>", script)
+# 	print(io, """
+# 	<iframe srcdoc="$(srcdoc_escape(html))" $iframe_attrs>
+# 	</iframe>
+# 	""")
+# end
 
-function save(fname::String, snap::Snapshot)
-    content = readstring(open(joinpath(viewer_root, "build", "inline.html")))
-    # TODO: there has to be a better way than doing a replace() on the html.
-    script = """
-    <script>
-    scene = new THREE.ObjectLoader().parse(JSON.parse(`$(snap.json)`));
-    update_gui();
-    </script>
-    </body>
-    """
-    html = replace(content, "</body>", script)
-    open(fname, "w") do file
-        write(file, html)
-    end
-end
+# function save(fname::String, snap::Snapshot)
+#     content = readstring(open(joinpath(viewer_root, "build", "inline.html")))
+#     # TODO: there has to be a better way than doing a replace() on the html.
+#     script = """
+#     <script>
+#     scene = new THREE.ObjectLoader().parse(JSON.parse(`$(snap.json)`));
+#     update_gui();
+#     </script>
+#     </body>
+#     """
+#     html = replace(content, "</body>", script)
+#     open(fname, "w") do file
+#         write(file, html)
+#     end
+# end

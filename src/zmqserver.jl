@@ -10,7 +10,6 @@ const DEFAULT_ZMQ_METHOD = "tcp"
 const DEFAULT_ZMQ_PORT = 6000
 
 function handle_file_request(req, res)
-    @show req.resource
     # This file handler is *extremely* simple, by design. I'm not currently
     # confident that I can write a secure file server that only serves files
     # inside the viewer root, so instead I am manually whitelisting the files
@@ -18,15 +17,15 @@ function handle_file_request(req, res)
     if req.resource == "/static" || req.resource == "/static/" || req.resource == joinpath("/static", VIEWER_HTML)
         file = open(joinpath(VIEWER_ROOT, VIEWER_HTML))
     elseif req.resource in [
-        "/js/LoaderSupport.js",
-        "/js/OBJLoader.js",
-        "/js/OBJLoader2.js",
-        "/js/OrbitControls.js",
-        "/js/dat.gui.js",
-        "/js/meshcat.js",
-        "/js/msgpack.min.js",
-        "/js/split.min.js",
-        "/js/three.js"
+        "/static/js/LoaderSupport.js",
+        "/static/js/OBJLoader.js",
+        "/static/js/OBJLoader2.js",
+        "/static/js/OrbitControls.js",
+        "/static/js/dat.gui.js",
+        "/static/js/meshcat.js",
+        "/static/js/msgpack.min.js",
+        "/static/js/split.min.js",
+        "/static/js/three.js"
         ]
         file = open(joinpath(VIEWER_ROOT, "js", splitdir(req.resource)[2]))
     else
@@ -135,7 +134,6 @@ end
 function Base.run(bridge::ZMQWebSocketBridge)
     while true
         msg = take!(convert(IOStream, ZMQ.recv(bridge.zmq_socket)))
-        println("got msg from ZMQ")
         if length(msg) == 0
             ZMQ.send(bridge.zmq_socket, web_url(bridge))
         else
@@ -150,5 +148,5 @@ function Base.run(bridge::ZMQWebSocketBridge)
     end
 end
 
-bridge = ZMQWebSocketBridge()
-run(bridge)
+# bridge = ZMQWebSocketBridge()
+# run(bridge)
