@@ -14,6 +14,9 @@ if get(ENV, "CI", nothing) == "true"
 else
     open(vis)
 end
+
+wait(vis)
+
 @testset "MeshCat" begin
     @testset "shapes" begin
         v = vis[:shapes]
