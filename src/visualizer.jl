@@ -17,6 +17,10 @@ mutable struct ViewerWindow
 		socket = ZMQ.Socket(context, ZMQ.REQ)
 		ZMQ.connect(socket, zmq_url)
 		web_url = request_zmq_url(socket)
+		# Connect again, to work around weird bug in the Python version of the
+		# server. See https://github.com/rdeits/meshcat-python/pull/2
+		socket = ZMQ.Socket(context, ZMQ.REQ)
+		ZMQ.connect(socket, zmq_url)
 		ViewerWindow(context, socket, web_url, zmq_url, nothing)
 	end
 
