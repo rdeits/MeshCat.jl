@@ -52,7 +52,7 @@ end
 function Base.send(c::ViewerWindow, cmd::AbstractCommand)
 	data = lower(cmd)
 	ZMQ.send(c.socket, data["type"], true)
-	ZMQ.send(c.socket, join(data["path"], '/'), true)
+	ZMQ.send(c.socket, data["path"], true)
 	ZMQ.send(c.socket, pack(data), false)
 	ZMQ.recv(c.socket)
 	nothing

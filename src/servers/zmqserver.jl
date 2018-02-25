@@ -165,7 +165,11 @@ function update_tree!(bridge::ZMQWebSocketBridge, command::String, path::Abstrac
         bridge.tree[path].transform = data
     else
         @assert command == "delete"
-        delete!(bridge.tree, path)
+        if length(path) == 0
+            bridge.tree = SceneNode()
+        else
+            delete!(bridge.tree, path)
+        end
     end
 end
 
@@ -192,7 +196,7 @@ function Base.run(bridge::ZMQWebSocketBridge)
             wait_for_websockets(bridge)
             ZMQ.send(bridge.zmq_socket, "ok")
         elseif command in ["set_object", "set_transform", "delete"]
-            path = split(unsafe_string(frames[2]), '/')
+            path = filter(x -> length(x) > 0, split(unsafe_string(frames[2]), '/'))
             data = take!(convert(IOStream, frames[3]))
             send_to_websockets(bridge, data)
             update_tree!(bridge, command, path, data)
