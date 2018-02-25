@@ -149,7 +149,11 @@ end
 function send_to_websockets(bridge::ZMQWebSocketBridge, msg)
     @sync begin
         for websocket in bridge.websockets
-            @async write(websocket, msg)
+            @async begin
+                if isopen(websocket)
+                    write(websocket, msg)
+                end
+            end
         end
     end
 end
