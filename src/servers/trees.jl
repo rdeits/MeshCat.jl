@@ -27,7 +27,7 @@ end
 
 function Base.delete!(s::SceneNode, path::AbstractVector{<:AbstractString})
     parent = s[path[1:end-1]]
-    chlid = path[end]
+    child = path[end]
     delete!(parent, child)
 end
 
