@@ -13,4 +13,3 @@ end
 struct Delete <: AbstractCommand
     path::Vector{Symbol}
 end
-

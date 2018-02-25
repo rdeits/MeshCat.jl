@@ -14,9 +14,14 @@ if get(ENV, "CI", nothing) == "true"
 else
     open(vis)
 end
+
+wait(vis)
+delete!(vis)
+
 @testset "MeshCat" begin
     @testset "shapes" begin
         v = vis[:shapes]
+        delete!(v)
         settransform!(v, Translation(1., 0, 0))
         @testset "cube" begin
             setobject!(v[:cube], HyperRectangle(Vec(0., 0, 0), Vec(0.1, 0.2, 0.3)))

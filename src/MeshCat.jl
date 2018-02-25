@@ -4,8 +4,7 @@ module MeshCat
 
 using GeometryTypes
 using CoordinateTransformations
-using WebSockets
-using HttpServer
+using ZMQ
 
 using Colors: Colorant, RGB, RGBA, alpha
 using StaticArrays: StaticVector, SVector, SDiagonal
@@ -37,9 +36,10 @@ export Visualizer,
 	delete!,
 	url
 
+include("servers/trees.jl")
+include("servers/zmqserver.jl")
+using .ZMQServer: ZMQWebSocketBridge, zmq_url, web_url, VIEWER_ROOT
 
-# include("servers.jl")
-include("zmqserver.jl")
 include("geometry.jl")
 include("objects.jl")
 include("commands.jl")

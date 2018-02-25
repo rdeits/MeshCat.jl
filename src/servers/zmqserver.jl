@@ -1,8 +1,14 @@
+module ZMQServer
+
+using ..SceneTrees: SceneNode
+
 using HttpServer
 using WebSockets
 using ZMQ
 
-const VIEWER_ROOT = joinpath(@__DIR__, "..", "viewer", "static")
+export ZMQWebSocketBridge, zmq_url, web_url
+
+const VIEWER_ROOT = abspath(joinpath(@__DIR__, "..", "..", "viewer", "static"))
 const VIEWER_HTML = "meshcat.html"
 const DEFAULT_FILESERVER_PORT = 7000
 const MAX_ATTEMPTS = 1000
@@ -13,7 +19,7 @@ function handle_file_request(req, res)
     # This file handler is *extremely* simple, by design. I'm not currently
     # confident that I can write a secure file server that only serves files
     # inside the viewer root, so instead I am manually whitelisting the files
-    # that might need to be served. 
+    # that might need to be served.
     if req.resource == "/static" || req.resource == "/static/" || req.resource == joinpath("/static", VIEWER_HTML)
         file = open(joinpath(VIEWER_ROOT, VIEWER_HTML))
     elseif req.resource in [
@@ -53,6 +59,7 @@ end
 mutable struct ZMQWebSocketBridge
     host::IPv4
     websockets::Set{WebSocket}
+    tree::SceneNode
     web_port::Int
     web_server::Server
     zmq_context::ZMQ.Context
@@ -61,7 +68,7 @@ mutable struct ZMQWebSocketBridge
 
     function ZMQWebSocketBridge(zmq_url=nothing, host::IPv4=IPv4(127,0,0,1), port=nothing)
         HttpServer.initcbs()
-        bridge = new(host, Set{WebSocket}())
+        bridge = new(host, Set{WebSocket}(), SceneNode())
 
         if port === nothing
             bridge.web_server, bridge.web_port = find_available_port(DEFAULT_FILESERVER_PORT, MAX_ATTEMPTS) do port
@@ -95,8 +102,8 @@ web_url(b::ZMQWebSocketBridge) = "http://$(b.host):$(b.web_port)/static/"
 
 function WebSockets.WebSocketHandler(bridge::ZMQWebSocketBridge)
     WebSocketHandler() do req, client
-        @show client
         push!(bridge.websockets, client)
+        send_scene(bridge, client)
         try
             while true
                 read(client)
@@ -131,22 +138,73 @@ function wait_for_websockets(bridge::ZMQWebSocketBridge)
     end
 end
 
-function Base.run(bridge::ZMQWebSocketBridge)
-    while true
-        msg = take!(convert(IOStream, ZMQ.recv(bridge.zmq_socket)))
-        if length(msg) == 0
-            ZMQ.send(bridge.zmq_socket, web_url(bridge))
-        else
-            wait_for_websockets(bridge)
-            @sync begin
-                for websocket in bridge.websockets
-                    @async write(websocket, msg)
+function recv_multipart(sock::ZMQ.Socket)
+    frames = [ZMQ.recv(sock)]
+    while ZMQ.ismore(sock)
+        push!(frames, ZMQ.recv(sock))
+    end
+    frames
+end
+
+function send_to_websockets(bridge::ZMQWebSocketBridge, msg)
+    @sync begin
+        for websocket in bridge.websockets
+            @async begin
+                if isopen(websocket)
+                    write(websocket, msg)
                 end
             end
-            ZMQ.send(bridge.zmq_socket, "ok")
         end
     end
 end
 
-# bridge = ZMQWebSocketBridge()
-# run(bridge)
+function update_tree!(bridge::ZMQWebSocketBridge, command::String, path::AbstractVector, data)
+    if command == "set_object"
+        bridge.tree[path].object = data
+    elseif command == "set_transform"
+        bridge.tree[path].transform = data
+    else
+        @assert command == "delete"
+        if length(path) == 0
+            bridge.tree = SceneNode()
+        else
+            delete!(bridge.tree, path)
+        end
+    end
+end
+
+function send_scene(bridge::ZMQWebSocketBridge, websocket::WebSocket)
+    @sync begin
+        foreach(bridge.tree) do node
+            if !isnull(node.object)
+                @async write(websocket, get(node.object))
+            end
+            if !isnull(node.transform)
+                @async write(websocket, get(node.transform))
+            end
+        end
+    end
+end
+
+function Base.run(bridge::ZMQWebSocketBridge)
+    while true
+        frames = recv_multipart(bridge.zmq_socket)
+        command = unsafe_string(frames[1])
+        if command == "url"
+            ZMQ.send(bridge.zmq_socket, web_url(bridge))
+        elseif command == "wait"
+            wait_for_websockets(bridge)
+            ZMQ.send(bridge.zmq_socket, "ok")
+        elseif command in ["set_object", "set_transform", "delete"]
+            path = filter(x -> length(x) > 0, split(unsafe_string(frames[2]), '/'))
+            data = take!(convert(IOStream, frames[3]))
+            send_to_websockets(bridge, data)
+            update_tree!(bridge, command, path, data)
+            ZMQ.send(bridge.zmq_socket, "ok")
+        else
+            ZMQ.send(bridge.zmq_socket, "error: unrecognized command")
+        end
+    end
+end
+
+end

@@ -32,8 +32,8 @@ mutable struct ViewerWindow
 end
 
 function request_zmq_url(socket::ZMQ.Socket)
-	ZMQ.send(socket, "")
-	zmq_url = copy(unsafe_string(ZMQ.recv(socket)))
+	ZMQ.send(socket, "url")
+	zmq_url = unsafe_string(ZMQ.recv(socket))
 end
 
 url(c::ViewerWindow) = c.web_url
@@ -43,8 +43,17 @@ function Base.close(c::ViewerWindow)
 	close(c.context)
 end
 
+function Base.wait(c::ViewerWindow)
+	ZMQ.send(c.socket, "wait")
+	ZMQ.recv(c.socket)
+	nothing
+end
+
 function Base.send(c::ViewerWindow, cmd::AbstractCommand)
-	ZMQ.send(c.socket, pack(Dict("commands" => [lower(cmd)])))
+	data = lower(cmd)
+	ZMQ.send(c.socket, data["type"], true)
+	ZMQ.send(c.socket, data["path"], true)
+	ZMQ.send(c.socket, pack(data), false)
 	ZMQ.recv(c.socket)
 	nothing
 end
@@ -77,6 +86,7 @@ url(v::Visualizer) = url(v.window)
 Base.open(v::Visualizer) = (open(v.window); v)
 Base.close(v::Visualizer) = close(v.window)
 Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer at $(url(v))")
+Base.wait(v::Visualizer) = wait(v.window)
 
 function setobject!(vis::Visualizer, obj::AbstractObject)
 	send(vis.window, SetObject(obj, vis.path))
