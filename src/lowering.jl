@@ -193,14 +193,14 @@ function lower(cmd::SetObject)
     Dict{String, Any}(
         "type" => "set_object",
         "object" => lower(cmd.object),
-        "path" => string.(cmd.path)
+        "path" => string("/", join(string.(cmd.path), '/'))
     )
 end
 
 function lower(cmd::SetTransform)
     Dict{String, Any}(
         "type" => "set_transform",
-        "path" => string.(cmd.path),
+        "path" => string("/", join(string.(cmd.path), '/')),
         "matrix" => PackedVector(Float32.(lower(cmd.tform))),
     )
 end
@@ -208,6 +208,6 @@ end
 function lower(cmd::Delete)
     Dict{String, Any}(
         "type" => "delete",
-        "path" => string.(cmd.path)
+        "path" => string("/", join(string.(cmd.path), '/'))
     )
 end
