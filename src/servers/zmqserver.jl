@@ -31,9 +31,10 @@ function handle_file_request(req, res)
         "/static/js/meshcat.js",
         "/static/js/msgpack.min.js",
         "/static/js/split.min.js",
-        "/static/js/three.js"
+        "/static/js/three.js",
+        "/static/dat.gui/build/dat.gui.js"
         ]
-        file = open(joinpath(VIEWER_ROOT, "js", splitdir(req.resource)[2]))
+        file = open(joinpath(VIEWER_ROOT, req.resource[9:end]))
     else
         return Response(404)
     end
