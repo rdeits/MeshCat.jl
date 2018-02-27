@@ -1,7 +1,11 @@
 vis = Visualizer()
 
 println("opening vis")
-open(vis)
+if haskey(ENV, "CI")
+    open(`firefox -headless $(url(vis))`)
+else
+    open(vis)
+end
 println("waiting for vis")
 wait(vis)
 println("got websocket")
