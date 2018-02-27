@@ -8,4 +8,5 @@ using MeshIO, FileIO
 @testset "MeshCat" begin
     include("server_client.jl")
     include("visualizer.jl")
+    include("notebook.jl")
 end
