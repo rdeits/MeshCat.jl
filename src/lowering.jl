@@ -152,7 +152,8 @@ function lower(material::MeshMaterial, uuid=uuid1())
         "depthFunc" => material.depthFunc,
         "depthTest" => material.depthTest,
         "depthWrite" => material.depthWrite,
-        "emissive" => material.emissive
+        "emissive" => material.emissive,
+        "side" => material.side,
     )
     if material.map !== nothing
         uuid = uuid1()

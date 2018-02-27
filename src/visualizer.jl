@@ -94,6 +94,7 @@ end
 
 setobject!(vis::Visualizer, geom::GeometryLike) = setobject!(vis, Mesh(geom))
 setobject!(vis::Visualizer, cloud::PointCloud) = setobject!(vis, Points(cloud))
+setobject!(vis::Visualizer, geom::GeometryLike, material::AbstractMaterial) = setobject!(vis, Mesh(geom, material))
 
 function settransform!(vis::Visualizer, tform::Transformation)
     send(vis.window, SetTransform(tform, vis.path))
