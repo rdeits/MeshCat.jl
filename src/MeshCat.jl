@@ -19,7 +19,7 @@ import GeometryTypes: origin, radius
 
 export Visualizer,
        ViewerWindow,
-	IJuliaCell,
+       IJuliaCell,
        HyperEllipsoid,
        HyperCylinder,
        PointCloud,
@@ -31,10 +31,10 @@ export Visualizer,
        PngImage,
        Mesh,
        Points,
-	setobject!,
-	settransform!,
-	delete!,
-	url
+       setobject!,
+       settransform!,
+       delete!,
+       url
 
 include("servers/trees.jl")
 include("servers/zmqserver.jl")

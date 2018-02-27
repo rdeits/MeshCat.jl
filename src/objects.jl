@@ -3,8 +3,8 @@ abstract type AbstractObject end
 abstract type AbstractMaterial end
 
 struct Mesh{G <: GeometryLike, M <: AbstractMaterial} <: AbstractObject
-	geometry::G
-	material::M
+    geometry::G
+    material::M
 end
 
 geometry(o::Mesh) = o.geometry
@@ -25,8 +25,8 @@ PngImage(fname::AbstractString) = PngImage(open(read, fname))
 end
 
 @with_kw mutable struct MeshMaterial <: AbstractMaterial
-	_type::String
-	color::RGBA{Float32} = RGB(1., 1., 1.)
+    _type::String
+    color::RGBA{Float32} = RGB(1., 1., 1.)
     map::Union{Texture, Void} = nothing
     depthFunc::Int = 3
     depthTest::Bool = true
