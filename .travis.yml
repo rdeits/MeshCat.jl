@@ -30,5 +30,8 @@ matrix:
  allow_failures:
  - julia: nightly
 
+before_script:
+  - xdg-mime default firefox text/html
+
 after_success:
   - julia -e 'cd(Pkg.dir("MeshCat")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
