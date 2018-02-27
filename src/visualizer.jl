@@ -62,11 +62,11 @@ function open_url(url)
     @show url
     try
         @static if is_windows()
-            open(`start $url`)
+            run(`start $url`)
         elseif is_apple()
-            open(`open $url`)
+            run(`open $url`)
         elseif is_linux()
-            open(`xdg-open $url`)
+            run(`xdg-open $url`)
         end
     catch e
         println("Could not open browser automatically: $e")
