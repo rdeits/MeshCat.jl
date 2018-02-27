@@ -1,7 +1,9 @@
 vis = Visualizer()
 
 open(vis)
+println("waiting for vis")
 wait(vis)
+println("got websocket")
 delete!(vis)
 
 @testset "self-contained visualizer" begin
