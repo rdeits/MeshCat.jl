@@ -30,7 +30,7 @@ matrix:
  allow_failures:
  - julia: nightly
 
-before_script:
+before_install:
   - xdg-mime default firefox.desktop text/html
 
 after_success:
