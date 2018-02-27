@@ -1,14 +1,6 @@
 vis = Visualizer()
 
-if get(ENV, "CI", nothing) == "true"
-    port = split(split(url(vis), ':')[end], '/')[1]
-    @show port
-    stream, proc = open(`julia $(joinpath(@__DIR__, "dummy_websocket_client.jl")) $port`)
-else
-    proc = nothing
-    open(vis)
-end
-
+open(vis)
 wait(vis)
 delete!(vis)
 
@@ -75,7 +67,3 @@ delete!(vis)
 end
 
 close(vis)
-
-if proc !== nothing
-    kill(proc)
-end

@@ -1,9 +1,6 @@
 @testset "server + client" begin
     script = joinpath(@__DIR__, "..", "src", "servers", "standalone.jl")
-    cmd = `$(joinpath(JULIA_HOME, "julia")) -- $script --zmq-url="tcp://127.0.0.1:5568"`
-    if !haskey(ENV, "CI")
-        cmd = `$cmd --open`
-    end
+    cmd = `$(joinpath(JULIA_HOME, "julia")) -- $script --zmq-url="tcp://127.0.0.1:5568" --open`
     stream, proc = open(cmd)
     try
         line = readline(stream)
