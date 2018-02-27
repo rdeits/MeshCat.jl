@@ -19,13 +19,22 @@ addons:
   apt:
     packages:
       - libzmq3
-  chrome: beta
+      - xvfb
+  firefox: latest
 
 # uncomment the following lines to allow failures on nightly julia
 # (tests will run but not make your overall status red)
 matrix:
  allow_failures:
  - julia: nightly
+
+## uncomment the following lines to override the default test script
+#script:
+#  - julia -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
+
+script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]] then xvfb-run julia -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)' ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] then julia -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)' ; fi
 
 after_success:
   - julia -e 'cd(Pkg.dir("MeshCat")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
