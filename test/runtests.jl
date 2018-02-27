@@ -35,9 +35,9 @@ delete!(vis)
         end
 
         @testset "sphere" begin
-            setobject!(v[:sphere], Mesh(
+            setobject!(v[:sphere],
                 HyperSphere(Point(0., 0, 0), 0.15),
-                MeshLambertMaterial(color=colorant"maroon")))
+                MeshLambertMaterial(color=colorant"maroon"))
             settransform!(v[:sphere], Translation(0, 1, 0.15))
         end
 

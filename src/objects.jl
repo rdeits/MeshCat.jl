@@ -32,6 +32,7 @@ end
     depthTest::Bool = true
     depthWrite::Bool = true
     emissive::Float32 = 0
+    side::Int = 2            # TODO: make an enum https://github.com/mrdoob/three.js/blob/d55897b8e9b2632896d8ac146a05b3b4be3668f8/src/constants.js#L14
 end
 
 MeshBasicMaterial(;kw...) = MeshMaterial(_type="MeshBasicMaterial"; kw...)
