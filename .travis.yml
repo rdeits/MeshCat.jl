@@ -19,10 +19,7 @@ addons:
   apt:
     packages:
       - libzmq3
-  firefox: latest
-
-env:
-  - MOZ_HEADLESS=1
+  chrome: stable
 
 # uncomment the following lines to allow failures on nightly julia
 # (tests will run but not make your overall status red)

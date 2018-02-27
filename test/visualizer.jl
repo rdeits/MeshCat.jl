@@ -2,7 +2,7 @@ vis = Visualizer()
 
 println("opening vis")
 if haskey(ENV, "CI")
-    open(`firefox -headless $(url(vis))`)
+    open(`google-chrome-stable --headless --disable-gpu $(url(vis))`)
 else
     open(vis)
 end
