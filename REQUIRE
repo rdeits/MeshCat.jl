@@ -1,17 +1,17 @@
 julia 0.6
 
 # Geometry
-GeometryTypes
-StaticArrays
-CoordinateTransformations
-Colors
+GeometryTypes 0.4
+StaticArrays 0.5
+CoordinateTransformations 0.4.1
+Colors 0.7.1
 
 # Misc
-Parameters
+Parameters 0.7
 
 # Communication
-MsgPack
-WebSockets
-HttpServer
-URIParser
-ZMQ
+MsgPack 0.1.1
+WebSockets 0.3
+HttpServer 0.2
+URIParser 0.2
+ZMQ 0.4.2

@@ -1,3 +1,4 @@
-MeshIO
-FileIO
-Colors
+MeshIO 0.1.2
+FileIO 0.4
+Meshing 0.2  # TODO: bump up to 0.3 to get coordinate fix
+NBInclude 1.0

@@ -190,25 +190,27 @@ function lower(material::PointsMaterial, uuid=uuid1())
     )
 end
 
+lower(path::Path) = string(path)
+
 function lower(cmd::SetObject)
     Dict{String, Any}(
         "type" => "set_object",
         "object" => lower(cmd.object),
-        "path" => string("/", join(string.(cmd.path), '/'))
+        "path" => lower(cmd.path) 
     )
 end
 
 function lower(cmd::SetTransform)
     Dict{String, Any}(
         "type" => "set_transform",
-        "path" => string("/", join(string.(cmd.path), '/')),
         "matrix" => PackedVector(Float32.(lower(cmd.tform))),
+        "path" => lower(cmd.path)
     )
 end
 
 function lower(cmd::Delete)
     Dict{String, Any}(
         "type" => "delete",
-        "path" => string("/", join(string.(cmd.path), '/'))
+        "path" => lower(cmd.path)
     )
 end

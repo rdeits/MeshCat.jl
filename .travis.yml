@@ -28,6 +28,9 @@ matrix:
 
 before_script: # homebrew for mac
   - julia -e 'Pkg.add("DandelionWebSockets")'
+  # TODO: remove when Meshing 0.3 is tagged
+  - julia -e 'Pkg.add("Meshing"); Pkg.checkout("Meshing")' 
+
 
 ## uncomment the following lines to override the default test script
 #script:

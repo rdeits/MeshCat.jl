@@ -77,20 +77,21 @@ end
 
 struct Visualizer
     window::ViewerWindow
-    path::Vector{Symbol}
+    path::Path
 end
 
-Visualizer() = Visualizer(ViewerWindow(), [:meshcat])
-Visualizer(zmq_url::AbstractString) = Visualizer(ViewerWindow(zmq_url), [:meshcat])
+Visualizer() = Visualizer(ViewerWindow(), ["meshcat"])
+Visualizer(zmq_url::AbstractString) = Visualizer(ViewerWindow(zmq_url), ["meshcat"])
 
 url(v::Visualizer) = url(v.window)
 Base.open(v::Visualizer) = (open(v.window); v)
 Base.close(v::Visualizer) = close(v.window)
-Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer at $(url(v))")
+Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer at $(url(v)) with path $(v.path)")
 Base.wait(v::Visualizer) = wait(v.window)
 
 function setobject!(vis::Visualizer, obj::AbstractObject)
     send(vis.window, SetObject(obj, vis.path))
+    vis
 end
 
 setobject!(vis::Visualizer, geom::GeometryLike) = setobject!(vis, Mesh(geom))
@@ -99,11 +100,13 @@ setobject!(vis::Visualizer, geom::GeometryLike, material::AbstractMaterial) = se
 
 function settransform!(vis::Visualizer, tform::Transformation)
     send(vis.window, SetTransform(tform, vis.path))
+    vis
 end
 
 function delete!(vis::Visualizer)
     send(vis.window, Delete(vis.path))
+    vis
 end
 
-Base.getindex(vis::Visualizer, path::Symbol...) = Visualizer(vis.window, vcat(vis.path, path...))
+Base.getindex(vis::Visualizer, path::Union{Symbol, AbstractString}...) = Visualizer(vis.window, vcat(vis.path, path...))
 
