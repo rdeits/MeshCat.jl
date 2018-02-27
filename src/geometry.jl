@@ -30,7 +30,7 @@ end
 
 function PointCloud(position::AbstractVector{<:AbstractVector{T}},
            color::AbstractVector{C}=RGB{Float32}[]) where {T, C <: Colorant}
-	PointCloud{T, Point{3, T}, C}(position, color)
+    PointCloud{T, Point{3, T}, C}(position, color)
 end
 
 

@@ -48,7 +48,7 @@ function find_available_port(f::Function, default=8000, max_attempts=1000)
             return f(port), port
         catch e
             if e isa Base.UVError || e isa ZMQ.StateError
-                println("Port $port in use, trying another")
+                info("Port $port in use, trying another")
             else
                 rethrow(e)
             end
@@ -90,10 +90,10 @@ mutable struct ZMQWebSocketBridge
             end
         else
             bridge.zmq_url = zmq_url
-            bridge.zmq_socket = start_zmq(zmq_url)
+            bridge.zmq_socket = start_zmq(bridge, zmq_url)
         end
-        println(zmq_url)
-        println(web_url(bridge))
+        println("zmq_url=", zmq_url)
+        println("web_url=", web_url(bridge))
         bridge
     end
 end
@@ -127,7 +127,7 @@ function start_server(bridge::ZMQWebSocketBridge, port)
     return server
 end
 
-function start_zmq(bridge::ZMQWebSocketBridge, url::String)
+function start_zmq(bridge::ZMQWebSocketBridge, url::AbstractString)
     socket = Socket(bridge.zmq_context, REP)
     ZMQ.bind(socket, url)
     socket

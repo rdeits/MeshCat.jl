@@ -5,5 +5,3 @@ extcode(::Type{UInt32}) = 0x16
 extcode(::Type{Float32}) = 0x17
 
 pack(io::IO, v::PackedVector) = pack(io, Ext(extcode(v), reinterpret(UInt8, v.data, (sizeof(v.data),))))
-
-pack(s::IO, cmd::AbstractCommand) = pack(s, lower(cmd))
