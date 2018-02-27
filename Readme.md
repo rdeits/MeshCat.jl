@@ -44,6 +44,7 @@ using CoordinateTransformations
 
 setobject!(vis, HyperRectangle(Vec(0., 0, 0), Vec(1., 1, 1)))
 settransform!(vis, Translation(-0.5, -0.5, 0))```
+```
 
 ![demo-cube](https://user-images.githubusercontent.com/591886/36703848-9da5abae-1b2b-11e8-8fa7-57e5cd3e2420.png)
 
