@@ -5,9 +5,7 @@ function serve()
     zmq_url = nothing
     open_browser = false
     for arg in ARGS
-        info("arg:", arg)
         m = match(r"^\-\-zmq\-url=(.*)$", arg)
-        info(m)
         if m !== nothing
             zmq_url = strip(m[1])
         end
