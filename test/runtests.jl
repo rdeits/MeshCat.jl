@@ -6,6 +6,6 @@ using Colors
 using MeshIO, FileIO
 
 @testset "MeshCat" begin
-    include("server_client.jl")
     include("visualizer.jl")
+    include("server_client.jl")
 end

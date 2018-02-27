@@ -1,15 +1,14 @@
 vis = Visualizer()
 
-if get(ENV, "CI", nothing) == "true"
-    port = split(split(url(vis), ':')[end], '/')[1]
-    @show port
-    stream, proc = open(`julia $(joinpath(@__DIR__, "dummy_websocket_client.jl")) $port`)
+println("opening vis")
+if haskey(ENV, "CI")
+    open(`firefox $(url(vis))`)
 else
-    proc = nothing
     open(vis)
 end
-
+println("waiting for vis")
 wait(vis)
+println("got websocket")
 delete!(vis)
 
 @testset "self-contained visualizer" begin
@@ -75,7 +74,3 @@ delete!(vis)
 end
 
 close(vis)
-
-if proc !== nothing
-    kill(proc)
-end
