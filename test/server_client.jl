@@ -21,9 +21,9 @@
         vis = Visualizer(zmq_url)
         @test url(vis) == web_url
 
-        if !haskey(ENV, "CI")
-            wait(vis)
-        end
+        println("waiting for vis")
+        wait(vis)
+        println("websocket connected")
         setobject!(vis, HyperSphere(Point(0., 0, 0), 0.5))
         settransform!(vis, Translation(0, 0, 1))
     finally
