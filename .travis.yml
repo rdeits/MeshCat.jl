@@ -30,5 +30,8 @@ matrix:
  allow_failures:
  - julia: nightly
 
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then xdg-mime default firefox.desktop text/html ; fi
+
 after_success:
   - julia -e 'cd(Pkg.dir("MeshCat")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
