@@ -1,5 +1,6 @@
 vis = Visualizer()
 
+println("opening vis")
 open(vis)
 println("waiting for vis")
 wait(vis)
