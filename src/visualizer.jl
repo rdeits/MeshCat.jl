@@ -59,7 +59,6 @@ function Base.send(c::ViewerWindow, cmd::AbstractCommand)
 end
 
 function open_url(url)
-    @show url
     try
         @static if is_windows()
             run(`start $url`)

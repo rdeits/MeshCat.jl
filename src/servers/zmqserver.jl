@@ -48,7 +48,7 @@ function find_available_port(f::Function, default=8000, max_attempts=1000)
             return f(port), port
         catch e
             if e isa Base.UVError || e isa ZMQ.StateError
-                info("Port $port in use, trying another")
+                # info("Port $port in use, trying another")
             else
                 rethrow(e)
             end
