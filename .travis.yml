@@ -26,10 +26,6 @@ matrix:
  allow_failures:
  - julia: nightly
 
-before_script: # homebrew for mac
-  - julia -e 'Pkg.add("DandelionWebSockets")'
-
-
 ## uncomment the following lines to override the default test script
 #script:
 #  - julia -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
