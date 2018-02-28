@@ -1,4 +1,4 @@
 MeshIO 0.1.2
 FileIO 0.4
-Meshing 0.2  # TODO: bump up to 0.3 to get coordinate fix
+Meshing 0.3
 NBInclude 1.0
