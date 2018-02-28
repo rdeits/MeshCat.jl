@@ -1,6 +1,6 @@
 vis = Visualizer()
 
-if get(ENV, "CI", nothing) == "true"
+if haskey(ENV, "CI")
     port = split(split(url(vis), ':')[end], '/')[1]
     @show port
     stream, proc = open(`julia $(joinpath(@__DIR__, "dummy_websocket_client.jl")) $port`)
