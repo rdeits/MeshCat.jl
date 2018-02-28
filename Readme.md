@@ -20,9 +20,18 @@ As much as possible, MeshCat.jl tries to use existing implementations of its fun
 
 That means that MeshCat should play well with other tools in the JuliaGeometry ecosystem like MeshIO.jl, Meshing.jl, etc. 
 
-# Usage
+# Demo
 
-See [demo.ipynb](demo.ipynb)
+For detailed examples of usage, check out [demo.ipynb](demo.ipynb).
+
+# Related Projects
+
+MeshCat.jl is a successor to [DrakeVisualizer.jl](https://github.com/rdeits/DrakeVisualizer.jl), and the interface is quite similar (with the exception that we use `setobject!` instead of `setgeometry!`). The primary difference is that DrakeVisualizer required Director, LCM, and VTK, all of which could be difficult to install, while MeshCat just needs ZeroMQ and a web browser. MeshCat also has better support for materials, textures, point clouds, and complex meshes. 
+
+You may also want to check out:
+
+* [meshcat-python](https://github.com/rdeits/meshcat-python): the Python implementation of the same protocol
+* [MeshCatMechanisms.jl](https://github.com/rdeits/MeshCatMechanisms.jl) extensions to MeshCat.jl for visualizing mechanisms, robots, and URDFs 
 
 # Examples
 
