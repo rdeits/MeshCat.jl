@@ -74,6 +74,22 @@ function open_url(url)
     end
 end
 
+"""
+    vis = Visualizer()
+
+Construct a new MeshCat visualizer instance. This also starts the MeshCat ZeroMQ
+and file servers, choosing an appropriate port automatically.
+
+Useful methods:
+
+    open(vis) # open the visualizer in your browser
+    vis[:group1] # get a new visualizer representing a sub-tree of the scene
+    setobject!(vis[:group1], geometry) # set the object shown by this sub-tree of the visualizer
+
+    vis = Visualizer(zmq_url::String)
+
+Connect to an existing MeshCat server at the given ZeroMQ URL.
+"""
 struct Visualizer
     window::ViewerWindow
     path::Path
@@ -82,12 +98,40 @@ end
 Visualizer() = Visualizer(ViewerWindow(), ["meshcat"])
 Visualizer(zmq_url::AbstractString) = Visualizer(ViewerWindow(zmq_url), ["meshcat"])
 
+"""
+$(SIGNATURES)
+
+Get the URL at which the MeshCat file server is running.
+Open this URL in your browser to see the 3D scene.
+"""
 url(v::Visualizer) = url(v.window)
+
+"""
+Open the visualizer's web URL in your default browser
+"""
 Base.open(v::Visualizer) = (open(v.window); v)
 Base.close(v::Visualizer) = close(v.window)
 Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer at $(url(v)) with path $(v.path)")
+
+"""
+$(SIGNATURES)
+
+Wait until at least one browser has connected to the
+visualizer's server. This is useful in scripts to delay
+execution until the browser window has opened.
+"""
 Base.wait(v::Visualizer) = wait(v.window)
 
+"""
+$(SIGNATURES)
+
+Set the object at this visualizer's path. This replaces whatever
+geometry was presently at that path. To draw multiple geometries,
+place them at different paths by using the slicing notation:
+
+    setobject!(vis[:group1][:box1], geometry1)
+    setobject!(vis[:group1][:box2], geometry2)
+"""
 function setobject!(vis::Visualizer, obj::AbstractObject)
     send(vis.window, SetObject(obj, vis.path))
     vis
@@ -97,11 +141,25 @@ setobject!(vis::Visualizer, geom::GeometryLike) = setobject!(vis, Mesh(geom))
 setobject!(vis::Visualizer, cloud::PointCloud) = setobject!(vis, Points(cloud))
 setobject!(vis::Visualizer, geom::GeometryLike, material::AbstractMaterial) = setobject!(vis, Mesh(geom, material))
 
+"""
+$(SIGNATURES)
+
+Set the transform of this visualizer's path. This can be done
+before or after adding an object at that path. The overall transform
+of an object is the composition of the transforms of all of its parents,
+so setting the transform of `vis[:group1]` affects the poses of the objects
+at `vis[:group1][:box1]` and `vis[:group1][:box2]`.
+"""
 function settransform!(vis::Visualizer, tform::Transformation)
     send(vis.window, SetTransform(tform, vis.path))
     vis
 end
 
+"""
+$(SIGNATURES)
+
+Delete the geometry at this visualizer's path and all of its descendants.
+"""
 function delete!(vis::Visualizer)
     send(vis.window, Delete(vis.path))
     vis

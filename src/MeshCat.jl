@@ -12,6 +12,7 @@ using GeometryTypes: raw
 using Parameters: @with_kw
 using Base.Random: UUID, uuid1
 using URIParser: escape
+using DocStringExtensions
 
 import Base: delete!, length
 import MsgPack: pack, Ext
