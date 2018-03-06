@@ -2,6 +2,14 @@ threejs_type(m::MeshMaterial) = m._type
 threejs_type(::Mesh) = "Mesh"
 threejs_type(::Points) = "Points"
 
+"""
+Convert a geometry, material, object, or transform into the appropriate
+plain data structures expected by three.js. Most objects are lowered
+into `Dict`s matching the JSON structure used by three.js.
+"""
+function lower end
+
+
 function lower(t::Transformation)
     H = [transform_deriv(t, Vec(0., 0, 0)) t(Vec(0., 0, 0));
      Vec(0, 0, 0, 1)']
@@ -196,7 +204,7 @@ function lower(cmd::SetObject)
     Dict{String, Any}(
         "type" => "set_object",
         "object" => lower(cmd.object),
-        "path" => lower(cmd.path) 
+        "path" => lower(cmd.path)
     )
 end
 
