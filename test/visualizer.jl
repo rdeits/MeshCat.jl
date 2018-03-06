@@ -17,8 +17,9 @@ delete!(vis)
         v = vis[:shapes]
         delete!(v)
         settransform!(v, Translation(1., 0, 0))
-        @testset "cube" begin
-            setobject!(v[:cube], HyperRectangle(Vec(0., 0, 0), Vec(0.1, 0.2, 0.3)))
+        @testset "box" begin
+            setobject!(v[:box], HyperRectangle(Vec(0., 0, 0), Vec(0.1, 0.2, 0.3)))
+            settransform!(v[:box], Translation(-0.05, -0.1, 0))
         end
 
         @testset "cylinder" begin
@@ -38,6 +39,11 @@ delete!(vis)
         @testset "ellipsoid" begin
             setobject!(v[:ellipsoid], HyperEllipsoid(Point(0., 0, 0), Vec(0.3, 0.1, 0.1)))
             settransform!(v[:ellipsoid], Translation(0, 1.5, 0.1))
+        end
+
+        @testset "cube" begin
+            setobject!(v[:cube], HyperCube(Vec(-0.1, -0.1, 0), 0.2), MeshBasicMaterial())
+            settransform!(v[:cube], Translation(0, 2.0, 0))
         end
     end
 

@@ -5,8 +5,6 @@ struct Path
 end
 
 Base.convert(::Type{Path}, x::AbstractVector{<:AbstractString}) = Path(x)
-Base.length(p::Path) = length(p.entries)
-Base.push!(p::Path, s::AbstractString) = push!(p.entries, s)
 Base.vcat(p::Path, s...) = Path(vcat(p.entries, s...))
 Base.show(io::IO, p::Path) = print(io, string('/', join(p.entries, '/')))
 
