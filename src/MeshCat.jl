@@ -6,7 +6,7 @@ using GeometryTypes
 using CoordinateTransformations
 using ZMQ
 
-using Colors: Colorant, RGB, RGBA, alpha
+using Colors: Color, Colorant, RGB, RGBA, alpha
 using StaticArrays: StaticVector, SVector, SDiagonal
 using GeometryTypes: raw
 using Parameters: @with_kw

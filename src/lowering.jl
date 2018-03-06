@@ -61,6 +61,8 @@ function lower(box::HyperRectangle{3}, uuid=uuid1())
     )
 end
 
+lower(cube::HyperCube{3}, uuid=uuid1()) = lower(HyperRectangle(origin(cube), widths(cube)), uuid)
+
 function lower(c::HyperCylinder{3}, uuid=uuid1())
     Dict{String, Any}(
         "uuid" => string(uuid),
@@ -148,19 +150,18 @@ function lower(cloud::PointCloud, uuid=uuid1())
     )
 end
 
-
+lower(color::Color) = string("0x", hex(convert(RGB, color)))
 
 function lower(material::MeshMaterial, uuid=uuid1())
     data = Dict{String, Any}(
         "uuid" => string(uuid),
         "type" => threejs_type(material),
-        "color" => string("0x", hex(convert(RGB, material.color))),
+        "color" => lower(convert(RGB, material.color)),
         "transparent" => alpha(material.color) != 1,
         "opacity" => alpha(material.color),
         "depthFunc" => material.depthFunc,
         "depthTest" => material.depthTest,
         "depthWrite" => material.depthWrite,
-        "emissive" => material.emissive,
         "side" => material.side,
     )
     if material.map !== nothing

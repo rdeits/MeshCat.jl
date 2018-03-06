@@ -31,7 +31,6 @@ end
     depthFunc::Int = 3
     depthTest::Bool = true
     depthWrite::Bool = true
-    emissive::Float32 = 0
     side::Int = 2            # TODO: make an enum https://github.com/mrdoob/three.js/blob/d55897b8e9b2632896d8ac146a05b3b4be3668f8/src/constants.js#L14
 end
 
@@ -54,12 +53,3 @@ material(p::Points) = p.material
 end
 
 Points(geometry::GeometryLike; kw...) = Points(geometry, PointsMaterial(kw...))
-
-
-quaternion_xyzw(::IdentityTransformation) = SVector(0., 0, 0, 1)
-quaternion_xyzw(tform::AbstractAffineMap) = quaternion_xyzw(transform_deriv(tform, SVector(0., 0, 0)))
-quaternion_xyzw(matrix::UniformScaling) = quaternion_xyzw(IdentityTransformation())
-quaternion_xyzw(matrix::AbstractMatrix) = quaternion_xyzw(Quat(matrix))
-quaternion_xyzw(quat::Quat) = SVector(quat.x, quat.y, quat.z, quat.w)
-
-translation(tform::Transformation) = tform(SVector(0., 0, 0))
