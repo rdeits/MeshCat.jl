@@ -188,6 +188,9 @@ function send_scene(bridge::ZMQWebSocketBridge, websocket::WebSocket)
 end
 
 function Base.run(bridge::ZMQWebSocketBridge)
+    if !isfile(joinpath(VIEWER_ROOT, VIEWER_HTML))
+        error("Could not find `viewer/static/meshcat.html`. Please run `Pkg.build(\"MeshCat\")`.")
+    end
     while true
         frames = recv_multipart(bridge.zmq_socket)
         command = unsafe_string(frames[1])
