@@ -55,9 +55,9 @@ function lower(box::HyperRectangle{3}, uuid=uuid1())
     Dict{String, Any}(
         "uuid" => string(uuid),
         "type" => "BoxGeometry",
-        "width" => w[1],
-        "height" => w[2],
-        "depth" => w[3]
+        "width" => max(w[1], eps(Float32)),
+        "height" => max(w[2], eps(Float32)),
+        "depth" => max(w[3], eps(Float32))
     )
 end
 
@@ -69,7 +69,7 @@ function lower(c::HyperCylinder{3}, uuid=uuid1())
         "type" => "CylinderGeometry",
         "radiusTop" => c.radius,
         "radiusBottom" => c.radius,
-        "height" => c.length,
+        "height" => max(c.length, eps(Float32)),
         "radialSegments" => 100,
     )
 end
