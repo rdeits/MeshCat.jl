@@ -24,7 +24,7 @@ delete!(vis)
 
         @testset "cylinder" begin
             setobject!(v[:cylinder], Mesh(
-               HyperCylinder(0.2, 0.1),
+               Cylinder(Point(0., 0, 0), Point(0, 0, 0.2), 0.1),
                MeshLambertMaterial(color=colorant"lime")))
             settransform!(v[:cylinder], Translation(0, 0.5, 0.1))
         end
@@ -37,13 +37,18 @@ delete!(vis)
         end
 
         @testset "ellipsoid" begin
-            setobject!(v[:ellipsoid], HyperEllipsoid(Point(0., 0, 0), Vec(0.3, 0.1, 0.1)))
-            settransform!(v[:ellipsoid], Translation(0, 1.5, 0.1))
+            setobject!(v[:ellipsoid], HyperEllipsoid(Point(0., 1.5, 0), Vec(0.3, 0.1, 0.1)))
+            settransform!(v[:ellipsoid], Translation(0, 0, 0.1))
         end
 
         @testset "cube" begin
             setobject!(v[:cube], HyperCube(Vec(-0.1, -0.1, 0), 0.2), MeshBasicMaterial())
             settransform!(v[:cube], Translation(0, 2.0, 0))
+        end
+
+        @testset "more complicated cylinder" begin
+            setobject!(v[:cylinder2], Cylinder(Point(0, 2.5, 0), Point(0.1, 0.1, 0), 0.05))
+            settransform!(v[:cylinder2], Translation(0, 0, 0.05))
         end
     end
 

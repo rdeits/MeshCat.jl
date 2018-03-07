@@ -8,20 +8,7 @@ origin(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.center
 radii(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.radii
 center(geometry::HyperEllipsoid) = origin(geometry)
 
-struct HyperCylinder{N, T} <: GeometryPrimitive{N, T}
-    length::T # along last axis
-    radius::T
-    # origin is at center
-end
-
-HyperCylinder(length, radius) =
-    HyperCylinder{3, promote_type(typeof(length), typeof(radius))}(length, radius)
-
-length(geometry::HyperCylinder) = geometry.length
-radius(geometry::HyperCylinder) = geometry.radius
-origin(geometry::HyperCylinder{N, T}) where {N, T} = zeros(SVector{N, T})
-center(g::HyperCylinder) = origin(g)
-
+@deprecate HyperCylinder(length::T, radius) where {T} Cylinder{3, T}(Point(0., 0., 0.), Point(0, 0, length), radius)
 
 struct PointCloud{T, Point <: StaticVector{3, T}, C <: Colorant} <: AbstractGeometry{3, T}
     position::Vector{Point}
@@ -41,6 +28,12 @@ center(geometry::HyperSphere) = origin(geometry)
 intrinsic_transform(g) = IdentityTransformation()
 intrinsic_transform(g::HyperRectangle) = Translation(center(g)...)
 intrinsic_transform(g::HyperSphere) = Translation(center(g)...)
-intrinsic_transform(g::HyperEllipsoid) = LinearMap(SDiagonal(radii(g)...)) ∘ Translation(center(g)...)
-intrinsic_transform(g::HyperCylinder{3}) = LinearMap(RotX(π/2)) ∘ Translation(center(g)...)
+intrinsic_transform(g::HyperEllipsoid) = Translation(center(g)...) ∘ LinearMap(SDiagonal(radii(g)...))
 intrinsic_transform(g::HyperCube) = Translation(center(g)...)
+
+function intrinsic_transform(g::Cylinder{3})
+    # Three.js wants a cylinder to lie along the y axis
+    R = rotation_between(SVector(0, 1, 0), g.extremity)
+    Translation(origin(g)) ∘ LinearMap(R)
+end
+
