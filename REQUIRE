@@ -4,6 +4,7 @@ julia 0.6
 GeometryTypes 0.4
 StaticArrays 0.5
 CoordinateTransformations 0.4.1
+Rotations
 Colors 0.7.1
 
 # Misc

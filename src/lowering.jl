@@ -63,13 +63,13 @@ end
 
 lower(cube::HyperCube{3}, uuid=uuid1()) = lower(HyperRectangle(origin(cube), widths(cube)), uuid)
 
-function lower(c::HyperCylinder{3}, uuid=uuid1())
+function lower(c::Cylinder{3}, uuid=uuid1())
     Dict{String, Any}(
         "uuid" => string(uuid),
         "type" => "CylinderGeometry",
-        "radiusTop" => c.radius,
-        "radiusBottom" => c.radius,
-        "height" => max(c.length, eps(Float32)),
+        "radiusTop" => radius(c),
+        "radiusBottom" => radius(c),
+        "height" => max(norm(c.extremity), eps(Float32)),
         "radialSegments" => 100,
     )
 end

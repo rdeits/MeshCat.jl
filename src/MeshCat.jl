@@ -4,6 +4,7 @@ module MeshCat
 
 using GeometryTypes
 using CoordinateTransformations
+using Rotations: rotation_between
 using ZMQ
 
 using Colors: Color, Colorant, RGB, RGBA, alpha
