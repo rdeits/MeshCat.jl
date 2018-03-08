@@ -16,11 +16,11 @@ function lower(t::Transformation)
     reshape(H, length(H))
 end
 
-function lower(obj::AbstractObject, uuid=uuid1())
+function lower(obj::AbstractObject)
     data = Dict{String, Any}(
         "metadata" => Dict{String, Any}("version" => 4.5, "type" => "Object"),
         "object" => Dict{String, Any}(
-            "uuid" => string(uuid),
+            "uuid" => string(uuid1()),
             "type" => threejs_type(obj),
             "matrix" => lower(intrinsic_transform(geometry(obj))),
             "geometry" => lower(geometry(obj)),
@@ -50,10 +50,10 @@ function flatten!(object_data::Dict)
     end
 end
 
-function lower(box::HyperRectangle{3}, uuid=uuid1())
+function lower(box::HyperRectangle{3})
     w = widths(box)
     Dict{String, Any}(
-        "uuid" => string(uuid),
+        "uuid" => string(uuid1()),
         "type" => "BoxGeometry",
         "width" => max(w[1], eps(Float32)),
         "height" => max(w[2], eps(Float32)),
@@ -61,11 +61,11 @@ function lower(box::HyperRectangle{3}, uuid=uuid1())
     )
 end
 
-lower(cube::HyperCube{3}, uuid=uuid1()) = lower(HyperRectangle(origin(cube), widths(cube)), uuid)
+lower(cube::HyperCube{3}) = lower(HyperRectangle(origin(cube), widths(cube)))
 
-function lower(c::Cylinder{3}, uuid=uuid1())
+function lower(c::Cylinder{3})
     Dict{String, Any}(
-        "uuid" => string(uuid),
+        "uuid" => string(uuid1()),
         "type" => "CylinderGeometry",
         "radiusTop" => radius(c),
         "radiusBottom" => radius(c),
@@ -74,9 +74,9 @@ function lower(c::Cylinder{3}, uuid=uuid1())
     )
 end
 
-function lower(s::HyperSphere{3}, uuid=uuid1())
+function lower(s::HyperSphere{3})
     Dict{String, Any}(
-        "uuid" => string(uuid),
+        "uuid" => string(uuid1()),
         "type" => "SphereGeometry",
         "radius" => radius(s),
         "widthSegments" => 20,
@@ -84,11 +84,11 @@ function lower(s::HyperSphere{3}, uuid=uuid1())
     )
 end
 
-function lower(g::HyperEllipsoid{3}, uuid=uuid1())
+function lower(g::HyperEllipsoid{3})
     # Radius is always 1 because we handle all the
     # radii in intrinsic_transform
     Dict{String, Any}(
-        "uuid" => string(uuid),
+        "uuid" => string(uuid1()),
         "type" => "SphereGeometry",
         "radius" => 1,
         "widthSegments" => 20,
@@ -117,7 +117,7 @@ to_zero_index(f::Face{N}) where {N} = SVector(raw.(convert(Face{N, OffsetInteger
 
 lower(faces::Vector{<:Face}) = lower(to_zero_index.(faces))
 
-function lower(mesh::AbstractMesh, uuid=uuid1())
+function lower(mesh::AbstractMesh)
     attributes = Dict{String, Any}(
         "position" => lower(convert(Vector{Point3f0}, vertices(mesh)))
     )
@@ -125,7 +125,7 @@ function lower(mesh::AbstractMesh, uuid=uuid1())
         attributes["uv"] = lower(texturecoordinates(mesh))
     end
     Dict{String, Any}(
-        "uuid" => string(uuid),
+        "uuid" => string(uuid1()),
         "type" => "BufferGeometry",
         "data" => Dict{String, Any}(
             "attributes" => attributes,
@@ -134,7 +134,7 @@ function lower(mesh::AbstractMesh, uuid=uuid1())
     )
 end
 
-function lower(cloud::PointCloud, uuid=uuid1())
+function lower(cloud::PointCloud)
     attributes = Dict{String, Any}(
         "position" => lower(convert(Vector{Point3f0}, cloud.position)),
     )
@@ -142,7 +142,7 @@ function lower(cloud::PointCloud, uuid=uuid1())
         attributes["color"] = lower(cloud.color)
     end
     Dict{String, Any}(
-        "uuid" => string(uuid),
+        "uuid" => string(uuid1()),
         "type" => "BufferGeometry",
         "data" => Dict(
             "attributes" => attributes
@@ -152,9 +152,9 @@ end
 
 lower(color::Color) = string("0x", hex(convert(RGB, color)))
 
-function lower(material::MeshMaterial, uuid=uuid1())
+function lower(material::MeshMaterial)
     data = Dict{String, Any}(
-        "uuid" => string(uuid),
+        "uuid" => string(uuid1()),
         "type" => threejs_type(material),
         "color" => lower(convert(RGB, material.color)),
         "transparent" => alpha(material.color) != 1,
@@ -165,31 +165,30 @@ function lower(material::MeshMaterial, uuid=uuid1())
         "side" => material.side,
     )
     if material.map !== nothing
-        uuid = uuid1()
         data["map"] = lower(material.map)
     end
     data
 end
 
-function lower(t::Texture, uuid=uuid1())
+function lower(t::Texture)
     Dict{String, Any}(
-        "uuid" => string(uuid),
+        "uuid" => string(uuid1()),
         "image" => lower(t.image),
         "wrap" => t.wrap,
         "repeat" => t.repeat,
     )
 end
 
-function lower(img::PngImage, uuid=uuid1())
+function lower(img::PngImage)
     Dict{String, Any}(
-        "uuid" => string(uuid),
+        "uuid" => string(uuid1()),
         "url" => string("data:image/png;base64,", base64encode(img.data))
     )
 end
 
-function lower(material::PointsMaterial, uuid=uuid1())
+function lower(material::PointsMaterial)
     Dict{String, Any}(
-        "uuid" => string(uuid),
+        "uuid" => string(uuid1()),
         "type" => "PointsMaterial",
         "color" => string("0x", hex(convert(RGB, material.color))),
         "transparent" => alpha(material.color) != 1,
