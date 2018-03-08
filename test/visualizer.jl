@@ -26,7 +26,7 @@ delete!(vis)
             setobject!(v[:cylinder], Mesh(
                Cylinder(Point(0., 0, 0), Point(0, 0, 0.2), 0.1),
                MeshLambertMaterial(color=colorant"lime")))
-            settransform!(v[:cylinder], Translation(0, 0.5, 0.1))
+            settransform!(v[:cylinder], Translation(0, 0.5, 0.0))
         end
 
         @testset "sphere" begin
