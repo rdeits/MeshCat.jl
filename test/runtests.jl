@@ -4,6 +4,9 @@ using GeometryTypes
 using CoordinateTransformations
 using Colors
 using MeshIO, FileIO
+using Polyhedra
+using CDDLib
+
 
 @testset "MeshCat" begin
     include("server_client.jl")
