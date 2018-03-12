@@ -3,3 +3,5 @@ FileIO 0.4
 Meshing 0.3
 NBInclude 1.0
 DandelionWebSockets 0.1
+Polyhedra 0.2.0
+CDDLib 0.2.0
