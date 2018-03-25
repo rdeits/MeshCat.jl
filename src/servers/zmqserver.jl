@@ -8,8 +8,8 @@ using ZMQ
 
 export ZMQWebSocketBridge, zmq_url, web_url
 
-const VIEWER_ROOT = abspath(joinpath(@__DIR__, "..", "..", "viewer", "static"))
-const VIEWER_HTML = "meshcat.html"
+const VIEWER_ROOT = abspath(joinpath(@__DIR__, "..", "..", "assets", "meshcat", "dist"))
+const VIEWER_HTML = "index.html"
 const DEFAULT_FILESERVER_PORT = 7000
 const MAX_ATTEMPTS = 1000
 const DEFAULT_ZMQ_METHOD = "tcp"
@@ -22,19 +22,10 @@ function handle_file_request(req, res)
     # that might need to be served.
     if req.resource == "/static" || req.resource == "/static/" || req.resource == joinpath("/static", VIEWER_HTML)
         file = open(joinpath(VIEWER_ROOT, VIEWER_HTML))
-    elseif req.resource in [
-        "/static/js/LoaderSupport.js",
-        "/static/js/OBJLoader.js",
-        "/static/js/OBJLoader2.js",
-        "/static/js/OrbitControls.js",
-        "/static/js/dat.gui.js",
-        "/static/js/meshcat.js",
-        "/static/js/msgpack.min.js",
-        "/static/js/split.min.js",
-        "/static/js/three.js",
-        "/static/dat.gui/build/dat.gui.js"
-        ]
-        file = open(joinpath(VIEWER_ROOT, req.resource[9:end]))
+    elseif req.resource == "/static/main.js"
+        file = open(joinpath(VIEWER_ROOT, "main.js"))
+    elseif req.resource == "/static/main.min.js"
+        file = open(joinpath(VIEWER_ROOT, "main.min.js"))
     else
         return Response(404)
     end

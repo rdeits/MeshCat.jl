@@ -62,10 +62,10 @@ delete!(vis)
 
         @testset "textured valkyrie" begin
             head = Mesh(
-                load(joinpath(MeshCat.VIEWER_ROOT, "data", "head_multisense.obj"), GLUVMesh),
+                load(joinpath(MeshCat.VIEWER_ROOT, "..", "data", "head_multisense.obj"), GLUVMesh),
                 MeshLambertMaterial(
                     map=Texture(
-                        image=PngImage(joinpath(MeshCat.VIEWER_ROOT, "data", "HeadTextureMultisense.png"))
+                        image=PngImage(joinpath(MeshCat.VIEWER_ROOT, "..", "data", "HeadTextureMultisense.png"))
                     )
                 ))
             setobject!(v[:valkyrie, :head], head)
