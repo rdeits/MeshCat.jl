@@ -13,7 +13,5 @@ DocStringExtensions 0.4
 
 # Communication
 MsgPack 0.1.1
-WebSockets 0.3
-HttpServer 0.2
-URIParser 0.2
-ZMQ 0.4.2
+WebIO
+JSExpr

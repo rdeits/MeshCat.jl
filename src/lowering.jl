@@ -224,3 +224,30 @@ function lower(cmd::Delete)
         "path" => lower(cmd.path)
     )
 end
+
+function lower(b::Button)
+    println(string(@js(() -> $(b.observer)[] = Date.now())))
+    Dict{String, Any}(
+        "name" => b.name,
+        "callback" => string(@js((value) -> $(b.observer)[] = Date.now())),
+    )
+end
+
+function lower(n::NumericControl)
+    println(string(@js((val) -> $(b.observer)[] = val)))
+    Dict{String, Any}(
+        "name" => n.name,
+        "callback" => string(@js((val) -> $(b.observer)[] = val)),
+        "value" => n.value,
+        "min" => n.min,
+        "max" => n.max
+    )
+end
+
+function lower(cmd::SetControl)
+    d = Dict{String, Any}(
+        "type" => "set_control",
+    )
+    merge!(d, lower(cmd.control))
+    d
+end
