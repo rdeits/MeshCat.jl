@@ -226,18 +226,16 @@ function lower(cmd::Delete)
 end
 
 function lower(b::Button)
-    println(string(@js(() -> $(b.observer)[] = Date.now())))
     Dict{String, Any}(
         "name" => b.name,
-        "callback" => string(@js((value) -> $(b.observer)[] = Date.now())),
+        "callback" => string(@js((value) -> $(b.observer)[] = [$(b.name), Date.now()])),
     )
 end
 
 function lower(n::NumericControl)
-    println(string(@js((val) -> $(b.observer)[] = val)))
     Dict{String, Any}(
         "name" => n.name,
-        "callback" => string(@js((val) -> $(b.observer)[] = val)),
+        "callback" => string(@js((val) -> $(n.observer)[] = [$(n.name), val])),
         "value" => n.value,
         "min" => n.min,
         "max" => n.max

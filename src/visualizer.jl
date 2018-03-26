@@ -3,6 +3,8 @@ mutable struct CoreVisualizer
     tree::SceneNode
     command_channel::Observable{Vector{UInt8}}
     request_channel::Observable{String}
+    controls_channel::Observable{Vector{Any}}
+    controls::Dict{String, Observable}
 
     function CoreVisualizer()
         scope = WebIO.Scope(
@@ -12,6 +14,7 @@ mutable struct CoreVisualizer
         )
         command_channel = Observable(scope, "meshcat-command", UInt8[])
         request_channel = Observable(scope, "meshcat-request", "")
+        controls_channel = Observable(scope, "meshcat-controls", [])
 
         onimport(scope, @js function(mc)
             viewer = @new mc.Viewer(this.dom.querySelector("#meshcat-container"))
@@ -23,7 +26,6 @@ mutable struct CoreVisualizer
         onjs(command_channel, @js function(val)
             viewer.handle_command_message(Dict(:data => val))
         end)
-
         scope = scope(dom"div#meshcat-container"(style=Dict(
             :width => "100%",
             :height => "100%",
@@ -31,10 +33,17 @@ mutable struct CoreVisualizer
         )))
 
         tree = SceneNode()
-
-        vis = new(scope, tree, command_channel, request_channel)
+        controls = Dict{String, Observable}()
+        vis = new(scope, tree, command_channel, request_channel, controls_channel, controls)
         on(request_channel) do x
             send_scene(vis)
+        end
+
+        on(controls_channel) do msg
+            name::String, value = msg
+            if haskey(vis.controls, name)
+                Base.invokelatest(setindex!, vis.controls[name], value)
+            end
         end
         vis
     end
@@ -244,6 +253,18 @@ Delete the geometry at this visualizer's path and all of its descendants.
 """
 function delete!(vis::Visualizer)
     send(vis.core, Delete(vis.path))
+    vis
+end
+
+function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable)
+    vis.core.controls[name] = obs
+    send(vis.core, SetControl(Button(vis.core.controls_channel, name)))
+    vis
+end
+
+function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable, value, min=zero(value), max=one(value))
+    vis.core.controls[name] = obs
+    send(vis.core, SetControl(NumericControl(vis.core.controls_channel, name, value, min, max)))
     vis
 end
 
