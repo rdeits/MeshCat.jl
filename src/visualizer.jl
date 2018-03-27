@@ -4,7 +4,7 @@ mutable struct CoreVisualizer
     command_channel::Observable{Vector{UInt8}}
     request_channel::Observable{String}
     controls_channel::Observable{Vector{Any}}
-    controls::Dict{String, Observable}
+    controls::Dict{String, Tuple{Observable, AbstractControl}}
 
     function CoreVisualizer()
         scope = WebIO.Scope(
@@ -15,22 +15,40 @@ mutable struct CoreVisualizer
         command_channel = Observable(scope, "meshcat-command", UInt8[])
         request_channel = Observable(scope, "meshcat-request", "")
         controls_channel = Observable(scope, "meshcat-controls", [])
+        viewer_name = "meshcat_viewer_$(scope.id)" 
+        div_id = "$viewer_name"
 
         onimport(scope, @js function(mc)
-            viewer = @new mc.Viewer(this.dom.querySelector("#meshcat-container"))
-            @var n = String(Date.now())
-            console.log("Sending request: ", n)
-            $request_channel[] = n
+            @var element = this.dom.querySelector("#" + $div_id)
+            # @var outer_document = document
+            # @var inner_document = element.contentDocument
+            # window.document = inner_document
+            # window[$viewer_name] = @new mc.Viewer(inner_document.body)
+            window[$viewer_name] = @new mc.Viewer(element)
+            # window.document = outer_document
+            $request_channel[] = String(Date.now())
         end)
 
         onjs(command_channel, @js function(val)
-            viewer.handle_command_message(Dict(:data => val))
+            console.log("handling command")
+
+            window[$viewer_name].handle_command_message(Dict(:data => val))
         end)
-        scope = scope(dom"div#meshcat-container"(style=Dict(
-            :width => "100%",
-            :height => "100%",
-            Symbol("min-height") => "400px"
-        )))
+        # scope = scope(dom"iframe"(
+        #     id=div_id,
+        #     width="600",
+        #     height="400"
+        # ))
+        scope = scope(dom"div.meshcat-viewer"(
+            id=div_id,
+            style=Dict(
+                :width => "100%",
+                :height => "100%",
+                :position => "absolute",
+                :left => 0,
+                :right => 0,
+            )
+        ))
 
         tree = SceneNode()
         controls = Dict{String, Observable}()
@@ -42,7 +60,8 @@ mutable struct CoreVisualizer
         on(controls_channel) do msg
             name::String, value = msg
             if haskey(vis.controls, name)
-                Base.invokelatest(setindex!, vis.controls[name], value)
+                @async vis.controls[name] = value
+                # Base.invokelatest(setindex!, vis.controls[name], value)
             end
         end
         vis
@@ -65,7 +84,19 @@ function update_tree!(core::CoreVisualizer, cmd::Delete, data)
     end
 end
 
-# TODO: store the controls in the tree as well
+# using Requires
+
+# @require Mux @eval(
+#         MeshCat, 
+#         function serve(core::CoreVisualizer, port::Integer=8000)
+#             div = dom"div"(
+#                 core.scope,
+#                 style=Dict(:width => "100vw", :height => "100vh")
+#             )
+#             Main.webio_serve(Mux.page(req -> div), port)
+#         end
+#     )
+
 update_tree!(core::CoreVisualizer, cmd::SetControl, data) = nothing 
 
 function send_scene(core::CoreVisualizer)
@@ -76,6 +107,9 @@ function send_scene(core::CoreVisualizer)
         if !isnull(node.transform)
             core.command_channel[] = get(node.transform)
         end
+    end
+    for (name, (obs, control)) in core.controls
+        send(core, SetControl(control))
     end
 end
 
@@ -210,7 +244,13 @@ Visualizer() = Visualizer(CoreVisualizer(), ["meshcat"])
 # """
 # Base.wait(v::Visualizer) = wait(v.window)
 
-Base.show(io::IO, M::MIME"text/html", vis::Visualizer) = show(io, M, vis.core.scope)
+function Base.show(io::IO, M::MIME"text/html", vis::Visualizer)
+    node = dom"div"(
+        vis.core.scope,
+        style=Dict(Symbol("min-height") => "400px")
+    )
+    show(io, M, node)
+end
 
 
 """
@@ -257,14 +297,16 @@ function delete!(vis::Visualizer)
 end
 
 function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable)
-    vis.core.controls[name] = obs
-    send(vis.core, SetControl(Button(vis.core.controls_channel, name)))
+    control = Button(vis.core.controls_channel, name)
+    vis.core.controls[name] = (obs, control)
+    send(vis.core, SetControl(control))
     vis
 end
 
 function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable, value, min=zero(value), max=one(value))
-    vis.core.controls[name] = obs
-    send(vis.core, SetControl(NumericControl(vis.core.controls_channel, name, value, min, max)))
+    control = NumericControl(vis.core.controls_channel, name, value, min, max)
+    vis.core.controls[name] = (obs, control)
+    send(vis.core, SetControl(control))
     vis
 end
 
