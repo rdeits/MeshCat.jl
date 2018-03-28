@@ -16,7 +16,7 @@ mutable struct CoreVisualizer
         request_channel = Observable(scope, "meshcat-request", "")
         controls_channel = Observable(scope, "meshcat-controls", [])
         viewer_name = "meshcat_viewer_$(scope.id)"
-        div_id = "$viewer_name"
+        div_id = viewer_name
 
         onimport(scope, @js function(mc)
             @var element = this.dom.querySelector("#" + $div_id)
@@ -29,11 +29,6 @@ mutable struct CoreVisualizer
 
             window[$viewer_name].handle_command_message(Dict(:data => val))
         end)
-        # scope = scope(dom"iframe"(
-        #     id=div_id,
-        #     width="600",
-        #     height="400"
-        # ))
         scope = scope(dom"div.meshcat-viewer"(
             id=div_id,
             style=Dict(
@@ -63,14 +58,8 @@ mutable struct CoreVisualizer
     end
 end
 
-function Base.show(io::IO, M::MIME"text/html", core::CoreVisualizer)
-    node = dom"div"(
-        core.scope,
-        style=Dict(Symbol("min-height") => "400px")
-    )
-    show(io, M, node)
-end
 
+WebIO.render(core::CoreVisualizer) = iframe(core.scope)
 
 function update_tree!(core::CoreVisualizer, cmd::SetObject, data)
     core.tree[cmd.path].object = data
@@ -87,19 +76,6 @@ function update_tree!(core::CoreVisualizer, cmd::Delete, data)
         delete!(core.tree, cmd.path)
     end
 end
-
-# using Requires
-
-# @require Mux @eval(
-#         MeshCat,
-#         function serve(core::CoreVisualizer, port::Integer=8000)
-#             div = dom"div"(
-#                 core.scope,
-#                 style=Dict(:width => "100vw", :height => "100vh")
-#             )
-#             Main.webio_serve(Mux.page(req -> div), port)
-#         end
-#     )
 
 update_tree!(core::CoreVisualizer, cmd::SetControl, data) = nothing
 
@@ -124,65 +100,9 @@ function Base.send(c::CoreVisualizer, cmd::AbstractCommand)
     nothing
 end
 
-# mutable struct ViewerWindow
-#     context::ZMQ.Context
-#     socket::ZMQ.Socket
-#     web_url::String
-#     zmq_url::String
-#     bridge::Union{ZMQWebSocketBridge, Void}
-
-#     function ViewerWindow(bridge::ZMQWebSocketBridge)
-#         context = ZMQ.Context()
-#         socket = ZMQ.Socket(context, ZMQ.REQ)
-#         ZMQ.connect(socket, zmq_url(bridge))
-#         new(context, socket, web_url(bridge), zmq_url(bridge), bridge)
-#     end
-
-#     function ViewerWindow(zmq_url::AbstractString)
-#         context = ZMQ.Context()
-#         socket = ZMQ.Socket(context, ZMQ.REQ)
-#         ZMQ.connect(socket, zmq_url)
-#         web_url = request_zmq_url(socket)
-#         # Connect again, to work around weird bug in the Python version of the
-#         # server. See https://github.com/rdeits/meshcat-python/pull/2
-#         socket = ZMQ.Socket(context, ZMQ.REQ)
-#         ZMQ.connect(socket, zmq_url)
-#         new(context, socket, web_url, zmq_url, nothing)
-#     end
-
-#     function ViewerWindow()
-#         bridge = ZMQWebSocketBridge()
-#         @async run(bridge)
-#         ViewerWindow(bridge)
-#     end
-# end
-
-# function request_zmq_url(socket::ZMQ.Socket)
-#     ZMQ.send(socket, "url")
-#     zmq_url = unsafe_string(ZMQ.recv(socket))
-# end
-
-# url(c::ViewerWindow) = c.web_url
-# Base.open(c::ViewerWindow) = open_url(url(c))
-# function Base.close(c::ViewerWindow)
-#     close(c.socket)
-#     close(c.context)
-# end
-
-# function Base.wait(c::ViewerWindow)
-#     ZMQ.send(c.socket, "wait")
-#     ZMQ.recv(c.socket)
-#     nothing
-# end
-
-# function Base.send(c::ViewerWindow, cmd::AbstractCommand)
-#     data = lower(cmd)
-#     ZMQ.send(c.socket, data["type"], true)
-#     ZMQ.send(c.socket, data["path"], true)
-#     ZMQ.send(c.socket, pack(data), false)
-#     ZMQ.recv(c.socket)
-#     nothing
-# end
+function Base.wait(c::CoreVisualizer)
+    WebIO.ensure_connection(c.scope.pool)
+end
 
 function open_url(url)
     try
@@ -200,55 +120,41 @@ function open_url(url)
     end
 end
 
-# """
-#     vis = Visualizer()
+"""
+    vis = Visualizer()
 
-# Construct a new MeshCat visualizer instance. This also starts the MeshCat ZeroMQ
-# and file servers, choosing an appropriate port automatically.
+Construct a new MeshCat visualizer instance.
 
-# Useful methods:
+Useful methods:
 
-#     open(vis) # open the visualizer in your browser
-#     vis[:group1] # get a new visualizer representing a sub-tree of the scene
-#     setobject!(vis[:group1], geometry) # set the object shown by this sub-tree of the visualizer
-
-#     vis = Visualizer(zmq_url::String)
-
-# Connect to an existing MeshCat server at the given ZeroMQ URL.
-# """
+    vis[:group1] # get a new visualizer representing a sub-tree of the scene
+    setobject!(vis, geometry) # set the object shown by this visualizer's sub-tree of the scene
+    settransform!(vis], tform) # set the transformation of this visualizer's sub-tree of the scene
+"""
 struct Visualizer
     core::CoreVisualizer
     path::Path
 end
 
 Visualizer() = Visualizer(CoreVisualizer(), ["meshcat"])
-# Visualizer(zmq_url::AbstractString) = Visualizer(ViewerWindow(zmq_url), ["meshcat"])
-
-# """
-# $(SIGNATURES)
-
-# Get the URL at which the MeshCat file server is running.
-# Open this URL in your browser to see the 3D scene.
-# """
-# url(v::Visualizer) = url(v.window)
 
 # """
 # Open the visualizer's web URL in your default browser
 # """
 # Base.open(v::Visualizer) = (open(v.window); v)
 # Base.close(v::Visualizer) = close(v.window)
-# Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer at $(url(v)) with path $(v.path)")
 
-# """
-# $(SIGNATURES)
+"""
+$(SIGNATURES)
 
-# Wait until at least one browser has connected to the
-# visualizer's server. This is useful in scripts to delay
-# execution until the browser window has opened.
-# """
-# Base.wait(v::Visualizer) = wait(v.window)
+Wait until at least one browser has connected to the
+visualizer's server. This is useful in scripts to delay
+execution until the browser window has opened.
+"""
+Base.wait(v::Visualizer) = wait(v.core)
 
-Base.show(io::IO, M::MIME"text/html", vis::Visualizer) = show(io, M, vis.core)
+WebIO.render(vis::Visualizer) = WebIO.render(vis.core)
+Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer with path $(v.path)")
 
 """
 $(SIGNATURES)
@@ -309,3 +215,44 @@ end
 
 Base.getindex(vis::Visualizer, path::Union{Symbol, AbstractString}...) = Visualizer(vis.core, vcat(vis.path, path...))
 
+
+
+# adapted from WebIO.jl/src/iframe.jl by Shashi Gowda
+function iframe(dom)
+    str = stringmime("text/html", dom)
+
+    s = Scope()
+    s.dom = Node(:div,
+                 Node(:iframe, id="ifr", style=Dict("width"=>"100%", "height"=>"100%"),
+                      attributes=Dict("src"=>"javascript:void(0)","frameborder"=>0, "scrolling"=>"no")),
+                style=Dict("overflow"=>"hidden", "height"=>"400px", "width"=>"100%", "position" => "relative"),
+    )
+    onimport(s,
+        js"""function () {
+            var frame = this.dom.querySelector("#ifr");
+            var doc = frame.contentDocument
+            var win = frame.contentWindow
+            var webio = doc.createElement("script")
+            webio.src = "/pkg/WebIO/webio/dist/bundle.js"
+            var parent = window
+
+            function resizeIframe() {
+                doc.body.style.padding = '0'
+                doc.body.style.margin = '0'
+                doc.documentElement.height = '100%'
+                doc.body.height = '100%'
+            }
+
+            webio.onload = function () {
+                win.WebIO.sendCallback = parent.WebIO.sendCallback; // Share stuff
+                win.WebIO.scopes = parent.WebIO.scopes
+                win.WebIO.obsscopes = parent.WebIO.obsscopes
+                win.WebIO._connected = true
+                doc.body.innerHTML = "<html><body>" + $str + "</body></html>";
+                setTimeout(function () { resizeIframe() }, 0)
+            }
+
+            doc.body.appendChild(webio)
+        }""")
+    s
+end

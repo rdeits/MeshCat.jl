@@ -11,7 +11,6 @@ using StaticArrays: StaticVector, SVector, SDiagonal
 using GeometryTypes: raw
 using Parameters: @with_kw
 using Base.Random: UUID, uuid1
-using URIParser: escape
 using DocStringExtensions
 
 using WebIO
@@ -38,7 +37,7 @@ export Visualizer,
        setobject!,
        settransform!,
        delete!,
-       url
+       handler
 
 include("trees.jl")
 using .SceneTrees
@@ -48,6 +47,9 @@ include("commands.jl")
 include("lowering.jl")
 include("msgpack.jl")
 include("visualizer.jl")
-# include("ijulia.jl")
+
+@deprecate IJuliaCell(vis::Visualizer) WebIO.render(vis)
+
+handler(vis::Visualizer) = req -> vis.core.scope
 
 end
