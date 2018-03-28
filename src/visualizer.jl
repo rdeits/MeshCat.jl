@@ -21,10 +21,11 @@ mutable struct CoreVisualizer
         onimport(scope, @js function(mc)
             @var element = this.dom.querySelector("#" + $div_id)
             # @var outer_document = document
-            # @var inner_document = element.contentDocument
+            @var inner_document = element.contentDocument
+            @var div = inner_document.body.appendChild(inner_document.createElement("div"))
             # window.document = inner_document
             # window[$viewer_name] = @new mc.Viewer(inner_document.body)
-            window[$viewer_name] = @new mc.Viewer(element)
+            window[$viewer_name] = @new mc.Viewer(div)
             # window.document = outer_document
             $request_channel[] = String(Date.now())
         end)
@@ -34,21 +35,21 @@ mutable struct CoreVisualizer
 
             window[$viewer_name].handle_command_message(Dict(:data => val))
         end)
-        # scope = scope(dom"iframe"(
-        #     id=div_id,
-        #     width="600",
-        #     height="400"
-        # ))
-        scope = scope(dom"div.meshcat-viewer"(
+        scope = scope(dom"iframe"(
             id=div_id,
-            style=Dict(
-                :width => "100%",
-                :height => "100%",
-                :position => "absolute",
-                :left => 0,
-                :right => 0,
-            )
+            width="600",
+            height="400"
         ))
+        # scope = scope(dom"div.meshcat-viewer"(
+        #     id=div_id,
+        #     style=Dict(
+        #         :width => "100%",
+        #         :height => "100%",
+        #         :position => "absolute",
+        #         :left => 0,
+        #         :right => 0,
+        #     )
+        # ))
 
         tree = SceneNode()
         controls = Dict{String, Observable}()
