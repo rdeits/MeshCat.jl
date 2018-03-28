@@ -15,18 +15,12 @@ mutable struct CoreVisualizer
         command_channel = Observable(scope, "meshcat-command", UInt8[])
         request_channel = Observable(scope, "meshcat-request", "")
         controls_channel = Observable(scope, "meshcat-controls", [])
-        viewer_name = "meshcat_viewer_$(scope.id)" 
+        viewer_name = "meshcat_viewer_$(scope.id)"
         div_id = "$viewer_name"
 
         onimport(scope, @js function(mc)
             @var element = this.dom.querySelector("#" + $div_id)
-            # @var outer_document = document
-            @var inner_document = element.contentDocument
-            @var div = inner_document.body.appendChild(inner_document.createElement("div"))
-            # window.document = inner_document
-            # window[$viewer_name] = @new mc.Viewer(inner_document.body)
-            window[$viewer_name] = @new mc.Viewer(div)
-            # window.document = outer_document
+            window[$viewer_name] = @new mc.Viewer(element)
             $request_channel[] = String(Date.now())
         end)
 
@@ -35,21 +29,21 @@ mutable struct CoreVisualizer
 
             window[$viewer_name].handle_command_message(Dict(:data => val))
         end)
-        scope = scope(dom"iframe"(
-            id=div_id,
-            width="600",
-            height="400"
-        ))
-        # scope = scope(dom"div.meshcat-viewer"(
+        # scope = scope(dom"iframe"(
         #     id=div_id,
-        #     style=Dict(
-        #         :width => "100%",
-        #         :height => "100%",
-        #         :position => "absolute",
-        #         :left => 0,
-        #         :right => 0,
-        #     )
+        #     width="600",
+        #     height="400"
         # ))
+        scope = scope(dom"div.meshcat-viewer"(
+            id=div_id,
+            style=Dict(
+                :width => "100%",
+                :height => "100%",
+                :position => "absolute",
+                :left => 0,
+                :right => 0,
+            )
+        ))
 
         tree = SceneNode()
         controls = Dict{String, Observable}()
@@ -68,6 +62,15 @@ mutable struct CoreVisualizer
         vis
     end
 end
+
+function Base.show(io::IO, M::MIME"text/html", core::CoreVisualizer)
+    node = dom"div"(
+        core.scope,
+        style=Dict(Symbol("min-height") => "400px")
+    )
+    show(io, M, node)
+end
+
 
 function update_tree!(core::CoreVisualizer, cmd::SetObject, data)
     core.tree[cmd.path].object = data
@@ -88,7 +91,7 @@ end
 # using Requires
 
 # @require Mux @eval(
-#         MeshCat, 
+#         MeshCat,
 #         function serve(core::CoreVisualizer, port::Integer=8000)
 #             div = dom"div"(
 #                 core.scope,
@@ -98,7 +101,7 @@ end
 #         end
 #     )
 
-update_tree!(core::CoreVisualizer, cmd::SetControl, data) = nothing 
+update_tree!(core::CoreVisualizer, cmd::SetControl, data) = nothing
 
 function send_scene(core::CoreVisualizer)
     foreach(core.tree) do node
@@ -245,14 +248,7 @@ Visualizer() = Visualizer(CoreVisualizer(), ["meshcat"])
 # """
 # Base.wait(v::Visualizer) = wait(v.window)
 
-function Base.show(io::IO, M::MIME"text/html", vis::Visualizer)
-    node = dom"div"(
-        vis.core.scope,
-        style=Dict(Symbol("min-height") => "400px")
-    )
-    show(io, M, node)
-end
-
+Base.show(io::IO, M::MIME"text/html", vis::Visualizer) = show(io, M, vis.core)
 
 """
 $(SIGNATURES)
