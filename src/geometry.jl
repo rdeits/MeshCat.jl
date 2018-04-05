@@ -20,6 +20,16 @@ function PointCloud(position::AbstractVector{<:AbstractVector{T}},
     PointCloud{T, Point{3, T}, C}(position, color)
 end
 
+struct Triad <: AbstractGeometry{3, Float64}
+    # # three.js:  https://jsfiddle.net/prisoner849/jp17wjam/
+    # var worldAxis = new THREE.AxesHelper(20);
+    # sphere.add(worldAxis);
+
+    scale::Float64
+    # tube::Bool
+
+    Triad(scale=20.0) = new(scale)
+end
 
 center(geometry::HyperRectangle) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperCube) = minimum(geometry) + 0.5 * widths(geometry)
@@ -37,4 +47,3 @@ function intrinsic_transform(g::Cylinder{3})
     R = rotation_between(SVector(0, 1, 0), g.extremity)
     Translation(center(g)) ∘ LinearMap(R)
 end
-
