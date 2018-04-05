@@ -36,6 +36,15 @@ center(geometry::HyperCube) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperSphere) = origin(geometry)
 center(geometry::Cylinder) = origin(geometry) + geometry.extremity / 2
 
+"""
+$(SIGNATURES)
+
+Different tools disagree about what various geometric primitives mean. For example,
+GeometryTypes.jl considers the "origin" of a cube to be its bottom-left corner, where
+DrakeVisualizer and MeshCat consider its origin to be the center. The
+intrinsic_transform(g) returns the transform from the GeometryTypes origin to the
+MeshCat origin.
+"""
 intrinsic_transform(g) = IdentityTransformation()
 intrinsic_transform(g::HyperRectangle) = Translation(center(g)...)
 intrinsic_transform(g::HyperSphere) = Translation(center(g)...)
