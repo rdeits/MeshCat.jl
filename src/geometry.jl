@@ -20,12 +20,31 @@ function PointCloud(position::AbstractVector{<:AbstractVector{T}},
     PointCloud{T, Point{3, T}, C}(position, color)
 end
 
+struct Triad <: AbstractGeometry{3, Float64}
+    # # three.js:  https://jsfiddle.net/prisoner849/jp17wjam/
+    # var worldAxis = new THREE.AxesHelper(20);
+    # sphere.add(worldAxis);
+
+    scale::Float64
+    # tube::Bool
+
+    Triad(scale=20.0) = new(scale)
+end
 
 center(geometry::HyperRectangle) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperCube) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperSphere) = origin(geometry)
 center(geometry::Cylinder) = origin(geometry) + geometry.extremity / 2
 
+"""
+$(SIGNATURES)
+
+Different tools disagree about what various geometric primitives mean. For example,
+GeometryTypes.jl considers the "origin" of a cube to be its bottom-left corner, where
+DrakeVisualizer and MeshCat consider its origin to be the center. The
+intrinsic_transform(g) returns the transform from the GeometryTypes origin to the
+MeshCat origin.
+"""
 intrinsic_transform(g) = IdentityTransformation()
 intrinsic_transform(g::HyperRectangle) = Translation(center(g)...)
 intrinsic_transform(g::HyperSphere) = Translation(center(g)...)
@@ -37,4 +56,3 @@ function intrinsic_transform(g::Cylinder{3})
     R = rotation_between(SVector(0, 1, 0), g.extremity)
     Translation(center(g)) ∘ LinearMap(R)
 end
-

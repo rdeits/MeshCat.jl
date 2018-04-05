@@ -50,6 +50,11 @@ delete!(vis)
             setobject!(v[:cylinder2], Cylinder(Point(0, 2.5, 0), Point(0.1, 0.1, 0), 0.05))
             settransform!(v[:cylinder2], Translation(0, 0, 0.05))
         end
+
+        @testset "triad" begin
+            setobject!(v[:triad], Triad(0.2))
+            settransform!(v[:triad], Translation(0, 3, 0.2))
+        end
     end
 
     @testset "meshes" begin
