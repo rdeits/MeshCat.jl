@@ -96,6 +96,15 @@ function lower(g::HyperEllipsoid{3})
     )
 end
 
+function lower(t::Triad)
+  Dict{String, Any}(
+    "uuid" => string(uuid1()),
+    "type" => "AxesHelper",
+    "scale" => t.scale,
+    # "radius" => 1,
+  )
+end
+
 js_array_type(::Type{Float32}) = "Float32Array"
 js_array_type(::Type{UInt32}) = "Uint32Array"
 
