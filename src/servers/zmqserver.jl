@@ -5,6 +5,7 @@ using ..SceneTrees: SceneNode
 using HttpServer
 using WebSockets
 using ZMQ
+using MsgPack
 
 export ZMQWebSocketBridge, zmq_url, web_url
 
@@ -139,13 +140,13 @@ function wait_for_websockets(bridge::ZMQWebSocketBridge)
     end
 end
 
-function recv_multipart(sock::ZMQ.Socket)
-    frames = [ZMQ.recv(sock)]
-    while ZMQ.ismore(sock)
-        push!(frames, ZMQ.recv(sock))
-    end
-    frames
-end
+# function recv_multipart(sock::ZMQ.Socket)
+#     frames = [ZMQ.recv(sock)]
+#     while ZMQ.ismore(sock)
+#         push!(frames, ZMQ.recv(sock))
+#     end
+#     frames
+# end
 
 function send_to_websockets(bridge::ZMQWebSocketBridge, msg)
     @sync begin
@@ -192,16 +193,22 @@ function Base.run(bridge::ZMQWebSocketBridge)
         error("Could not find `viewer/static/meshcat.html`. Please run `Pkg.build(\"MeshCat\")`.")
     end
     while true
-        frames = recv_multipart(bridge.zmq_socket)
-        command = unsafe_string(frames[1])
+        msg = ZMQ.recv(bridge.zmq_socket)
+        unpacked = MsgPack.unpack(msg)
+
+        # frames = recv_multipart(bridge.zmq_socket)
+        # command = unsafe_string(frames[1])
+        command = unpacked["type"]
         if command == "url"
             ZMQ.send(bridge.zmq_socket, web_url(bridge))
         elseif command == "wait"
             wait_for_websockets(bridge)
             ZMQ.send(bridge.zmq_socket, "ok")
         elseif command in ["set_object", "set_transform", "delete"]
-            path = filter(x -> length(x) > 0, split(unsafe_string(frames[2]), '/'))
-            data = take!(convert(IOStream, frames[3]))
+            # path = filter(x -> length(x) > 0, split(unsafe_string(frames[2]), '/'))
+            path = filter(x -> length(x) > 0, split(unpacked["path"], '/'))
+            # data = take!(convert(IOStream, frames[3]))
+            data = take!(convert(IOStream, msg))
             send_to_websockets(bridge, data)
             update_tree!(bridge, command, path, data)
             ZMQ.send(bridge.zmq_socket, "ok")
