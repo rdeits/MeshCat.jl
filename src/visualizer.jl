@@ -32,7 +32,7 @@ mutable struct ViewerWindow
 end
 
 function request_zmq_url(socket::ZMQ.Socket)
-    ZMQ.send(socket, "url")
+    ZMQ.send(socket, pack(Dict("type" => "url")))
     zmq_url = unsafe_string(ZMQ.recv(socket))
 end
 
@@ -44,7 +44,7 @@ function Base.close(c::ViewerWindow)
 end
 
 function Base.wait(c::ViewerWindow)
-    ZMQ.send(c.socket, "wait")
+    ZMQ.send(c.socket, pack(Dict("type" => "wait")))
     ZMQ.recv(c.socket)
     nothing
 end
