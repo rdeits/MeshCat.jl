@@ -1,6 +1,3 @@
-threejs_type(m::MeshMaterial) = m._type
-threejs_type(::Mesh) = "Mesh"
-threejs_type(::Points) = "Points"
 
 """
 Convert a geometry, material, object, or transform into the appropriate
@@ -96,6 +93,22 @@ function lower(g::HyperEllipsoid{3})
     )
 end
 
+function lower(t::Triad)
+    attributes = Dict{String, Any}(
+        "position" => lower([Point3f0(0, 0, 0), Point3f0(t.scale, 0, 0),
+                             Point3f0(0, 0, 0), Point3f0(0, t.scale, 0),
+                             Point3f0(0, 0, 0), Point3f0(0, 0, t.scale)]),
+        "color" => lower([RGB{Float32}(1,0,0), RGB{Float32}(1,0.6000000238418579,0),
+                          RGB{Float32}(0,1,0), RGB{Float32}(0.6000000238418579,1,0),
+                          RGB{Float32}(0,0,1), RGB{Float32}(0,0.6000000238418579,1)])
+    )
+    Dict{String, Any}(
+        "uuid" => string(uuid1()),
+        "type" => "BufferGeometry",
+        "data" => Dict("attributes" => attributes),
+    )
+end
+
 js_array_type(::Type{Float32}) = "Float32Array"
 js_array_type(::Type{UInt32}) = "Uint32Array"
 
@@ -154,7 +167,7 @@ end
 
 lower(color::Color) = string("0x", hex(convert(RGB, color)))
 
-function lower(material::MeshMaterial)
+function lower(material::GenericMaterial)
     data = Dict{String, Any}(
         "uuid" => string(uuid1()),
         "type" => threejs_type(material),
@@ -165,6 +178,7 @@ function lower(material::MeshMaterial)
         "depthTest" => material.depthTest,
         "depthWrite" => material.depthWrite,
         "side" => material.side,
+        "vertexColors" => material.vertexColors,
     )
     if material.map !== nothing
         data["map"] = lower(material.map)

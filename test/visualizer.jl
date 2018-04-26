@@ -50,6 +50,11 @@ delete!(vis)
             setobject!(v[:cylinder2], Cylinder(Point(0, 2.5, 0), Point(0.1, 0.1, 0), 0.05))
             settransform!(v[:cylinder2], Translation(0, 0, 0.05))
         end
+
+        @testset "triad" begin
+            setobject!(v[:triad], Triad(0.2))
+            settransform!(v[:triad], Translation(0, 3, 0.2))
+        end
     end
 
     @testset "meshes" begin
@@ -86,10 +91,10 @@ delete!(vis)
 
 
     @testset "Polyhedra" begin
-        ext1 = SimpleVRepresentation([0 1 2 3;0 2 1 3; 1 0 2 3; 1 2 0 3; 2 0 1 3; 2 1 0 3;
-                                    0 1 3 2;0 3 1 2; 1 0 3 2; 1 3 0 2; 3 0 1 2; 3 1 0 2;
-                                    0 3 2 1;0 2 3 1; 3 0 2 1; 3 2 0 1; 2 0 3 1; 2 3 0 1;
-                                    3 1 2 0;3 2 1 0; 1 3 2 0; 1 2 3 0; 2 3 1 0; 2 1 3 0])
+        ext1 = vrep([0 1 2 3;0 2 1 3; 1 0 2 3; 1 2 0 3; 2 0 1 3; 2 1 0 3;
+                     0 1 3 2;0 3 1 2; 1 0 3 2; 1 3 0 2; 3 0 1 2; 3 1 0 2;
+                     0 3 2 1;0 2 3 1; 3 0 2 1; 3 2 0 1; 2 0 3 1; 2 3 0 1;
+                     3 1 2 0;3 2 1 0; 1 3 2 0; 1 2 3 0; 2 3 1 0; 2 1 3 0])
         poly1 = CDDPolyhedron{4,Rational{BigInt}}(ext1)
 
         poly2 = project(poly1, [1 1 1; -1 1 1; 0 -2 1; 0 0 -3])

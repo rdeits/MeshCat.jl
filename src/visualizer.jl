@@ -171,9 +171,8 @@ function setobject!(vis::Visualizer, obj::AbstractObject)
     vis
 end
 
-setobject!(vis::Visualizer, geom::GeometryLike) = setobject!(vis, Mesh(geom))
-setobject!(vis::Visualizer, cloud::PointCloud) = setobject!(vis, Points(cloud))
-setobject!(vis::Visualizer, geom::GeometryLike, material::AbstractMaterial) = setobject!(vis, Mesh(geom, material))
+setobject!(vis::Visualizer, geom::GeometryLike) = setobject!(vis, Object(geom))
+setobject!(vis::Visualizer, geom::GeometryLike, material::AbstractMaterial) = setobject!(vis, Object(geom, material))
 
 """
 $(SIGNATURES)
