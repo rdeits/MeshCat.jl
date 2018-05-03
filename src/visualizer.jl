@@ -9,7 +9,7 @@ mutable struct CoreVisualizer
     function CoreVisualizer()
         scope = WebIO.Scope(
             imports=[
-                "/pkg/MeshCat/meshcat/dist/main.min.js"
+                "pkg/MeshCat/meshcat/dist/main.min.js"
             ]
         )
         command_channel = Observable(scope, "meshcat-command", UInt8[])
