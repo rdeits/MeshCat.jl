@@ -59,7 +59,15 @@ mutable struct CoreVisualizer
 end
 
 
-WebIO.render(core::CoreVisualizer) = iframe(core.scope)
+function WebIO.render(core::CoreVisualizer)
+    node = WebIO.iframe(core.scope)
+    style = node.dom.props[:style]
+    style["height"] = "400px"
+    style["width"] = "100%"
+    style["position"] = "relative"
+    node.dom.children[1].props[:style]["height"] = "100%"
+    node
+end
 
 function update_tree!(core::CoreVisualizer, cmd::SetObject, data)
     core.tree[cmd.path].object = data
@@ -213,60 +221,3 @@ function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable, val
 end
 
 Base.getindex(vis::Visualizer, path::Union{Symbol, AbstractString}...) = Visualizer(vis.core, vcat(vis.path, path...))
-
-
-
-# adapted from WebIO.jl/src/iframe.jl by Shashi Gowda
-function iframe(dom)
-    str = stringmime("text/html", dom)
-
-    s = Scope()
-    s.dom = Node(:div,
-                 Node(:iframe, id="ifr", style=Dict("width"=>"100%", "height"=>"100%"),
-                      attributes=Dict("src"=>"javascript:void(0)","frameborder"=>0, "scrolling"=>"no")),
-                style=Dict("overflow"=>"hidden", "height"=>"400px", "width"=>"100%", "position" => "relative"),
-    )
-    onimport(s,
-        js"""function () {
-            var frame = this.dom.querySelector("#ifr");
-            var doc = frame.contentDocument
-            var win = frame.contentWindow
-
-            // Determine if we're running on a Jupyter hosting service
-            // that requires a base URL when retrieving assets
-            var curMatch = 
-                window.location.href
-                .match(/(.*)\/notebooks\/.*\.ipynb/);
-            curMatch = curMatch ||
-                window.location.href
-                .match(/(.*)\/apps\/.*\.ipynb/);
-            if (curMatch) {
-                var base = doc.createElement("base");
-                base.setAttribute("href", curMatch[1] + '/');
-                doc.head.appendChild(base);
-            }
-
-            var webio = doc.createElement("script")
-            webio.src = "pkg/WebIO/webio/dist/bundle.js"
-            var parent = window
-
-            function resizeIframe() {
-                doc.body.style.padding = '0'
-                doc.body.style.margin = '0'
-                doc.documentElement.height = '100%'
-                doc.body.height = '100%'
-            }
-
-            webio.onload = function () {
-                win.WebIO.sendCallback = parent.WebIO.sendCallback; // Share stuff
-                win.WebIO.scopes = parent.WebIO.scopes
-                win.WebIO.obsscopes = parent.WebIO.obsscopes
-                win.WebIO._connected = true
-                doc.body.innerHTML = "<html><body>" + $str + "</body></html>";
-                setTimeout(function () { resizeIframe() }, 0)
-            }
-
-            doc.body.appendChild(webio)
-        }""")
-    s
-end
