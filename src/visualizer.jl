@@ -65,6 +65,7 @@ function WebIO.render(core::CoreVisualizer)
     style["height"] = "400px"
     style["width"] = "100%"
     style["position"] = "relative"
+    style["resize"] = "both"
     node.dom.children[1].props[:style]["height"] = "100%"
     node
 end
