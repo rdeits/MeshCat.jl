@@ -16,29 +16,28 @@ mutable struct CoreVisualizer
         request_channel = Observable(scope, "meshcat-request", "")
         controls_channel = Observable(scope, "meshcat-controls", [])
         viewer_name = "meshcat_viewer_$(scope.id)"
-        div_id = viewer_name
 
         onimport(scope, @js function(mc)
-            @var element = this.dom.querySelector("#" + $div_id)
+            @var element = this.dom.children[0];
             window[$viewer_name] = @new mc.Viewer(element)
             $request_channel[] = String(Date.now())
+            window.document.body.style.margin = "0"
         end)
 
         onjs(command_channel, @js function(val)
-            console.log("handling command")
-
             window[$viewer_name].handle_command_message(Dict(:data => val))
         end)
         scope = scope(dom"div.meshcat-viewer"(
-            id=div_id,
             style=Dict(
-                :width => "100%",
-                :height => "100%",
+                :width => "100vw",
+                :height => "100vh",
                 :position => "absolute",
                 :left => 0,
                 :right => 0,
+                :margin => 0,
             )
         ))
+        scope.dom.props[:style][:overflow] = "hidden"
 
         tree = SceneNode()
         controls = Dict{String, Observable}()
@@ -58,17 +57,22 @@ mutable struct CoreVisualizer
     end
 end
 
+WebIO.render(core::CoreVisualizer) = core.scope
 
-function WebIO.render(core::CoreVisualizer)
-    node = WebIO.iframe(core.scope)
-    style = node.dom.props[:style]
-    style["height"] = "400px"
-    style["width"] = "100%"
-    style["position"] = "relative"
-    style["resize"] = "both"
-    node.dom.children[1].props[:style]["height"] = "100%"
-    node
+function WebIO.iframe(core::CoreVisualizer; height="100%", width="100%", minHeight="400px")
+    ifr = WebIO.iframe(core.scope)
+    onimport(ifr, @js function()
+        this.dom.style.height = "100%"
+    end)
+    ifr.dom.props[:style]["height"] = height
+    ifr.dom.props[:style]["minHeight"] = minHeight
+    ifr.dom.props[:style]["width"] = width
+    ifr.dom.props[:style]["display"] = "flex"
+    ifr.dom.props[:style]["flexDirection"] = "column"
+    ifr.dom.children[1].props[:style]["flexGrow"] = "1"
+    ifr
 end
+
 
 function update_tree!(core::CoreVisualizer, cmd::SetObject, data)
     core.tree[cmd.path].object = data
@@ -162,7 +166,8 @@ execution until the browser window has opened.
 """
 Base.wait(v::Visualizer) = wait(v.core)
 
-IJuliaCell(vis::Visualizer) = vis.core
+IJuliaCell(vis::Visualizer; kw...) = iframe(vis.core; kw...)
+
 Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer with path $(v.path)")
 
 """
