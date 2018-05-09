@@ -12,6 +12,8 @@ using GeometryTypes: raw
 using Parameters: @with_kw
 using Base.Random: UUID, uuid1
 using DocStringExtensions
+using Requires
+using Mux
 
 using WebIO
 using JSExpr
@@ -38,8 +40,7 @@ export Visualizer,
        LineSegments,
        setobject!,
        settransform!,
-       delete!,
-       handler
+       delete!
 
 include("trees.jl")
 using .SceneTrees
@@ -50,8 +51,13 @@ include("lowering.jl")
 include("msgpack.jl")
 include("visualizer.jl")
 
-@deprecate IJuliaCell(vis::Visualizer) WebIO.render(vis)
+# TODO: https://github.com/JuliaGizmos/WebIO.jl/issues/107
+# @require Blink begin
+#     Base.open(vis::Visualizer, w::Blink.AtomShell.Window) = Blink.body!(w, vis.core)
+# end
 
-handler(vis::Visualizer) = req -> vis.core.scope
+@require WebIO begin
+    WebIO.register_renderable(CoreVisualizer)
+end
 
 end

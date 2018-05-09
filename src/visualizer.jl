@@ -162,7 +162,7 @@ execution until the browser window has opened.
 """
 Base.wait(v::Visualizer) = wait(v.core)
 
-WebIO.render(vis::Visualizer) = WebIO.render(vis.core)
+IJuliaCell(vis::Visualizer) = vis.core
 Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer with path $(v.path)")
 
 """
