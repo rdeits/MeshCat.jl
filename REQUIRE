@@ -13,6 +13,6 @@ DocStringExtensions 0.4
 
 # Communication
 MsgPack 0.1.1
-WebIO
-Mux
-JSExpr
+WebIO 0.1.8
+Mux 0.2.3
+JSExpr 0.1.0
