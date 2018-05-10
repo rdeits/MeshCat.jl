@@ -14,6 +14,9 @@ matrix:
     - os: osx
       julia: nightly
       env: TESTCMD="julia"
+  allow_failures:
+    - julia: nightly
+
 notifications:
   email: false
 git:
@@ -22,12 +25,6 @@ git:
 branches:
   only:
     - master
-
-# uncomment the following lines to allow failures on nightly julia
-# (tests will run but not make your overall status red)
-matrix:
- allow_failures:
- - julia: nightly
 
 # uncomment the following lines to override the default test script
 script:
