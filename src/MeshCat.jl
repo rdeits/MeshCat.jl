@@ -13,8 +13,7 @@ using Parameters: @with_kw
 using Base.Random: UUID, uuid1
 using DocStringExtensions
 using Requires
-using Mux
-
+using Mux: page
 using WebIO
 using JSExpr
 
