@@ -117,22 +117,6 @@ function Base.wait(c::CoreVisualizer)
     WebIO.ensure_connection(c.scope.pool)
 end
 
-function open_url(url)
-    try
-        @static if is_windows()
-            run(`start $url`)
-        elseif is_apple()
-            run(`open $url`)
-        elseif is_linux()
-            run(`xdg-open $url`)
-        end
-    catch e
-        println("Could not open browser automatically: $e")
-        println("Please open the following URL in your browser:")
-        println(url)
-    end
-end
-
 """
     vis = Visualizer()
 
