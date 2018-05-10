@@ -51,6 +51,8 @@ include("lowering.jl")
 include("msgpack.jl")
 include("visualizer.jl")
 
+const VIEWER_ROOT = joinpath(@__DIR__, "..", "assets", "meshcat", "dist")
+
 Base.open(vis::Visualizer, args...; kw...) = open(vis.core, args...; kw...)
 
 function Base.open(core::CoreVisualizer, port::Integer)
@@ -95,7 +97,13 @@ function Base.open(core::CoreVisualizer; default_port=8700, max_retries=500)
 end
 
 @require Blink begin
-    Base.open(core::CoreVisualizer, w::Blink.AtomShell.Window) = Blink.body!(w, core.scope)
+    function Base.open(core::CoreVisualizer, w::Blink.AtomShell.Window) 
+        # Ensure the window is ready
+        Blink.js(w, "ok")
+        # Set its contents
+        Blink.body!(w, core.scope)
+        w
+    end
 end
 
 

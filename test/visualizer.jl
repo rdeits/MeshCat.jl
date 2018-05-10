@@ -1,15 +1,16 @@
+using Blink
+
+notinstalled = !AtomShell.isinstalled()
+notinstalled && AtomShell.install()
+
+
+using Revise, MeshCat, Blink
+
+window = Window()
 vis = Visualizer()
-
-if haskey(ENV, "CI")
-    port = split(split(url(vis), ':')[end], '/')[1]
-    @show port
-    stream, proc = open(`julia $(joinpath(@__DIR__, "dummy_websocket_client.jl")) $port`)
-else
-    proc = nothing
-    open(vis)
-end
-
+open(vis, window)
 wait(vis)
+println("done waiting")
 delete!(vis)
 
 @testset "self-contained visualizer" begin
@@ -104,8 +105,4 @@ delete!(vis)
 
 end
 
-close(vis)
-
-if proc !== nothing
-    kill(proc)
-end
+notinstalled && AtomShell.uninstall()

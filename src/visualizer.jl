@@ -114,7 +114,9 @@ function Base.send(c::CoreVisualizer, cmd::AbstractCommand)
 end
 
 function Base.wait(c::CoreVisualizer)
-    WebIO.ensure_connection(c.scope.pool)
+    while isempty(c.scope.pool.connections)
+        sleep(0.25)
+    end
 end
 
 """
