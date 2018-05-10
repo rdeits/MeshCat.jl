@@ -3,15 +3,10 @@ using Blink
 notinstalled = !AtomShell.isinstalled()
 notinstalled && AtomShell.install()
 
-
-using Revise, MeshCat, Blink
-
 window = Window()
 vis = Visualizer()
 open(vis, window)
 wait(vis)
-println("done waiting")
-delete!(vis)
 
 @testset "self-contained visualizer" begin
     @testset "shapes" begin
