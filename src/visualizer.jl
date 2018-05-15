@@ -18,14 +18,14 @@ mutable struct CoreVisualizer
         viewer_name = "meshcat_viewer_$(scope.id)"
 
         onimport(scope, @js function(mc)
-            @var element = this.dom.children[0];
-            window[$viewer_name] = @new mc.Viewer(element)
+            @var element = this.dom.children[0]
+            this.viewer = @new mc.Viewer(element)
             $request_channel[] = String(Date.now())
             window.document.body.style.margin = "0"
         end)
 
         onjs(command_channel, @js function(val)
-            window[$viewer_name].handle_command_message(Dict(:data => val))
+            this.viewer.handle_command_message(Dict(:data => val))
         end)
         scope = scope(dom"div.meshcat-viewer"(
             style=Dict(
