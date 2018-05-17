@@ -1,7 +1,10 @@
 using Blink
 
 notinstalled = !AtomShell.isinstalled()
+@show notinstalled
 notinstalled && AtomShell.install()
+println("finished install()")
+
 
 window = Window()
 vis = Visualizer()
@@ -100,4 +103,6 @@ wait(vis)
 
 end
 
+println("finished tests")
 notinstalled && AtomShell.uninstall()
+println("finished uninstall")
