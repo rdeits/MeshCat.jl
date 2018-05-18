@@ -6,11 +6,12 @@
 
 [MeshCat](https://github.com/rdeits/meshcat) is a remotely-controllable 3D viewer, built on top of [three.js](https://threejs.org/). The viewer contains a tree of objects and transformations (i.e. a scene graph) and allows those objects and transformations to be added and manipulated with simple commands. This makes it easy to create 3D visualizations of geometries, mechanisms, and robots. MeshCat.jl runs on macOS, Linux, and Windows. 
 
-The MeshCat architecture is based on the model used by [Jupyter](http://jupyter.org/)
+The MeshCat viewer runs entirely in the browser, with no external dependencies. All files are served locally, so no internet connection is required. Communication between the browser and your Julia code is managed by [WebIO.jl](https://github.com/JuliaGizmos/WebIO.jl). That means that MeshCat should work anywhere WebIO works: 
 
-- The viewer itself runs entirely in the browser, with no external dependencies. All files are served locally, so no internet connection is required. 
-- The MeshCat server communicates with the viewer via WebSockets
-- Your code can use the MeshCat.jl Julia library or communicate directly with the server through its [ZeroMQ](http://zguide.zeromq.org/) socket. 
+* In a normal browser tab
+* Inside a Jupyter Notebook with [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
+* In a standalone window with [Blink.jl](https://github.com/JunoLab/Blink.jl)
+* Inside the [Juno IDE](http://junolab.org/)
 
 As much as possible, MeshCat.jl tries to use existing implementations of its fundamental types. In particular, we use:
 
@@ -26,7 +27,7 @@ For detailed examples of usage, check out [demo.ipynb](demo.ipynb).
 
 # Related Projects
 
-MeshCat.jl is a successor to [DrakeVisualizer.jl](https://github.com/rdeits/DrakeVisualizer.jl), and the interface is quite similar (with the exception that we use `setobject!` instead of `setgeometry!`). The primary difference is that DrakeVisualizer required Director, LCM, and VTK, all of which could be difficult to install, while MeshCat just needs ZeroMQ and a web browser. MeshCat also has better support for materials, textures, point clouds, and complex meshes. 
+MeshCat.jl is a successor to [DrakeVisualizer.jl](https://github.com/rdeits/DrakeVisualizer.jl), and the interface is quite similar (with the exception that we use `setobject!` instead of `setgeometry!`). The primary difference is that DrakeVisualizer required Director, LCM, and VTK, all of which could be difficult to install, while MeshCat just needs a web browser. MeshCat also has better support for materials, textures, point clouds, and complex meshes. 
 
 You may also want to check out:
 
@@ -85,7 +86,7 @@ setobject!(vis, mesh,
 
 ### Polyhedra
 
-```
+```julia
 # Visualize a polyhedron from Polyhedra.jl
 using Polyhedra
 using CDDLib
