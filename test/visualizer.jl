@@ -5,8 +5,11 @@ notinstalled = !AtomShell.isinstalled()
 notinstalled && AtomShell.install()
 println("finished install()")
 
-
-window = Window()
+window = if haskey(ENV, "CI")
+    Window(Dict(:show => false))
+else
+    Window()
+end
 vis = Visualizer()
 open(vis, window)
 wait(vis)
