@@ -137,12 +137,6 @@ end
 
 Visualizer() = Visualizer(CoreVisualizer(), ["meshcat"])
 
-# """
-# Open the visualizer's web URL in your default browser
-# """
-# Base.open(v::Visualizer) = (open(v.window); v)
-# Base.close(v::Visualizer) = close(v.window)
-
 """
 $(SIGNATURES)
 
