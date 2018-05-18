@@ -9,7 +9,7 @@ window = Window()
 vis = Visualizer()
 open(vis, window)
 
-if !(is_windows() && haskey(ENV, "CI")
+if !(is_windows() && haskey(ENV, "CI"))
     # this gets stuck on windows CI, but I don't know why
     wait(vis)
 end
