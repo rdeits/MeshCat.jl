@@ -1,118 +1,141 @@
-mutable struct ViewerWindow
-    context::ZMQ.Context
-    socket::ZMQ.Socket
-    web_url::String
-    zmq_url::String
-    bridge::Union{ZMQWebSocketBridge, Void}
+mutable struct CoreVisualizer
+    scope::WebIO.Scope
+    tree::SceneNode
+    command_channel::Observable{Vector{UInt8}}
+    request_channel::Observable{String}
+    controls_channel::Observable{Vector{Any}}
+    controls::Dict{String, Tuple{Observable, AbstractControl}}
 
-    function ViewerWindow(bridge::ZMQWebSocketBridge)
-        context = ZMQ.Context()
-        socket = ZMQ.Socket(context, ZMQ.REQ)
-        ZMQ.connect(socket, zmq_url(bridge))
-        new(context, socket, web_url(bridge), zmq_url(bridge), bridge)
-    end
+    function CoreVisualizer()
+        scope = WebIO.Scope(
+            imports=[
+                "pkg/MeshCat/meshcat/dist/main.min.js"
+            ]
+        )
+        command_channel = Observable(scope, "meshcat-command", UInt8[])
+        request_channel = Observable(scope, "meshcat-request", "")
+        controls_channel = Observable(scope, "meshcat-controls", [])
+        viewer_name = "meshcat_viewer_$(scope.id)"
 
-    function ViewerWindow(zmq_url::AbstractString)
-        context = ZMQ.Context()
-        socket = ZMQ.Socket(context, ZMQ.REQ)
-        ZMQ.connect(socket, zmq_url)
-        web_url = request_zmq_url(socket)
-        # Connect again, to work around weird bug in the Python version of the
-        # server. See https://github.com/rdeits/meshcat-python/pull/2
-        socket = ZMQ.Socket(context, ZMQ.REQ)
-        ZMQ.connect(socket, zmq_url)
-        new(context, socket, web_url, zmq_url, nothing)
-    end
+        onimport(scope, @js function(mc)
+            @var element = this.dom.children[0]
+            this.viewer = @new mc.Viewer(element)
+            $request_channel[] = String(Date.now())
+            window.document.body.style.margin = "0"
+        end)
 
-    function ViewerWindow()
-        bridge = ZMQWebSocketBridge()
-        @async run(bridge)
-        ViewerWindow(bridge)
-    end
-end
+        onjs(command_channel, @js function(val)
+            this.viewer.handle_command_message(Dict(:data => val))
+        end)
+        scope = scope(dom"div.meshcat-viewer"(
+            style=Dict(
+                :width => "100vw",
+                :height => "100vh",
+                :position => "absolute",
+                :left => 0,
+                :right => 0,
+                :margin => 0,
+            )
+        ))
+        scope.dom.props[:style][:overflow] = "hidden"
 
-function request_zmq_url(socket::ZMQ.Socket)
-    ZMQ.send(socket, pack(Dict("type" => "url")))
-    zmq_url = unsafe_string(ZMQ.recv(socket))
-end
-
-url(c::ViewerWindow) = c.web_url
-Base.open(c::ViewerWindow) = open_url(url(c))
-function Base.close(c::ViewerWindow)
-    close(c.socket)
-    close(c.context)
-end
-
-function Base.wait(c::ViewerWindow)
-    ZMQ.send(c.socket, pack(Dict("type" => "wait")))
-    ZMQ.recv(c.socket)
-    nothing
-end
-
-function Base.send(c::ViewerWindow, cmd::AbstractCommand)
-    data = lower(cmd)
-    ZMQ.send(c.socket, pack(data))
-    # ZMQ.send(c.socket, data["type"], true)
-    # ZMQ.send(c.socket, data["path"], true)
-    # ZMQ.send(c.socket, pack(data), false)
-    ZMQ.recv(c.socket)
-    nothing
-end
-
-function open_url(url)
-    try
-        @static if is_windows()
-            run(`start $url`)
-        elseif is_apple()
-            run(`open $url`)
-        elseif is_linux()
-            run(`xdg-open $url`)
+        tree = SceneNode()
+        controls = Dict{String, Observable}()
+        vis = new(scope, tree, command_channel, request_channel, controls_channel, controls)
+        on(request_channel) do x
+            send_scene(vis)
         end
-    catch e
-        println("Could not open browser automatically: $e")
-        println("Please open the following URL in your browser:")
-        println(url)
+
+        on(controls_channel) do msg
+            name::String, value = msg
+            if haskey(vis.controls, name)
+                @async vis.controls[name] = value
+                # Base.invokelatest(setindex!, vis.controls[name], value)
+            end
+        end
+        vis
+    end
+end
+
+WebIO.render(core::CoreVisualizer) = core.scope
+
+function WebIO.iframe(core::CoreVisualizer; height="100%", width="100%", minHeight="400px")
+    ifr = WebIO.iframe(core.scope)
+    onimport(ifr, @js function()
+        this.dom.style.height = "100%"
+    end)
+    ifr.dom.props[:style]["height"] = height
+    ifr.dom.props[:style]["minHeight"] = minHeight
+    ifr.dom.props[:style]["width"] = width
+    ifr.dom.props[:style]["display"] = "flex"
+    ifr.dom.props[:style]["flexDirection"] = "column"
+    ifr.dom.children[1].props[:style]["flexGrow"] = "1"
+    ifr
+end
+
+
+function update_tree!(core::CoreVisualizer, cmd::SetObject, data)
+    core.tree[cmd.path].object = data
+end
+
+function update_tree!(core::CoreVisualizer, cmd::SetTransform, data)
+    core.tree[cmd.path].transform = data
+end
+
+function update_tree!(core::CoreVisualizer, cmd::Delete, data)
+    if length(cmd.path) == 0
+        core.tree = SceneNode()
+    else
+        delete!(core.tree, cmd.path)
+    end
+end
+
+update_tree!(core::CoreVisualizer, cmd::SetControl, data) = nothing
+
+function send_scene(core::CoreVisualizer)
+    foreach(core.tree) do node
+        if !isnull(node.object)
+            core.command_channel[] = get(node.object)
+        end
+        if !isnull(node.transform)
+            core.command_channel[] = get(node.transform)
+        end
+    end
+    for (name, (obs, control)) in core.controls
+        send(core, SetControl(control))
+    end
+end
+
+function Base.send(c::CoreVisualizer, cmd::AbstractCommand)
+    data = pack(lower(cmd))
+    update_tree!(c, cmd, data)
+    c.command_channel[] = data
+    nothing
+end
+
+function Base.wait(c::CoreVisualizer)
+    while isempty(c.scope.pool.connections)
+        sleep(0.25)
     end
 end
 
 """
     vis = Visualizer()
 
-Construct a new MeshCat visualizer instance. This also starts the MeshCat ZeroMQ
-and file servers, choosing an appropriate port automatically.
+Construct a new MeshCat visualizer instance.
 
 Useful methods:
 
-    open(vis) # open the visualizer in your browser
     vis[:group1] # get a new visualizer representing a sub-tree of the scene
-    setobject!(vis[:group1], geometry) # set the object shown by this sub-tree of the visualizer
-
-    vis = Visualizer(zmq_url::String)
-
-Connect to an existing MeshCat server at the given ZeroMQ URL.
+    setobject!(vis, geometry) # set the object shown by this visualizer's sub-tree of the scene
+    settransform!(vis], tform) # set the transformation of this visualizer's sub-tree of the scene
 """
 struct Visualizer
-    window::ViewerWindow
+    core::CoreVisualizer
     path::Path
 end
 
-Visualizer() = Visualizer(ViewerWindow(), ["meshcat"])
-Visualizer(zmq_url::AbstractString) = Visualizer(ViewerWindow(zmq_url), ["meshcat"])
-
-"""
-$(SIGNATURES)
-
-Get the URL at which the MeshCat file server is running.
-Open this URL in your browser to see the 3D scene.
-"""
-url(v::Visualizer) = url(v.window)
-
-"""
-Open the visualizer's web URL in your default browser
-"""
-Base.open(v::Visualizer) = (open(v.window); v)
-Base.close(v::Visualizer) = close(v.window)
-Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer at $(url(v)) with path $(v.path)")
+Visualizer() = Visualizer(CoreVisualizer(), ["meshcat"])
 
 """
 $(SIGNATURES)
@@ -121,7 +144,11 @@ Wait until at least one browser has connected to the
 visualizer's server. This is useful in scripts to delay
 execution until the browser window has opened.
 """
-Base.wait(v::Visualizer) = wait(v.window)
+Base.wait(v::Visualizer) = wait(v.core)
+
+IJuliaCell(vis::Visualizer; kw...) = iframe(vis.core; kw...)
+
+Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer with path $(v.path)")
 
 """
 $(SIGNATURES)
@@ -134,7 +161,7 @@ place them at different paths by using the slicing notation:
     setobject!(vis[:group1][:box2], geometry2)
 """
 function setobject!(vis::Visualizer, obj::AbstractObject)
-    send(vis.window, SetObject(obj, vis.path))
+    send(vis.core, SetObject(obj, vis.path))
     vis
 end
 
@@ -151,7 +178,7 @@ so setting the transform of `vis[:group1]` affects the poses of the objects
 at `vis[:group1][:box1]` and `vis[:group1][:box2]`.
 """
 function settransform!(vis::Visualizer, tform::Transformation)
-    send(vis.window, SetTransform(tform, vis.path))
+    send(vis.core, SetTransform(tform, vis.path))
     vis
 end
 
@@ -161,9 +188,22 @@ $(SIGNATURES)
 Delete the geometry at this visualizer's path and all of its descendants.
 """
 function delete!(vis::Visualizer)
-    send(vis.window, Delete(vis.path))
+    send(vis.core, Delete(vis.path))
     vis
 end
 
-Base.getindex(vis::Visualizer, path::Union{Symbol, AbstractString}...) = Visualizer(vis.window, vcat(vis.path, path...))
+function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable)
+    control = Button(vis.core.controls_channel, name)
+    vis.core.controls[name] = (obs, control)
+    send(vis.core, SetControl(control))
+    vis
+end
 
+function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable, value, min=zero(value), max=one(value))
+    control = NumericControl(vis.core.controls_channel, name, value, min, max)
+    vis.core.controls[name] = (obs, control)
+    send(vis.core, SetControl(control))
+    vis
+end
+
+Base.getindex(vis::Visualizer, path::Union{Symbol, AbstractString}...) = Visualizer(vis.core, vcat(vis.path, path...))

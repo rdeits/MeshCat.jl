@@ -1,13 +1,5 @@
 abstract type AbstractCommand end
 
-struct Path
-    entries::Vector{String}
-end
-
-Base.convert(::Type{Path}, x::AbstractVector{<:AbstractString}) = Path(x)
-Base.vcat(p::Path, s...) = Path(vcat(p.entries, s...))
-Base.show(io::IO, p::Path) = print(io, string('/', join(p.entries, '/')))
-
 struct SetObject{O <: AbstractObject} <: AbstractCommand
     object::O
     path::Path
@@ -20,4 +12,23 @@ end
 
 struct Delete <: AbstractCommand
     path::Path
+end
+
+abstract type AbstractControl end
+
+struct Button <: AbstractControl
+    observer::Observable
+    name::String
+end
+
+struct NumericControl{T} <: AbstractControl
+    observer::Observable
+    name::String
+    value::T
+    min::T
+    max::T
+end
+
+struct SetControl <: AbstractCommand
+    control::AbstractControl
 end

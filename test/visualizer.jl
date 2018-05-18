@@ -1,16 +1,18 @@
+using Blink
+
+notinstalled = !AtomShell.isinstalled()
+@show notinstalled
+notinstalled && AtomShell.install()
+println("finished install()")
+
+window = Window()
 vis = Visualizer()
 
-if haskey(ENV, "CI")
-    port = split(split(url(vis), ':')[end], '/')[1]
-    @show port
-    stream, proc = open(`julia $(joinpath(@__DIR__, "dummy_websocket_client.jl")) $port`)
-else
-    proc = nothing
-    open(vis)
+if !(is_windows() && haskey(ENV, "CI"))
+    # this gets stuck on windows CI, but I don't know why
+    open(vis, window)
+    wait(vis)
 end
-
-wait(vis)
-delete!(vis)
 
 @testset "self-contained visualizer" begin
     @testset "shapes" begin
@@ -104,8 +106,10 @@ delete!(vis)
 
 end
 
-close(vis)
+println("finished tests")
 
-if proc !== nothing
-    kill(proc)
+if !(is_windows() && haskey(ENV, "CI"))
+    # this also fails on appveyor, and again I have no way to debug it
+    notinstalled && AtomShell.uninstall()
+    println("finished uninstall")
 end
