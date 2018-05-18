@@ -5,14 +5,14 @@ notinstalled = !AtomShell.isinstalled()
 notinstalled && AtomShell.install()
 println("finished install()")
 
-window = if haskey(ENV, "CI")
-    Window(Dict(:show => false))
-else
-    Window()
-end
+window = Window()
 vis = Visualizer()
 open(vis, window)
-wait(vis)
+
+if !(is_windows() && haskey(ENV, "CI")
+    # this gets stuck on windows CI, but I don't know why
+    wait(vis)
+end
 
 @testset "self-contained visualizer" begin
     @testset "shapes" begin
