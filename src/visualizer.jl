@@ -91,6 +91,7 @@ function update_tree!(core::CoreVisualizer, cmd::Delete, data)
 end
 
 update_tree!(core::CoreVisualizer, cmd::SetControl, data) = nothing
+update_tree!(core::CoreVisualizer, cmd::SetAnimation, data) = nothing
 
 function send_scene(core::CoreVisualizer)
     foreach(core.tree) do node
@@ -189,6 +190,19 @@ Delete the geometry at this visualizer's path and all of its descendants.
 """
 function delete!(vis::Visualizer)
     send(vis.core, Delete(vis.path))
+    vis
+end
+
+"""
+$(SIGNATURES)
+
+Set a single property for the object at the given path.
+
+(this is named setprop! instead of setproperty! to avoid confusion
+with the Base.setproperty! function introduced in Julia v0.7)
+"""
+function setprop!(vis::Visualizer, property::String, value)
+    send(vis.core, SetProperty(vis.path, property, value))
     vis
 end
 

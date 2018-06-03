@@ -47,6 +47,7 @@ using .SceneTrees
 include("geometry.jl")
 include("objects.jl")
 include("commands.jl")
+include("animations.jl")
 include("lowering.jl")
 include("msgpack.jl")
 include("visualizer.jl")
@@ -88,16 +89,16 @@ function Base.open(core::CoreVisualizer; default_port=8700, max_retries=500)
             end
         end
         close(server)
-        # It is *possible* that a race condition could occur here, in which 
+        # It is *possible* that a race condition could occur here, in which
         # some other process grabs the given port in between the close() above
         # and the open() below. But it's unlikely and would not be terribly
-        # damaging (the user would just have to call open() again). 
+        # damaging (the user would just have to call open() again).
         return open(core, port)
     end
 end
 
 @require Blink begin
-    function Base.open(core::CoreVisualizer, w::Blink.AtomShell.Window) 
+    function Base.open(core::CoreVisualizer, w::Blink.AtomShell.Window)
         # Ensure the window is ready
         Blink.js(w, "ok")
         # Set its contents

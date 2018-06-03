@@ -28,6 +28,10 @@ function lower(obj::AbstractObject)
     data
 end
 
+function lower(q::Quat)
+    [q.w, q.x, q.y, q.z]
+end
+
 function replace_with_uuid!(data, field, destination_data, destination_field)
     if field in keys(data)
         obj = data[field]
@@ -236,6 +240,15 @@ function lower(cmd::Delete)
     Dict{String, Any}(
         "type" => "delete",
         "path" => lower(cmd.path)
+    )
+end
+
+function lower(cmd::SetProperty)
+    Dict{String, Any}(
+        "type" => "set_property",
+        "path" => lower(cmd.path),
+        "property" => lower(cmd.property),
+        "value" => lower(cmd.value)
     )
 end
 

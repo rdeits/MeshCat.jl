@@ -14,6 +14,12 @@ struct Delete <: AbstractCommand
     path::Path
 end
 
+struct SetProperty{T} <: AbstractCommand
+    path::Path
+    property::String
+    value::T
+end
+
 abstract type AbstractControl end
 
 struct Button <: AbstractControl
