@@ -37,12 +37,12 @@ function settransform!(vis::AnimationFrameVisualizer, tform::Transformation)
     _setprop!(clip, vis.current_frame, "quaternion", "quaternion", js_quaternion(tform))
 end
 
-function setproperty!(vis::AnimationFrameVisualizer, prop::AbstractString, value)
+function setprop!(vis::AnimationFrameVisualizer, prop::AbstractString, value)
     clip = getclip!(vis)
     _setprop!(clip, vis.current_frame, prop, value)
 end
 
-function setproperty!(vis::AnimationFrameVisualizer, prop::AbstractString, jstype::AbstractString, value)
+function setprop!(vis::AnimationFrameVisualizer, prop::AbstractString, jstype::AbstractString, value)
     clip = getclip!(vis)
     _setprop!(clip, vis.current_frame, prop, value)
 end
