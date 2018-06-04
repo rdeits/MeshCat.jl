@@ -4,7 +4,7 @@ module MeshCat
 
 using GeometryTypes
 using CoordinateTransformations
-using Rotations: rotation_between
+using Rotations: rotation_between, Rotation
 
 using Colors: Color, Colorant, RGB, RGBA, alpha
 using StaticArrays: StaticVector, SVector, SDiagonal
@@ -24,6 +24,7 @@ import GeometryTypes: origin, radius
 export Visualizer,
        ViewerWindow,
        IJuliaCell,
+       Object,
        HyperEllipsoid,
        HyperCylinder,
        PointCloud,
@@ -40,17 +41,28 @@ export Visualizer,
        LineSegments,
        setobject!,
        settransform!,
-       delete!
+       delete!,
+       Animation,
+       atframe,
+       setanimation!,
+       AbstractVisualizer,
+       AbstractMaterial,
+       AbstractObject,
+       GeometryLike
+
+
 
 include("trees.jl")
 using .SceneTrees
 include("geometry.jl")
 include("objects.jl")
-include("commands.jl")
 include("animations.jl")
+include("commands.jl")
+include("abstract_visualizer.jl")
 include("lowering.jl")
 include("msgpack.jl")
 include("visualizer.jl")
+include("animation_visualizer.jl")
 
 const VIEWER_ROOT = joinpath(@__DIR__, "..", "assets", "meshcat", "dist")
 

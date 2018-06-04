@@ -1,77 +1,21 @@
-abstract type AbstractAnimationTrack end
 
-struct TransformTrack <: AbstractAnimationTrack
-    frames::Vector{Pair{Int, AffineMap{RotMatrix{3, Float64, 9}, SVector{3, Float64}}}}
+struct AnimationTrack{T}
+    name::String
+    jstype::String
+    frames::Vector{Int}
+    values::Vector{T}
 end
 
-flat(q::Quat) = [q.x, q.y, q.z, q.w]
-
-function lower(track::TransformTrack)
-    times = first.(track.frames)
-    positions = [tform.v for (time, tform) in track.frames]
-    position_track = Dict{String, Any}(
-        "name" => ".position",
-        "type" => "vector3",
-        "keys" => [
-            Dict{String, Any}(
-                "time" => times[i],
-                "value" => convert(Vector, positions[i])
-            ) for i in eachindex(times)]
-    )
-
-    quaternions = [Quat(tform.m) for (time, tform) in track.frames]
-    quat_track = Dict{String, Any}(
-        "name" => ".quaternion",
-        "type" => "quaternion",
-        "keys" => [
-            Dict{String, Any}(
-                "time" => times[i],
-                "value" => flat(quaternions[i])
-            ) for i in eachindex(times)]
-    )
-    [position_track, quat_track]
-end
-
-@with_kw struct AnimationClip{T <: AbstractAnimationTrack}
-    tracks::Vector{T}
+@with_kw struct AnimationClip
+    tracks::Dict{String, AnimationTrack} = Dict{String, AnimationTrack}()
     fps::Int = 30
     name::String = "default"
 end
 
-function lower(clip::AnimationClip)
-    Dict{String, Any}(
-        "fps" => clip.fps,
-        "name" => clip.name,
-        "tracks" => vcat(lower.(clip.tracks)...)
-    )
+struct Animation
+    clips::Dict{Path, AnimationClip}
+    default_framerate::Int
 end
 
-struct Animation{C <: AnimationClip}
-    animations::Vector{Pair{Path, C}}
-end
+Animation(fps::Int=30) = Animation(Dict{Path, AnimationClip}(), fps)
 
-function lower(a::Animation)
-    [Dict{String, Any}(
-        "path" => lower(path),
-        "clip" => lower(clip)
-    ) for (path, clip) in a.animations]
-end
-
-struct SetAnimation{A <: Animation} <: AbstractCommand
-    animation::A
-    play::Bool
-    repetitions::Int
-end
-
-SetAnimation(anim::Animation; play=true, repetitions=1) = SetAnimation(anim, play, repetitions)
-
-function lower(cmd::SetAnimation)
-    Dict{String, Any}(
-        "type" => "set_animation",
-        "animations" => lower(cmd.animation),
-        "options" => Dict{String, Any}(
-            "play" => cmd.play,
-            "repetitions" => cmd.repetitions
-        )
-    )
-end
