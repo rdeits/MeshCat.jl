@@ -28,10 +28,6 @@ function lower(obj::AbstractObject)
     data
 end
 
-function lower(q::Quat)
-    [q.w, q.x, q.y, q.z]
-end
-
 function replace_with_uuid!(data, field, destination_data, destination_field)
     if field in keys(data)
         obj = data[field]

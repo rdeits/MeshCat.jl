@@ -1,30 +1,32 @@
 abstract type AbstractAnimationTrack end
 
 struct TransformTrack <: AbstractAnimationTrack
-    frames::Vector{Pair{Int, AffineMap{RotMatrix{3, Float64, 9}, Translation{SVector{3, Float64}}}}}
+    frames::Vector{Pair{Int, AffineMap{RotMatrix{3, Float64, 9}, SVector{3, Float64}}}}
 end
+
+flat(q::Quat) = [q.x, q.y, q.z, q.w]
 
 function lower(track::TransformTrack)
     times = first.(track.frames)
-    positions = [tform.v.v for (time, tform) in track.frames]
+    positions = [tform.v for (time, tform) in track.frames]
     position_track = Dict{String, Any}(
         "name" => ".position",
         "type" => "vector3",
         "keys" => [
             Dict{String, Any}(
                 "time" => times[i],
-                "value" => collect(positions[i])
+                "value" => convert(Vector, positions[i])
             ) for i in eachindex(times)]
     )
 
     quaternions = [Quat(tform.m) for (time, tform) in track.frames]
     quat_track = Dict{String, Any}(
-        "name" => ".rotation",
+        "name" => ".quaternion",
         "type" => "quaternion",
         "keys" => [
             Dict{String, Any}(
                 "time" => times[i],
-                "value" => lower(quaternions[i])
+                "value" => flat(quaternions[i])
             ) for i in eachindex(times)]
     )
     [position_track, quat_track]
