@@ -91,6 +91,8 @@ function update_tree!(core::CoreVisualizer, cmd::Delete, data)
 end
 
 update_tree!(core::CoreVisualizer, cmd::SetControl, data) = nothing
+update_tree!(core::CoreVisualizer, cmd::SetAnimation, data) = nothing
+update_tree!(core::CoreVisualizer, cmd::SetProperty, data) = nothing
 
 function send_scene(core::CoreVisualizer)
     foreach(core.tree) do node
@@ -130,7 +132,7 @@ Useful methods:
     setobject!(vis, geometry) # set the object shown by this visualizer's sub-tree of the scene
     settransform!(vis], tform) # set the transformation of this visualizer's sub-tree of the scene
 """
-struct Visualizer
+struct Visualizer <: AbstractVisualizer
     core::CoreVisualizer
     path::Path
 end
@@ -165,9 +167,6 @@ function setobject!(vis::Visualizer, obj::AbstractObject)
     vis
 end
 
-setobject!(vis::Visualizer, geom::GeometryLike) = setobject!(vis, Object(geom))
-setobject!(vis::Visualizer, geom::GeometryLike, material::AbstractMaterial) = setobject!(vis, Object(geom, material))
-
 """
 $(SIGNATURES)
 
@@ -192,6 +191,19 @@ function delete!(vis::Visualizer)
     vis
 end
 
+"""
+$(SIGNATURES)
+
+Set a single property for the object at the given path.
+
+(this is named setprop! instead of setproperty! to avoid confusion
+with the Base.setproperty! function introduced in Julia v0.7)
+"""
+function setprop!(vis::Visualizer, property::AbstractString, value)
+    send(vis.core, SetProperty(vis.path, property, value))
+    vis
+end
+
 function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable)
     control = Button(vis.core.controls_channel, name)
     vis.core.controls[name] = (obs, control)
@@ -206,4 +218,11 @@ function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable, val
     vis
 end
 
-Base.getindex(vis::Visualizer, path::Union{Symbol, AbstractString}...) = Visualizer(vis.core, vcat(vis.path, path...))
+function setanimation!(vis::Visualizer, anim::Animation; play::Bool=true, repetitions::Integer=1)
+    cmd = SetAnimation(anim, play, repetitions)
+    send(vis.core, cmd)
+end
+
+Base.getindex(vis::Visualizer, path...) =
+    Visualizer(vis.core, joinpath(vis.path, path...))
+

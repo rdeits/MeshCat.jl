@@ -14,6 +14,12 @@ struct Delete <: AbstractCommand
     path::Path
 end
 
+struct SetProperty{T} <: AbstractCommand
+    path::Path
+    property::String
+    value::T
+end
+
 abstract type AbstractControl end
 
 struct Button <: AbstractControl
@@ -32,3 +38,12 @@ end
 struct SetControl <: AbstractCommand
     control::AbstractControl
 end
+
+struct SetAnimation{A <: Animation} <: AbstractCommand
+    animation::A
+    play::Bool
+    repetitions::Int
+end
+
+SetAnimation(anim::Animation; play=true, repetitions=1) = SetAnimation(anim, play, repetitions)
+

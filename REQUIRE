@@ -10,6 +10,7 @@ Colors 0.7.1
 # Misc
 Parameters 0.7
 DocStringExtensions 0.4
+Compat
 
 # Communication
 MsgPack 0.1.1

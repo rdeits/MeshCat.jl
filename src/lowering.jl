@@ -6,6 +6,9 @@ into `Dict`s matching the JSON structure used by three.js.
 """
 function lower end
 
+lower(x::Vector) = x
+lower(x::String) = x
+lower(x::Union{Int32, Int64, Float32, Float64}) = x
 
 function lower(t::Transformation)
     H = [transform_deriv(t, Vec(0., 0, 0)) t(Vec(0., 0, 0));
@@ -239,6 +242,15 @@ function lower(cmd::Delete)
     )
 end
 
+function lower(cmd::SetProperty)
+    Dict{String, Any}(
+        "type" => "set_property",
+        "path" => lower(cmd.path),
+        "property" => lower(cmd.property),
+        "value" => lower(cmd.value)
+    )
+end
+
 function lower(b::Button)
     Dict{String, Any}(
         "name" => b.name,
@@ -263,3 +275,41 @@ function lower(cmd::SetControl)
     merge!(d, lower(cmd.control))
     d
 end
+
+function lower(track::AnimationTrack)
+    Dict{String, Any}(
+        "name" => string(".", track.name),
+        "type" => track.jstype,
+        "keys" => [Dict{String, Any}(
+            "time" => track.frames[i],
+            "value" => lower(track.values[i])
+        ) for i in eachindex(track.frames)]
+    )
+end
+
+function lower(clip::AnimationClip)
+    Dict{String, Any}(
+        "fps" => clip.fps,
+        "name" => clip.name,
+        "tracks" => [lower(t) for t in values(clip.tracks)]
+    )
+end
+
+function lower(a::Animation)
+    [Dict{String, Any}(
+        "path" => lower(path),
+        "clip" => lower(clip)
+    ) for (path, clip) in a.clips]
+end
+
+function lower(cmd::SetAnimation)
+    Dict{String, Any}(
+        "type" => "set_animation",
+        "animations" => lower(cmd.animation),
+        "options" => Dict{String, Any}(
+            "play" => cmd.play,
+            "repetitions" => cmd.repetitions
+        )
+    )
+end
+

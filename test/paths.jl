@@ -1,0 +1,10 @@
+vis = Visualizer()
+
+@test vis.path == MeshCat.Path(["meshcat"])
+@test vis[:foo].path == MeshCat.Path(["meshcat", "foo"])
+@test vis[:foo, :bar].path == MeshCat.Path(["meshcat", "foo", "bar"])
+@test vis[:foo, "bar"].path == MeshCat.Path(["meshcat", "foo", "bar"])
+@test vis[:foo, "/bar"].path == MeshCat.Path(["bar"])
+@test vis[:foo, "/bar", :baz].path == MeshCat.Path(["bar", "baz"])
+@test vis["foo/bar/baz"].path == MeshCat.Path(["meshcat", "foo", "bar", "baz"])
+@test vis["/foo/bar/baz"].path == MeshCat.Path(["foo", "bar", "baz"])
