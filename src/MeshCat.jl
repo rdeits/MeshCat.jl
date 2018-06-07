@@ -23,32 +23,39 @@ import GeometryTypes: origin, radius
 
 export Visualizer,
        ViewerWindow,
-       IJuliaCell,
-       Object,
+       IJuliaCell
+
+export setobject!,
+       settransform!,
+       delete!,
+       setprop!,
+       setanimation!
+
+export AbstractVisualizer,
+       AbstractMaterial,
+       AbstractObject,
+       GeometryLike
+
+export Object,
        HyperEllipsoid,
        HyperCylinder,
        PointCloud,
        Triad,
-       PointsMaterial,
+       Mesh,
+       Points,
+       LineSegments
+
+export PointsMaterial,
        MeshLambertMaterial,
        MeshBasicMaterial,
        MeshPhongMaterial,
        LineBasicMaterial,
        Texture,
-       PngImage,
-       Mesh,
-       Points,
-       LineSegments,
-       setobject!,
-       settransform!,
-       delete!,
-       Animation,
-       atframe,
-       setanimation!,
-       AbstractVisualizer,
-       AbstractMaterial,
-       AbstractObject,
-       GeometryLike
+       PngImage
+
+export Animation,
+       atframe
+
 
 
 
