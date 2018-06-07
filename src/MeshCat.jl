@@ -12,11 +12,12 @@ using GeometryTypes: raw
 using Parameters: @with_kw
 using Base.Random: UUID, uuid1
 using DocStringExtensions
-using Requires
+using Requires: @require
 using Mux: page
 using WebIO
 using JSExpr
 
+import Compat
 import Base: delete!, length
 import MsgPack: pack, Ext
 import GeometryTypes: origin, radius
