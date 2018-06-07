@@ -30,6 +30,8 @@ branches:
 script:
  # - julia -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
  - $TESTCMD -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
+ - julia --code-coverage=user -e 'using MeshCat; MeshCat.develop_meshcat_assets(true)'
+ - julia -e 'Pkg.build("MeshCat")'
 after_success:
   # push coverage results to Coveralls
   # push coverage results to Codecov
