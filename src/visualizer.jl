@@ -222,4 +222,6 @@ function setanimation!(vis::Visualizer, anim::Animation; play::Bool=true, repeti
     send(vis.core, cmd)
 end
 
-Base.getindex(vis::Visualizer, path::Union{Symbol, AbstractString}...) = Visualizer(vis.core, vcat(vis.path, path...))
+Base.getindex(vis::Visualizer, path...) =
+    Visualizer(vis.core, joinpath(vis.path, path...))
+

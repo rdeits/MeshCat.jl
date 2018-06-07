@@ -55,4 +55,4 @@ end
 atframe(f::Function, anim::Animation, vis::Visualizer, frame::Integer) =
     atframe(f, anim, vis.path, frame)
 
-Base.getindex(vis::AnimationFrameVisualizer, path::Union{Symbol, AbstractString}...) = AnimationFrameVisualizer(vis.animation, vcat(vis.path, path...), vis.current_frame)
+Base.getindex(vis::AnimationFrameVisualizer, path...) = AnimationFrameVisualizer(vis.animation, joinpath(vis.path, path...), vis.current_frame)
