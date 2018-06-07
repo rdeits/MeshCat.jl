@@ -92,6 +92,7 @@ end
 
 update_tree!(core::CoreVisualizer, cmd::SetControl, data) = nothing
 update_tree!(core::CoreVisualizer, cmd::SetAnimation, data) = nothing
+update_tree!(core::CoreVisualizer, cmd::SetProperty, data) = nothing
 
 function send_scene(core::CoreVisualizer)
     foreach(core.tree) do node

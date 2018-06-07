@@ -10,9 +10,13 @@ function _setprop!(track::AnimationTrack, frame::Integer, value)
     insert!(track.values, i, value)
 end
 
+wider_js_type(::Type{<:Integer}) = Float64  # Javascript thinks everything is a `double`
+wider_js_type(::Type{Float64}) = Float64
+wider_js_type(x) = x
+
 function _setprop!(clip::AnimationClip, frame::Integer, prop::AbstractString, jstype::AbstractString, value)
     track = get!(clip.tracks, prop) do
-        AnimationTrack(prop, jstype, Int[], typeof(value)[])
+        AnimationTrack(prop, jstype, Int[], wider_js_type(typeof(value))[])
     end
     _setprop!(track, frame, value)
 end
@@ -39,12 +43,12 @@ end
 
 function setprop!(vis::AnimationFrameVisualizer, prop::AbstractString, value)
     clip = getclip!(vis)
-    _setprop!(clip, vis.current_frame, prop, value)
+    _setprop!(clip, vis.current_frame, prop, "number", value)
 end
 
 function setprop!(vis::AnimationFrameVisualizer, prop::AbstractString, jstype::AbstractString, value)
     clip = getclip!(vis)
-    _setprop!(clip, vis.current_frame, prop, value)
+    _setprop!(clip, vis.current_frame, prop, jstype, value)
 end
 
 function atframe(f::Function, anim::Animation, path::Path, frame::Integer)

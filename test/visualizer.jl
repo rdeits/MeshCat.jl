@@ -115,6 +115,13 @@ end
         atframe(anim, vis[:shapes], 30) do frame_vis
             settransform!(frame_vis[:box], Translation(2., 0, 0) ∘ LinearMap(RotZ(π/2)))
         end
+        atframe(anim, vis, 0) do framevis
+            setprop!(framevis["/Cameras/default/rotated/<object>"], "zoom", 1)
+        end
+
+        atframe(anim, vis, 30) do framevis
+            setprop!(framevis["/Cameras/default/rotated/<object>"], "zoom", 0.5)
+        end
         setanimation!(vis, anim)
     end
 end
