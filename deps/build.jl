@@ -33,8 +33,8 @@ function update_meshcat()
 
     mktempdir() do download_dir
         download_path = joinpath(download_dir, "meshcat.zip")
-        run(DownloadHelpers.download_cmd(meshcat_url, download_path))
-        run(DownloadHelpers.unpack_cmd(download_path, download_dir, ".zip", nothing))
+        run(download_cmd(meshcat_url, download_path))
+        run(unpack_cmd(download_path, download_dir, ".zip", nothing))
         mv(joinpath(download_dir, "meshcat-$meshcat_sha"), meshcat_dir; remove_destination=true)
     end
     open(stamp_file, "w") do file
