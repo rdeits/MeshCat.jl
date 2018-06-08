@@ -1,3 +1,0 @@
-[submodule "assets/meshcat"]
-	path = assets/meshcat
-	url = https://github.com/rdeits/meshcat.git

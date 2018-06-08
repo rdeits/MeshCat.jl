@@ -20,23 +20,6 @@ end
 Animation(fps::Int=30) = Animation(Dict{Path, AnimationClip}(), fps)
 
 
-# Based on https://github.com/JuliaLang/BinDeps.jl/blob/69c3fb64f35b5e92c866323ba217e6d4f8f82ae7/src/BinDeps.jl#L84
-@static if Compat.Sys.isunix() && Sys.KERNEL != :FreeBSD
-    unpack_tarfile(file, directory) = `tar xf $file --directory=$directory`
-elseif Sys.KERNEL == :FreeBSD
-    function unpack_tarfile(file, directory)
-        tar_args = ["--no-same-owner", "--no-same-permissions"]
-        pipeline(
-            `/bin/mkdir -p $directory`,
-            `/usr/bin/tar -xf $file -C $directory $tar_args`)
-    end
-elseif Compat.Sys.iswindows()
-    const exe7z = joinpath(Compat.Sys.BINDIR, "7z.exe")
-    unpack_tarfile(file, directory) = `$exe7z x $file -y -o$directory`
-else
-    unpack_tarfile(args...) = error("I don't know how to unpack tar files on this operating system")
-end
-
 function convert_frames_to_video(tar_file_path::AbstractString, output_path::AbstractString="output.mp4"; framerate=60, overwrite=false)
     output_path = abspath(output_path)
     if !isfile(tar_file_path)
@@ -47,7 +30,7 @@ function convert_frames_to_video(tar_file_path::AbstractString, output_path::Abs
     end
 
     mktempdir() do tmpdir
-        run(unpack_tarfile(tar_file_path, tmpdir))
+        run(DownloadHelpers.unpack_cmd(tar_file_path, tmpdir, ".tar", nothing))
         cmd = `ffmpeg -r $framerate -i %07d.png -vcodec libx264 -preset slow -crf 18`
         if overwrite
             cmd = `$cmd -y`
