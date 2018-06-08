@@ -21,9 +21,15 @@ As much as possible, MeshCat.jl tries to use existing implementations of its fun
 
 That means that MeshCat should play well with other tools in the JuliaGeometry ecosystem like MeshIO.jl, Meshing.jl, etc. 
 
-# Demo
+# Demos
+
+## Basic Usage
 
 For detailed examples of usage, check out [demo.ipynb](demo.ipynb).
+
+## Animation
+
+To learn about the animation system (introduced in MeshCat.jl v0.2.0), see [animation.ipynb](animation.ipynb).
 
 # Related Projects
 
