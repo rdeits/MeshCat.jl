@@ -19,7 +19,6 @@ using JSExpr
 using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
 
-import Compat
 import Base: delete!, length
 import MsgPack: pack, Ext
 import GeometryTypes: origin, radius
