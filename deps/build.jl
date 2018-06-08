@@ -1,6 +1,6 @@
 using Base.Filesystem
+using BinDeps: unpack_cmd, download_cmd
 
-include("../src/download_helpers.jl")
 
 const meshcat_sha = "18028760b377c178bc77ee61cf4b9de8d176d3c5"
 const meshcat_url = "https://github.com/rdeits/meshcat/archive/$meshcat_sha.zip"
