@@ -26,12 +26,9 @@ branches:
   only:
     - master
 
-addons:
-  apt:
-    packages:
-      - ffmpeg
-
 # uncomment the following lines to override the default test script
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ffmpeg; fi
 script:
  # - julia -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
  - $TESTCMD -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
