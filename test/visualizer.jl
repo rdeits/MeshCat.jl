@@ -17,6 +17,23 @@ if !(is_windows() && haskey(ENV, "CI"))
     wait(vis)
 end
 
+# A custom geometry type to test that we can render arbitrary primitives
+# by decomposing them into simple meshes. This replaces the previous test
+# which did the same thing using a Polyhedron from Polyhedra.jl. The Polyhedra
+# test was removed because it required too many external dependencies just to
+# verify a simple interface. 
+struct CustomGeometry <: GeometryPrimitive{3, Float64}
+end
+
+GeometryTypes.isdecomposable(::Type{<:Face}, ::CustomGeometry) = true
+function GeometryTypes.decompose(::Type{F}, c::CustomGeometry) where {F <: Face}
+    [convert(F, Face(1,2,3))]
+end
+GeometryTypes.isdecomposable(::Type{<:Point}, ::CustomGeometry) = true
+function GeometryTypes.decompose(::Type{P}, c::CustomGeometry) where {P <: Point}
+    convert(Vector{P}, [Point(0., 0, 0), Point(0., 1, 0), Point(0., 0, 1)])
+end
+
 @testset "self-contained visualizer" begin
     @testset "shapes" begin
         v = vis[:shapes]
@@ -94,17 +111,10 @@ end
         end
     end
 
-
-    @testset "Polyhedra" begin
-        ext1 = vrep([0 1 2 3;0 2 1 3; 1 0 2 3; 1 2 0 3; 2 0 1 3; 2 1 0 3;
-                     0 1 3 2;0 3 1 2; 1 0 3 2; 1 3 0 2; 3 0 1 2; 3 1 0 2;
-                     0 3 2 1;0 2 3 1; 3 0 2 1; 3 2 0 1; 2 0 3 1; 2 3 0 1;
-                     3 1 2 0;3 2 1 0; 1 3 2 0; 1 2 3 0; 2 3 1 0; 2 1 3 0])
-        poly1 = CDDPolyhedron{4,Rational{BigInt}}(ext1)
-
-        poly2 = project(poly1, [1 1 1; -1 1 1; 0 -2 1; 0 0 -3])
-        setobject!(vis[:polyhedron], poly2)
-        settransform!(vis[:polyhedron],  Translation(-0.5, 1.0, 0) ∘ LinearMap(UniformScaling(0.1)))
+    @testset "Custom geometry primitives" begin
+        primitive = CustomGeometry()
+        setobject!(vis[:custom], primitive)
+        settransform!(vis[:custom],  Translation(-0.5, 1.0, 0) ∘ LinearMap(UniformScaling(0.5)))
     end
 
     @testset "Animation" begin
