@@ -17,8 +17,8 @@ using Mux: page
 using WebIO
 using JSExpr
 using Base.Filesystem: rm
+using BinDeps: download_cmd, unpack_cmd
 
-import Compat
 import Base: delete!, length
 import MsgPack: pack, Ext
 import GeometryTypes: origin, radius
@@ -65,7 +65,6 @@ include("trees.jl")
 using .SceneTrees
 include("geometry.jl")
 include("objects.jl")
-include("download_helpers.jl")
 include("animations.jl")
 include("commands.jl")
 include("abstract_visualizer.jl")
