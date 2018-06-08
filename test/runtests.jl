@@ -9,6 +9,8 @@ using CDDLib
 
 
 @testset "MeshCat" begin
+    include("downloads.jl")
+    include("video_rendering.jl")
     include("paths.jl")
     include("visualizer.jl")
     include("notebook.jl")
