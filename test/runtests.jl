@@ -9,6 +9,7 @@ using CDDLib
 
 
 @testset "MeshCat" begin
+    include("downloads.jl")
     include("paths.jl")
     include("visualizer.jl")
     include("notebook.jl")
