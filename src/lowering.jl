@@ -150,7 +150,7 @@ function lower(mesh::AbstractMesh)
     )
 end
 
-lower(g::GeometryPrimitive) = lower(GLNormalMesh(g))  # Fallback for everything else (like Polyhedra.jl's Polyhedron types)
+lower(g::GeometryPrimitive) = lower(GLPlainMesh(g))  # Fallback for everything else (like Polyhedra.jl's Polyhedron types)
 
 function lower(cloud::PointCloud)
     attributes = Dict{String, Any}(
