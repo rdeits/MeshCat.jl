@@ -10,7 +10,7 @@ using Colors: Color, Colorant, RGB, RGBA, alpha
 using StaticArrays: StaticVector, SVector, SDiagonal
 using GeometryTypes: raw
 using Parameters: @with_kw
-using Base.Random: UUID, uuid1
+using Compat.UUIDs: UUID, uuid1
 using DocStringExtensions
 using Requires: @require
 using Mux: page
