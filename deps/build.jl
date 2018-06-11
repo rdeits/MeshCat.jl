@@ -18,7 +18,7 @@ function update_meshcat()
         info("Meshcat assets in $meshcat_dir have been cloned with git, so they will not be automatically downloaded. To force a re-download, delete or rename the directory $meshcat_dir")
         return
     end
-    if isfile(stamp_file)
+    if isdir(meshcat_dir) && isfile(stamp_file)
         stamped_sha = strip(open(readstring, stamp_file))
         if stamped_sha == meshcat_sha 
             return
