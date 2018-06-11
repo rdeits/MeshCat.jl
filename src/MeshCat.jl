@@ -2,10 +2,10 @@ __precompile__()
 
 module MeshCat
 
+using WebIO
 using GeometryTypes
 using CoordinateTransformations
 using Rotations: rotation_between, Rotation
-
 using Colors: Color, Colorant, RGB, RGBA, alpha
 using StaticArrays: StaticVector, SVector, SDiagonal
 using GeometryTypes: raw
@@ -14,7 +14,6 @@ using Base.Random: UUID, uuid1
 using DocStringExtensions
 using Requires: @require
 using Mux: page
-using WebIO
 using JSExpr
 using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
