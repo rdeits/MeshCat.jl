@@ -110,6 +110,14 @@ end
         end
     end
 
+    @testset "lines" begin
+        v = vis[:circular_line]
+        settransform!(v, Translation(-1, -1, 0))
+        θ = linspace(0, 2π, 100)
+        geometry = PointCloud(Point.(0.5 .* sin.(θ), 0, 0.5 .* cos.(θ)))
+        setobject!(v, LineSegments(geometry, LineBasicMaterial()))
+    end
+
     @testset "Custom geometry primitives" begin
         primitive = CustomGeometry()
         setobject!(vis[:custom], primitive)
