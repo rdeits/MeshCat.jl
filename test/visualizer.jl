@@ -1,7 +1,6 @@
 using Blink
 
 notinstalled = !AtomShell.isinstalled()
-@show notinstalled
 notinstalled && AtomShell.install()
 
 window = Window()
@@ -21,7 +20,7 @@ end
 # by decomposing them into simple meshes. This replaces the previous test
 # which did the same thing using a Polyhedron from Polyhedra.jl. The Polyhedra
 # test was removed because it required too many external dependencies just to
-# verify a simple interface. 
+# verify a simple interface.
 struct CustomGeometry <: GeometryPrimitive{3, Float64}
 end
 

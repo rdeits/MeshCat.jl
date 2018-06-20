@@ -2,7 +2,7 @@ using Base.Filesystem
 using BinDeps: unpack_cmd, download_cmd
 
 
-const meshcat_sha = "18028760b377c178bc77ee61cf4b9de8d176d3c5"
+const meshcat_sha = "be9a22b26a547d83a9fe3fc31ee8788049a0413c"
 const meshcat_url = "https://github.com/rdeits/meshcat/archive/$meshcat_sha.zip"
 
 const assets_dir = normpath(joinpath(@__DIR__, "..", "assets"))
@@ -20,7 +20,7 @@ function update_meshcat()
     end
     if isdir(meshcat_dir) && isfile(stamp_file)
         stamped_sha = strip(open(readstring, stamp_file))
-        if stamped_sha == meshcat_sha 
+        if stamped_sha == meshcat_sha
             return
         else
             info("Updating meshcat assets in $meshcat_dir from SHA $stamped_sha to $meshcat_sha")

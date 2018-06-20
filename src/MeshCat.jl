@@ -3,8 +3,7 @@ __precompile__()
 module MeshCat
 
 using WebIO
-using GeometryTypes
-using CoordinateTransformations
+using GeometryTypes, CoordinateTransformations
 using Rotations: rotation_between, Rotation
 using Colors: Color, Colorant, RGB, RGBA, alpha
 using StaticArrays: StaticVector, SVector, SDiagonal
