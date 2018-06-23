@@ -7,11 +7,7 @@ mutable struct CoreVisualizer
     controls::Dict{String, Tuple{Observable, AbstractControl}}
 
     function CoreVisualizer()
-        scope = WebIO.Scope(
-            imports=[
-                "pkg/MeshCat/meshcat/dist/main.min.js"
-            ]
-        )
+        scope = WebIO.Scope(imports=ASSET_KEYS)
         command_channel = Observable(scope, "meshcat-command", UInt8[])
         request_channel = Observable(scope, "meshcat-request", "")
         controls_channel = Observable(scope, "meshcat-controls", [])
