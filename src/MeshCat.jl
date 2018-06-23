@@ -3,6 +3,7 @@ __precompile__()
 module MeshCat
 
 using WebIO
+import AssetRegistry
 using GeometryTypes, CoordinateTransformations
 using Rotations: rotation_between, Rotation
 using Colors: Color, Colorant, RGB, RGBA, alpha
@@ -10,7 +11,7 @@ using StaticArrays: StaticVector, SVector, SDiagonal
 using GeometryTypes: raw
 using Parameters: @with_kw
 using Base.Random: UUID, uuid1
-using DocStringExtensions
+using DocStringExtensions: SIGNATURES
 using JSExpr: @js, @new, @var
 using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
@@ -88,6 +89,12 @@ function develop_meshcat_assets(skip_confirmation=false)
     rm(meshcat_dir, force=true, recursive=true)
     run(`git clone https://github.com/rdeits/meshcat $meshcat_dir`)
     rm(joinpath(meshcat_dir, "..", "meshcat.stamp"))
+end
+
+const ASSET_KEYS = String[]
+
+function __init__()
+    push!(ASSET_KEYS, AssetRegistry.register(abspath(joinpath(VIEWER_ROOT, "main.min.js"))))
 end
 
 end
