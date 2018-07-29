@@ -2,6 +2,7 @@ __precompile__()
 
 module MeshCat
 
+using Compat
 using WebIO
 import AssetRegistry
 using GeometryTypes, CoordinateTransformations
@@ -16,6 +17,7 @@ using JSExpr: @js, @new, @var
 using Requires: @require
 using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
+using Compat.LinearAlgebra: UniformScaling
 
 import Base: delete!, length
 import MsgPack: pack, Ext

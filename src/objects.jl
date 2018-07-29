@@ -39,7 +39,7 @@ end
 @with_kw mutable struct GenericMaterial <: AbstractMaterial
     _type::String
     color::RGBA{Float32} = RGB(1., 1., 1.)
-    map::Union{Texture, Void} = nothing
+    map::Union{Texture, Nothing} = nothing
     depthFunc::Int = 3
     depthTest::Bool = true
     depthWrite::Bool = true

@@ -1,5 +1,6 @@
 module Servers
     module MuxProvider
+        using Compat
         using Mux
         using WebIO
         using JSON
@@ -53,13 +54,14 @@ module Servers
     using .MuxProvider: webio_serve
     using MeshCat: CoreVisualizer, Visualizer
     using Mux: page
+    using Compat
 
     Base.open(vis::Visualizer, args...; kw...) = open(vis.core, args...; kw...)
 
     function Base.open(core::CoreVisualizer, port::Integer)
         webio_serve(page("/", req -> core.scope), port)
         url = "http://127.0.0.1:$port"
-        info("Serving MeshCat visualizer at $url")
+        Compat.@info("Serving MeshCat visualizer at $url")
         open_url(url)
     end
 

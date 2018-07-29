@@ -92,11 +92,11 @@ update_tree!(core::CoreVisualizer, cmd::SetProperty, data) = nothing
 
 function send_scene(core::CoreVisualizer)
     foreach(core.tree) do node
-        if !isnull(node.object)
-            core.command_channel[] = get(node.object)
+        if node.object !== nothing
+            core.command_channel[] = node.object
         end
-        if !isnull(node.transform)
-            core.command_channel[] = get(node.transform)
+        if node.transform !== nothing
+            core.command_channel[] = node.transform
         end
     end
     for (name, (obs, control)) in core.controls
@@ -104,7 +104,7 @@ function send_scene(core::CoreVisualizer)
     end
 end
 
-function Base.send(c::CoreVisualizer, cmd::AbstractCommand)
+function send(c::CoreVisualizer, cmd::AbstractCommand)
     data = pack(lower(cmd))
     update_tree!(c, cmd, data)
     c.command_channel[] = data
