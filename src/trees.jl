@@ -1,5 +1,7 @@
 module SceneTrees
 
+using Compat
+
 export SceneNode, Path
 
 struct Path <: AbstractVector{String}
@@ -23,8 +25,8 @@ Base.getindex(p::Path, v::AbstractVector) = Path(p.entries[v])
 Base.setindex(p::Path, x, i::Int) = p.entries[i] = x
 
 mutable struct SceneNode
-    object::Nullable{Vector{UInt8}}
-    transform::Nullable{Vector{UInt8}}
+    object::Union{Vector{UInt8}, Nothing}
+    transform::Union{Vector{UInt8}, Nothing}
     children::Dict{String, SceneNode}
 end
 

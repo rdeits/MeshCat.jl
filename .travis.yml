@@ -6,16 +6,23 @@ matrix:
       julia: 0.6
       env: TESTCMD="xvfb-run julia"
     - os: linux
+      julia: 0.7
+      env: TESTCMD="xvfb-run julia"
+    - os: linux
       julia: nightly
       env: TESTCMD="xvfb-run julia"
     - os: osx
       julia: 0.6
       env: TESTCMD="julia"
     - os: osx
+      julia: 0.7
+      env: TESTCMD="julia"
+    - os: osx
       julia: nightly
       env: TESTCMD="julia"
   allow_failures:
     - julia: nightly
+    - julia: 0.7
 
 notifications:
   email: false

@@ -1,3 +1,4 @@
+using Compat
 using Base.Filesystem
 using BinDeps: unpack_cmd, download_cmd
 
@@ -15,7 +16,7 @@ function update_meshcat()
     end
 
     if isdir(joinpath(meshcat_dir, ".git"))
-        info("Meshcat assets in $meshcat_dir have been cloned with git, so they will not be automatically downloaded. To force a re-download, delete or rename the directory $meshcat_dir")
+        Compat.@info("Meshcat assets in $meshcat_dir have been cloned with git, so they will not be automatically downloaded. To force a re-download, delete or rename the directory $meshcat_dir")
         return
     end
     if isdir(meshcat_dir) && isfile(stamp_file)
@@ -23,7 +24,7 @@ function update_meshcat()
         if stamped_sha == meshcat_sha
             return
         else
-            info("Updating meshcat assets in $meshcat_dir from SHA $stamped_sha to $meshcat_sha")
+            Compat.@info("Updating meshcat assets in $meshcat_dir from SHA $stamped_sha to $meshcat_sha")
         end
     end
 

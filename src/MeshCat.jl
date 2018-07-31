@@ -2,6 +2,7 @@ __precompile__()
 
 module MeshCat
 
+using Compat
 using WebIO
 import AssetRegistry
 using GeometryTypes, CoordinateTransformations
@@ -10,11 +11,13 @@ using Colors: Color, Colorant, RGB, RGBA, alpha
 using StaticArrays: StaticVector, SVector, SDiagonal
 using GeometryTypes: raw
 using Parameters: @with_kw
-using Base.Random: UUID, uuid1
+using Compat.UUIDs: UUID, uuid1
 using DocStringExtensions: SIGNATURES
 using JSExpr: @js, @new, @var
+using Requires: @require
 using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
+using Compat.LinearAlgebra: UniformScaling
 
 import Base: delete!, length
 import MsgPack: pack, Ext
