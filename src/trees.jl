@@ -12,11 +12,11 @@ Base.size(p::Path) = size(p.entries)
 Base.IndexStyle(::Type{Path}) = IndexLinear()
 Base.convert(::Type{Path}, x::AbstractVector{<:AbstractString}) = Path(x)
 
-Base.joinpath(p::Path, s...) = foldl(joinpath, p, s)
+Base.joinpath(p::Path, s...) = foldl(joinpath, s, init=p)
 Base.joinpath(p::Path, s::Symbol) = joinpath(p, String(s))
 Base.joinpath(p::Path, s::AbstractString) = _joinpath(p, split(s, '/'))
 
-_joinpath(p::Path, s::AbstractVector{<:AbstractString}) = foldl(_joinpath, p, s)
+_joinpath(p::Path, s::AbstractVector{<:AbstractString}) = foldl(_joinpath, s, init=p)
 _joinpath(p::Path, s::AbstractString) = isempty(s) ? Path(String[]) : Path(vcat(p.entries, s))
 
 Base.show(io::IO, p::Path) = print(io, string('/', join(p.entries, '/')))

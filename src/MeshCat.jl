@@ -2,8 +2,8 @@ __precompile__()
 
 module MeshCat
 
-using Compat
 using WebIO
+import Mux
 import AssetRegistry
 using GeometryTypes, CoordinateTransformations
 using Rotations: rotation_between, Rotation
@@ -11,13 +11,16 @@ using Colors: Color, Colorant, RGB, RGBA, alpha
 using StaticArrays: StaticVector, SVector, SDiagonal
 using GeometryTypes: raw
 using Parameters: @with_kw
-using Compat.UUIDs: UUID, uuid1
 using DocStringExtensions: SIGNATURES
 using JSExpr: @js, @new, @var
 using Requires: @require
 using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
+using Compat
+using Compat.UUIDs: UUID, uuid1
 using Compat.LinearAlgebra: UniformScaling
+using Compat.Sockets: listen
+using Compat.Base64: base64encode
 
 import Base: delete!, length
 import MsgPack: pack, Ext
@@ -73,7 +76,6 @@ include("servers.jl")
 
 const VIEWER_ROOT = joinpath(@__DIR__, "..", "assets", "meshcat", "dist")
 
-
 function develop_meshcat_assets(skip_confirmation=false)
     meshcat_dir = abspath(joinpath(@__DIR__, "..", "assets", "meshcat"))
     if !skip_confirmation
@@ -98,6 +100,16 @@ const ASSET_KEYS = String[]
 
 function __init__()
     push!(ASSET_KEYS, AssetRegistry.register(abspath(joinpath(VIEWER_ROOT, "main.min.js"))))
+
+    @require Blink="ad839575-38b3-5650-b840-f874b8c74a25" begin
+        function Base.open(core::CoreVisualizer, w::Blink.AtomShell.Window)
+            # Ensure the window is ready
+            Blink.js(w, "ok")
+            # Set its contents
+            Blink.body!(w, core.scope)
+            w
+        end
+    end
 end
 
 end
