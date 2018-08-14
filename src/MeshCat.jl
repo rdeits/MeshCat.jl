@@ -18,7 +18,7 @@ using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
 using Compat
 using Compat.UUIDs: UUID, uuid1
-using Compat.LinearAlgebra: UniformScaling
+using Compat.LinearAlgebra: UniformScaling, norm
 using Compat.Sockets: listen
 using Compat.Base64: base64encode
 

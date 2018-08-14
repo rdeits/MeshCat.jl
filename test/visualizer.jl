@@ -10,7 +10,7 @@ if !haskey(ENV, "CI")
     open(vis)
 end
 
-if !(is_windows() && haskey(ENV, "CI"))
+if !(Compat.Sys.iswindows() && haskey(ENV, "CI"))
     # this gets stuck on windows CI, but I don't know why
     open(vis, window)
     wait(vis)
@@ -31,6 +31,13 @@ end
 GeometryTypes.isdecomposable(::Type{<:Point}, ::CustomGeometry) = true
 function GeometryTypes.decompose(::Type{P}, c::CustomGeometry) where {P <: Point}
     convert(Vector{P}, [Point(0., 0, 0), Point(0., 1, 0), Point(0., 0, 1)])
+end
+
+@static if VERSION < v"0.7-"
+    const cat_mesh_path = joinpath(Pkg.dir("GeometryTypes"), "test", "data", "cat.obj")
+else
+    import GeometryTypes
+    const cat_mesh_path = joinpath(dirname(pathof(GeometryTypes)), "..", "test", "data", "cat.obj")
 end
 
 @testset "self-contained visualizer" begin
@@ -81,7 +88,7 @@ end
     @testset "meshes" begin
         v = vis[:meshes]
         @testset "cat" begin
-            mesh = load(joinpath(Pkg.dir("GeometryTypes"), "test", "data", "cat.obj"))
+            mesh = load(cat_mesh_path)
             setobject!(v[:cat], mesh)
             settransform!(v[:cat], Translation(0, -1, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
         end
@@ -113,7 +120,7 @@ end
     @testset "lines" begin
         v = vis[:circular_line]
         settransform!(v, Translation(-1, -1, 0))
-        θ = linspace(0, 2π, 100)
+        θ = Compat.range(0, stop=2π, length=100)
         geometry = PointCloud(Point.(0.5 .* sin.(θ), 0, 0.5 .* cos.(θ)))
         setobject!(v, LineSegments(geometry, LineBasicMaterial()))
     end
@@ -145,7 +152,7 @@ end
 
 sleep(1)
 
-if !(is_windows() && haskey(ENV, "CI"))
+if !(Compat.Sys.iswindows() && haskey(ENV, "CI"))
     # this also fails on appveyor, and again I have no way to debug it
     notinstalled && AtomShell.uninstall()
 end
