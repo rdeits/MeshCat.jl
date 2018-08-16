@@ -48,9 +48,9 @@ before_install:
 
 script:
  # - julia -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
- - $TESTCMD -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
+ - $TESTCMD -e 'if VERSION < v"0.7-"; import Pkg; Pkg.clone(pwd()); else; Pkg.add(Pkg.PackageSpec(path=pwd())); end; Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
  - julia --code-coverage=user -e 'using MeshCat; MeshCat.develop_meshcat_assets(true)'
- - julia -e 'Pkg.build("MeshCat")'
+ - julia -e 'if VERSION >= v"0.7-"; import Pkg; end; Pkg.build("MeshCat")'
 after_success:
   # push coverage results to Codecov
-  - julia -e 'cd(Pkg.dir("MeshCat")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'if VERSION >= v"0.7-"; import Pkg; end; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
