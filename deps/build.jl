@@ -20,7 +20,7 @@ function update_meshcat()
         return
     end
     if isdir(meshcat_dir) && isfile(stamp_file)
-        stamped_sha = strip(open(readstring, stamp_file))
+        stamped_sha = strip(open(f -> read(f, String), stamp_file))
         if stamped_sha == meshcat_sha
             return
         else
