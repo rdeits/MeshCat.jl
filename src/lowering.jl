@@ -115,8 +115,8 @@ end
 js_array_type(::Type{Float32}) = "Float32Array"
 js_array_type(::Type{UInt32}) = "Uint32Array"
 
-struct PackedVector{V <: AbstractVector}  # TODO: should require contiguous layout
-    data::V
+struct PackedVector{T}
+    data::Vector{T}
 end
 
 function lower(points::Vector{P}) where {P <: Union{StaticVector, Colorant}}
@@ -125,7 +125,8 @@ function lower(points::Vector{P}) where {P <: Union{StaticVector, Colorant}}
     Dict{String, Any}(
         "itemSize" => N,
         "type" => js_array_type(T),
-        "array" => PackedVector(reinterpret(T, points, (N * length(points),))),
+        "array" => PackedVector{T}(
+            reshape(reinterpret(T, points), (N * length(points),))),
     )
 end
 

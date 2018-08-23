@@ -20,7 +20,7 @@ function update_meshcat()
         return
     end
     if isdir(meshcat_dir) && isfile(stamp_file)
-        stamped_sha = strip(open(readstring, stamp_file))
+        stamped_sha = strip(open(f -> read(f, String), stamp_file))
         if stamped_sha == meshcat_sha
             return
         else
@@ -36,7 +36,7 @@ function update_meshcat()
         download_path = joinpath(download_dir, "meshcat.zip")
         run(download_cmd(meshcat_url, download_path))
         run(unpack_cmd(download_path, download_dir, ".zip", nothing))
-        mv(joinpath(download_dir, "meshcat-$meshcat_sha"), meshcat_dir; remove_destination=true)
+        Compat.mv(joinpath(download_dir, "meshcat-$meshcat_sha"), meshcat_dir; force=true)
     end
     open(stamp_file, "w") do file
         print(file, meshcat_sha)
