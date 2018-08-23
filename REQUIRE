@@ -16,8 +16,8 @@ Requires
 
 # Communication
 MsgPack 0.1.1
-WebIO 0.3.0
-Mux 0.2.3
-JSExpr 0.3.0
+WebIO  # TODO: require v0.3.0 when we drop Julia v0.6
+Mux 0.2.3 # TODO: require v0.5.2 when we drop Julia v0.6
+JSExpr # TODO: require v0.3.0 when we drop Julia v0.6
 AssetRegistry 0.0.1
 JSON
