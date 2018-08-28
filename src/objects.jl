@@ -16,6 +16,7 @@ threejs_type(o::Object) = o._type
 Object(g::GeometryLike) = Mesh(g)
 Object(g::GeometryLike, m::AbstractMaterial) = Mesh(g, m)
 Object(c::PointCloud) = Points(c)
+Object(c::PointCloud, m::AbstractMaterial) = Points(c, m)
 Object(t::Triad) = LineSegments(t, LineBasicMaterial(vertexColors=2))
 
 Mesh(g, m) = Object(g, m, "Mesh")
