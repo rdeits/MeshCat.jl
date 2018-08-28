@@ -117,6 +117,16 @@ end
         end
     end
 
+    @testset "points with material (Issue #58)" begin
+        v = vis[:points_with_material]
+        settransform!(v, Translation(-1.5, -2.5, 0))
+        material = PointsMaterial(color=RGBA(0,0,1,0.5))
+        cloud = PointCloud(rand(Point3f0, 5000))
+        obj = Object(cloud, material)
+        @test MeshCat.threejs_type(obj) == "Points"
+        setobject!(v, cloud, material)
+    end
+
     @testset "lines" begin
         v = vis[:circular_line]
         settransform!(v, Translation(-1, -1, 0))
@@ -150,7 +160,7 @@ end
     end
 end
 
-sleep(1)
+sleep(5)
 
 if !(Compat.Sys.iswindows() && haskey(ENV, "CI"))
     # this also fails on appveyor, and again I have no way to debug it
