@@ -4,9 +4,9 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/uasj23i8s14pw852?svg=true)](https://ci.appveyor.com/project/rdeits/meshcat-jl)
 [![codecov.io](https://codecov.io/github/rdeits/MeshCat.jl/coverage.svg?branch=master)](https://codecov.io/github/rdeits/MeshCat.jl?branch=master)
 
-[MeshCat](https://github.com/rdeits/meshcat) is a remotely-controllable 3D viewer, built on top of [three.js](https://threejs.org/). The viewer contains a tree of objects and transformations (i.e. a scene graph) and allows those objects and transformations to be added and manipulated with simple commands. This makes it easy to create 3D visualizations of geometries, mechanisms, and robots. MeshCat.jl runs on macOS, Linux, and Windows. 
+[MeshCat](https://github.com/rdeits/meshcat) is a remotely-controllable 3D viewer, built on top of [three.js](https://threejs.org/). The viewer contains a tree of objects and transformations (i.e. a scene graph) and allows those objects and transformations to be added and manipulated with simple commands. This makes it easy to create 3D visualizations of geometries, mechanisms, and robots. MeshCat.jl runs on macOS, Linux, and Windows.
 
-The MeshCat viewer runs entirely in the browser, with no external dependencies. All files are served locally, so no internet connection is required. Communication between the browser and your Julia code is managed by [WebIO.jl](https://github.com/JuliaGizmos/WebIO.jl). That means that MeshCat should work anywhere WebIO works: 
+The MeshCat viewer runs entirely in the browser, with no external dependencies. All files are served locally, so no internet connection is required. Communication between the browser and your Julia code is managed by [WebIO.jl](https://github.com/JuliaGizmos/WebIO.jl). That means that MeshCat should work anywhere WebIO works:
 
 * In a normal browser tab
 * Inside a Jupyter Notebook with [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
@@ -19,7 +19,7 @@ As much as possible, MeshCat.jl tries to use existing implementations of its fun
 * Colors from [ColorTypes.jl](https://github.com/JuliaGraphics/ColorTypes.jl)
 * Affine transformations from [CoordinateTransformations.jl](https://github.com/FugroRoames/CoordinateTransformations.jl/)
 
-That means that MeshCat should play well with other tools in the JuliaGeometry ecosystem like MeshIO.jl, Meshing.jl, etc. 
+That means that MeshCat should play well with other tools in the JuliaGeometry ecosystem like MeshIO.jl, Meshing.jl, etc.
 
 # Demos
 
@@ -33,12 +33,12 @@ To learn about the animation system (introduced in MeshCat.jl v0.2.0), see [anim
 
 # Related Projects
 
-MeshCat.jl is a successor to [DrakeVisualizer.jl](https://github.com/rdeits/DrakeVisualizer.jl), and the interface is quite similar (with the exception that we use `setobject!` instead of `setgeometry!`). The primary difference is that DrakeVisualizer required Director, LCM, and VTK, all of which could be difficult to install, while MeshCat just needs a web browser. MeshCat also has better support for materials, textures, point clouds, and complex meshes. 
+MeshCat.jl is a successor to [DrakeVisualizer.jl](https://github.com/rdeits/DrakeVisualizer.jl), and the interface is quite similar (with the exception that we use `setobject!` instead of `setgeometry!`). The primary difference is that DrakeVisualizer required Director, LCM, and VTK, all of which could be difficult to install, while MeshCat just needs a web browser. MeshCat also has better support for materials, textures, point clouds, and complex meshes.
 
 You may also want to check out:
 
 * [meshcat-python](https://github.com/rdeits/meshcat-python): the Python implementation of the same protocol
-* [MeshCatMechanisms.jl](https://github.com/rdeits/MeshCatMechanisms.jl) extensions to MeshCat.jl for visualizing mechanisms, robots, and URDFs 
+* [MeshCatMechanisms.jl](https://github.com/rdeits/MeshCatMechanisms.jl) extensions to MeshCat.jl for visualizing mechanisms, robots, and URDFs
 
 # Examples
 
@@ -84,7 +84,7 @@ using Meshing
 f = x -> sum(sin, 5 * x)
 sdf = SignedDistanceField(f, HyperRectangle(Vec(-1, -1, -1), Vec(2, 2, 2)))
 mesh = HomogenousMesh(sdf, MarchingTetrahedra())
-setobject!(vis, mesh, 
+setobject!(vis, mesh,
            MeshPhongMaterial(color=RGBA{Float32}(1, 0, 0, 0.5)))
 ```
 
