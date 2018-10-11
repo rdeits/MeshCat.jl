@@ -99,7 +99,13 @@ end
 const ASSET_KEYS = String[]
 
 function __init__()
-    push!(ASSET_KEYS, AssetRegistry.register(abspath(joinpath(VIEWER_ROOT, "main.min.js"))))
+    main_js = abspath(joinpath(VIEWER_ROOT, "main.min.js"))
+    if !isfile(main_js)
+        error("""
+        main.min.js not found at $main_js.
+        Please build MeshCat using `import Pkg; Pkg.build("MeshCat")`""")
+    end
+    push!(ASSET_KEYS, AssetRegistry.register(main_js))
 
     @require Blink="ad839575-38b3-5650-b840-f874b8c74a25" begin
         function Base.open(core::CoreVisualizer, w::Blink.AtomShell.Window)
