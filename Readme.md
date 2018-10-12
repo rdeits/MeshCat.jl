@@ -92,22 +92,24 @@ setobject!(vis, mesh,
 
 ### Polyhedra
 
+See [here](https://github.com/JuliaPolyhedra/Polyhedra.jl/blob/master/examples/3D%20Plotting%20a%20projection%20of%20the%204D%20permutahedron.ipynb)
+for a notebook with the example.
+
 ```julia
-# Visualize a polyhedron from Polyhedra.jl
-using Polyhedra
+# Visualize the permutahedron of order 4 using Polyhedra.jl
+using Combinatorics, Polyhedra
+v = vrep(collect(permutations([0, 1, 2, 3])))
 using CDDLib
-# Construct a polyhedron in 4 dimensions
-ext1 = SimpleVRepresentation([0 1 2 3;0 2 1 3; 1 0 2 3; 1 2 0 3; 2 0 1 3; 2 1 0 3;
-                              0 1 3 2;0 3 1 2; 1 0 3 2; 1 3 0 2; 3 0 1 2; 3 1 0 2;
-                              0 3 2 1;0 2 3 1; 3 0 2 1; 3 2 0 1; 2 0 3 1; 2 3 0 1;
-                              3 1 2 0;3 2 1 0; 1 3 2 0; 1 2 3 0; 2 3 1 0; 2 1 3 0])
-poly1 = CDDPolyhedron{4,Rational{BigInt}}(ext1)
+p4 = polyhedron(v, CDDLib.Library())
 
 # Project that polyhedron down to 3 dimensions for visualization
-poly2 = project(poly1, [1 1 1; -1 1 1; 0 -2 1; 0 0 -3])
+v1 = [1, -1,  0,  0]
+v2 = [1,  1, -2,  0]
+v3 = [1,  1,  1, -3]
+p3 = project(p4, [v1 v2 v3])
 
 # Show the result
-setobject!(vis, poly2)
+setobject!(vis, Polyhedra.Mesh(p3))
 ```
 
 ![polyhedron](https://user-images.githubusercontent.com/591886/37313984-fa3b20c2-2627-11e8-8238-71607a7f16e7.png)
