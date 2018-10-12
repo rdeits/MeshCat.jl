@@ -93,14 +93,20 @@ end
             settransform!(v[:cat], Translation(0, -1, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
         end
 
-        @testset "cat_color" begin
-            mesh = load(cat_mesh_path)
-            color = RGBA{Float32}(0.5, 0.5, 0.5, 0.5)
-            mesh_color = HomogenousMesh(vertices=mesh.vertices, faces=mesh.faces, color=color)
-            object = Object(mesh_color)
-            @test MeshCat.material(object).color == color
-            mesh_color = setobject!(v[:cat_color], mesh_color)
-            settransform!(v[:cat_color], Translation(0, -2.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
+        if VERSION >= v"0.7-"
+            # In the versions of GeometryTypes available for Julia v0.6, the
+            # color keyword argument to HomogenousMesh does not appear to
+            # correctly set the color of the resulting mesh, so we disable
+            # this test on Julia v0.6.
+            @testset "cat_color" begin
+                mesh = load(cat_mesh_path)
+                color = RGBA{Float32}(0.5, 0.5, 0.5, 0.5)
+                mesh_color = HomogenousMesh(vertices=mesh.vertices, faces=mesh.faces, color=color)
+                object = Object(mesh_color)
+                @test MeshCat.material(object).color == color
+                mesh_color = setobject!(v[:cat_color], mesh_color)
+                settransform!(v[:cat_color], Translation(0, -2.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
+            end
         end
 
         @testset "textured valkyrie" begin
