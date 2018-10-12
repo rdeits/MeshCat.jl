@@ -98,7 +98,7 @@ end
             color = RGBA{Float32}(0.5, 0.5, 0.5, 0.5)
             mesh_color = HomogenousMesh(vertices=mesh.vertices, faces=mesh.faces, color=color)
             object = Object(mesh_color)
-            @test material(object).color == color
+            @test MeshCat.material(object).color == color
             mesh_color = setobject!(v[:cat_color], mesh_color)
             settransform!(v[:cat_color], Translation(0, -2.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
         end
