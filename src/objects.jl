@@ -25,10 +25,10 @@ Mesh(g, m) = Object(g, m, "Mesh")
 Mesh(geometry::GeometryLike) = Mesh(geometry, defaultmaterial())
 
 function Mesh(g::HomogenousMesh)
-    if geom.color == nothing
+    if g.color == nothing
         Mesh(g, defaultmaterial())
     else
-        Mesh(g, defaultmaterial(color=geom.color))
+        Mesh(g, defaultmaterial(color=g.color))
     end
 end
 
