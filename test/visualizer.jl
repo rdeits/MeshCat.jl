@@ -1,10 +1,14 @@
 using Blink
 
 notinstalled = !AtomShell.isinstalled()
+println("installing atomshell")
 notinstalled && AtomShell.install()
+println("finished install")
 
 window = Window()
+println("opened window")
 vis = Visualizer()
+println("made vis")
 
 if !haskey(ENV, "CI")
     open(vis)
