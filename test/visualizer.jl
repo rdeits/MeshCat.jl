@@ -16,8 +16,11 @@ end
 
 if !(Sys.iswindows() && haskey(ENV, "CI"))
     # this gets stuck on windows CI, but I don't know why
+    println("opening vis in window")
     open(vis, window)
+    println("waiting")
     wait(vis)
+    println("done waiting")
 end
 
 # A custom geometry type to test that we can render arbitrary primitives
