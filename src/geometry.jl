@@ -4,7 +4,7 @@ struct HyperEllipsoid{N, T} <: GeometryPrimitive{N, T}
     radii::Vec{N, T}
 end
 
-origin(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.center
+GeometryTypes.origin(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.center
 radii(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.radii
 center(geometry::HyperEllipsoid) = origin(geometry)
 

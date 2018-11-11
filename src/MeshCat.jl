@@ -19,11 +19,10 @@ using BinDeps: download_cmd, unpack_cmd
 using UUIDs: UUID, uuid1
 using LinearAlgebra: UniformScaling, norm
 using Sockets: listen
-using Base64: base64encode, IOError
+using Base64: base64encode
+using MsgPack: MsgPack, pack, Ext
 
-import Base: delete!, length
-import MsgPack: pack, Ext
-import GeometryTypes: origin, radius
+import Base: delete!
 
 export Visualizer,
        ViewerWindow,

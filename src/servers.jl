@@ -29,7 +29,7 @@ function Base.open(core::CoreVisualizer; default_port=8700, max_retries=500)
         server = try
             listen(port)
         catch e
-            if e isa IOError
+            if e isa Base.IOError
                 continue
             end
         end
