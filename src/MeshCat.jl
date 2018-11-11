@@ -19,7 +19,7 @@ using BinDeps: download_cmd, unpack_cmd
 using UUIDs: UUID, uuid1
 using LinearAlgebra: UniformScaling, norm
 using Sockets: listen
-using Base64: base64encode
+using Base64: base64encode, IOError
 
 import Base: delete!, length
 import MsgPack: pack, Ext

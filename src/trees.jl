@@ -1,7 +1,5 @@
 module SceneTrees
 
-using Compat
-
 export SceneNode, Path
 
 struct Path <: AbstractVector{String}
@@ -12,19 +10,11 @@ Base.size(p::Path) = size(p.entries)
 Base.IndexStyle(::Type{Path}) = IndexLinear()
 Base.convert(::Type{Path}, x::AbstractVector{<:AbstractString}) = Path(x)
 
-if VERSION < v"0.7-"
-    Base.joinpath(p::Path, s...) = foldl(joinpath, p, s)
-else
-    Base.joinpath(p::Path, s...) = foldl(joinpath, s, init=p)
-end
+Base.joinpath(p::Path, s...) = foldl(joinpath, s, init=p)
 Base.joinpath(p::Path, s::Symbol) = joinpath(p, String(s))
 Base.joinpath(p::Path, s::AbstractString) = _joinpath(p, split(s, '/'))
 
-if VERSION < v"0.7-"
-    _joinpath(p::Path, s::AbstractVector{<:AbstractString}) = foldl(_joinpath, p, s)
-else
-    _joinpath(p::Path, s::AbstractVector{<:AbstractString}) = foldl(_joinpath, s, init=p)
-end
+_joinpath(p::Path, s::AbstractVector{<:AbstractString}) = foldl(_joinpath, s, init=p)
 _joinpath(p::Path, s::AbstractString) = isempty(s) ? Path(String[]) : Path(vcat(p.entries, s))
 
 Base.show(io::IO, p::Path) = print(io, string('/', join(p.entries, '/')))

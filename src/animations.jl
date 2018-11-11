@@ -50,6 +50,6 @@ ffmpeg -r 60 -i %07d.png \\\n\t -vcodec libx264 \\\n\t -preset slow \\\n\t -crf 
             end
         end
     end
-    Compat.@info("Saved output as $output_path")
+    @info("Saved output as $output_path")
     return output_path
 end

@@ -1,6 +1,5 @@
-using Compat
-using Compat.Test
-using Compat.LinearAlgebra: UniformScaling
+using Test
+using LinearAlgebra: UniformScaling
 using MeshCat
 using GeometryTypes
 using CoordinateTransformations
