@@ -1,14 +1,10 @@
 using Blink
 
 notinstalled = !AtomShell.isinstalled()
-println("installing atomshell")
 notinstalled && AtomShell.install()
-println("finished install")
 
 window = Window()
-println("opened window")
 vis = Visualizer()
-println("made vis")
 
 if !haskey(ENV, "CI")
     open(vis)
@@ -16,11 +12,11 @@ end
 
 if !(Sys.iswindows() && haskey(ENV, "CI"))
     # this gets stuck on windows CI, but I don't know why
-    println("opening vis in window")
     open(vis, window)
-    println("waiting")
+end
+
+if !haskey(ENV, "CI")
     wait(vis)
-    println("done waiting")
 end
 
 # A custom geometry type to test that we can render arbitrary primitives
