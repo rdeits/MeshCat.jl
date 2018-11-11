@@ -4,7 +4,7 @@ struct HyperEllipsoid{N, T} <: GeometryPrimitive{N, T}
     radii::Vec{N, T}
 end
 
-origin(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.center
+GeometryTypes.origin(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.center
 radii(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.radii
 center(geometry::HyperEllipsoid) = origin(geometry)
 
@@ -21,12 +21,7 @@ function PointCloud(position::AbstractVector{<:AbstractVector{T}},
 end
 
 struct Triad <: AbstractGeometry{3, Float64}
-    # # three.js:  https://jsfiddle.net/prisoner849/jp17wjam/
-    # var worldAxis = new THREE.AxesHelper(20);
-    # sphere.add(worldAxis);
-
     scale::Float64
-    # tube::Bool
 
     Triad(scale=20.0) = new(scale)
 end

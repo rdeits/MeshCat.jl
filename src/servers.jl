@@ -1,25 +1,20 @@
-@static if VERSION < v"0.7-"
-    const IOError = Base.UVError
-else
-    using Base: IOError
-end
 
 Base.open(vis::Visualizer, args...; kw...) = open(vis.core, args...; kw...)
 
 function Base.open(core::CoreVisualizer, port::Integer)
     @async WebIO.webio_serve(Mux.page("/", req -> core.scope), port)
     url = "http://127.0.0.1:$port"
-    Compat.@info("Serving MeshCat visualizer at $url")
+    @info("Serving MeshCat visualizer at $url")
     open_url(url)
 end
 
 function open_url(url)
     try
-        if Compat.Sys.iswindows()
+        if Sys.iswindows()
             run(`start $url`)
-        elseif Compat.Sys.isapple()
+        elseif Sys.isapple()
             run(`open $url`)
-        elseif Compat.Sys.islinux()
+        elseif Sys.islinux()
             run(`xdg-open $url`)
         end
     catch e
@@ -34,7 +29,7 @@ function Base.open(core::CoreVisualizer; default_port=8700, max_retries=500)
         server = try
             listen(port)
         catch e
-            if e isa IOError
+            if e isa Base.IOError
                 continue
             end
         end

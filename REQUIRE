@@ -1,23 +1,22 @@
-julia 0.6
+julia 0.7
 
 # Geometry
-GeometryTypes 0.4
-StaticArrays 0.5
-CoordinateTransformations 0.4.1
-Rotations 0.5.0
-Colors 0.7.1
+GeometryTypes 0.6
+StaticArrays 0.8
+CoordinateTransformations 0.5
+Rotations 0.8
+Colors 0.9
 
 # Misc
-BinDeps 0.8.7
-Compat 0.54
+BinDeps 0.8.8
 DocStringExtensions 0.4
-Parameters 0.7
+Parameters 0.10
 Requires
 
 # Communication
-MsgPack 0.1.1
-WebIO  # TODO: require v0.3.0 when we drop Julia v0.6
-Mux 0.2.3 # TODO: require v0.5.2 when we drop Julia v0.6
-JSExpr # TODO: require v0.3.0 when we drop Julia v0.6
-AssetRegistry 0.0.1
-JSON
+MsgPack 0.2
+WebIO  0.4.2
+Mux 0.5.2
+JSExpr 0.3
+AssetRegistry 0.1
+JSON 0.18

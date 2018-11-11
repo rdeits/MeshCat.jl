@@ -16,15 +16,13 @@ using JSExpr: @js, @new, @var
 using Requires: @require
 using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
-using Compat
-using Compat.UUIDs: UUID, uuid1
-using Compat.LinearAlgebra: UniformScaling, norm
-using Compat.Sockets: listen
-using Compat.Base64: base64encode
+using UUIDs: UUID, uuid1
+using LinearAlgebra: UniformScaling, norm
+using Sockets: listen
+using Base64: base64encode
+using MsgPack: MsgPack, pack, Ext
 
-import Base: delete!, length
-import MsgPack: pack, Ext
-import GeometryTypes: origin, radius
+import Base: delete!
 
 export Visualizer,
        ViewerWindow,

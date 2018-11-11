@@ -3,9 +3,6 @@ language: julia
 matrix:
   include:
     - os: linux
-      julia: 0.6
-      env: TESTCMD="xvfb-run julia"
-    - os: linux
       julia: 0.7
       env: TESTCMD="xvfb-run julia"
     - os: linux
@@ -14,9 +11,6 @@ matrix:
     - os: linux
       julia: nightly
       env: TESTCMD="xvfb-run julia"
-    - os: osx
-      julia: 0.6
-      env: TESTCMD="julia"
     - os: osx
       julia: 0.7
       env: TESTCMD="julia"
@@ -47,10 +41,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ffmpeg; fi
 
 script:
- # - julia -e 'Pkg.clone(pwd()); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
- - $TESTCMD -e 'if VERSION < v"0.7-"; Pkg.clone(pwd()); else; import Pkg; Pkg.add(Pkg.PackageSpec(path=pwd())); end; Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
+ - $TESTCMD -e 'import Pkg; Pkg.add(Pkg.PackageSpec(path=pwd())); Pkg.build("MeshCat"); Pkg.test("MeshCat"; coverage=true)'
  - julia --code-coverage=user -e 'using MeshCat; MeshCat.develop_meshcat_assets(true)'
- - julia -e 'if VERSION >= v"0.7-"; import Pkg; end; Pkg.build("MeshCat")'
+ - julia -e 'import Pkg; Pkg.build("MeshCat")'
 after_success:
-  # push coverage results to Codecov
-  - julia -e 'if VERSION >= v"0.7-"; import Pkg; end; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'import Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'

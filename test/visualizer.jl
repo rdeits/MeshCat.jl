@@ -10,9 +10,12 @@ if !haskey(ENV, "CI")
     open(vis)
 end
 
-if !(Compat.Sys.iswindows() && haskey(ENV, "CI"))
+if !(Sys.iswindows() && haskey(ENV, "CI"))
     # this gets stuck on windows CI, but I don't know why
     open(vis, window)
+end
+
+if !haskey(ENV, "CI")
     wait(vis)
 end
 
@@ -130,7 +133,7 @@ end
     @testset "lines" begin
         v = vis[:circular_line]
         settransform!(v, Translation(-1, -1, 0))
-        θ = Compat.range(0, stop=2π, length=100)
+        θ = range(0, stop=2π, length=100)
         geometry = PointCloud(Point.(0.5 .* sin.(θ), 0, 0.5 .* cos.(θ)))
         setobject!(v, LineSegments(geometry, LineBasicMaterial()))
     end
@@ -162,7 +165,7 @@ end
 
 sleep(5)
 
-if !(Compat.Sys.iswindows() && haskey(ENV, "CI"))
+if !(Sys.iswindows() && haskey(ENV, "CI"))
     # this also fails on appveyor, and again I have no way to debug it
     notinstalled && AtomShell.uninstall()
 end
