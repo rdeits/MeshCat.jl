@@ -96,6 +96,16 @@ end
             settransform!(v[:cat], Translation(0, -1, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
         end
 
+        @testset "cat_color" begin
+            mesh = load(cat_mesh_path)
+            color = RGBA{Float32}(0.5, 0.5, 0.5, 0.5)
+            mesh_color = HomogenousMesh(vertices=mesh.vertices, faces=mesh.faces, color=color)
+            object = Object(mesh_color)
+            @test MeshCat.material(object).color == color
+            mesh_color = setobject!(v[:cat_color], mesh_color)
+            settransform!(v[:cat_color], Translation(0, -2.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
+        end
+
         @testset "textured valkyrie" begin
             head = Mesh(
                 load(joinpath(MeshCat.VIEWER_ROOT, "..", "data", "head_multisense.obj"), GLUVMesh),
