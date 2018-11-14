@@ -1,4 +1,5 @@
 using Blink
+import GeometryTypes
 
 notinstalled = !AtomShell.isinstalled()
 notinstalled && AtomShell.install()
@@ -36,14 +37,9 @@ function GeometryTypes.decompose(::Type{P}, c::CustomGeometry) where {P <: Point
     convert(Vector{P}, [Point(0., 0, 0), Point(0., 1, 0), Point(0., 0, 1)])
 end
 
-@static if VERSION < v"0.7-"
-    const cat_mesh_path = joinpath(Pkg.dir("GeometryTypes"), "test", "data", "cat.obj")
-else
-    import GeometryTypes
-    const cat_mesh_path = joinpath(dirname(pathof(GeometryTypes)), "..", "test", "data", "cat.obj")
-end
-
 @testset "self-contained visualizer" begin
+    cat_mesh_path = joinpath(dirname(pathof(GeometryTypes)), "..", "test", "data", "cat.obj")
+
     @testset "shapes" begin
         v = vis[:shapes]
         delete!(v)
