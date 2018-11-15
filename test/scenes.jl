@@ -22,8 +22,8 @@ import GeometryTypes
 
     @testset "Default" begin
         vis = Visualizer()
-        open(vis)
         if !haskey(ENV, "CI")
+            open(vis)
             wait(vis)
         end
         add_cats!(vis)
@@ -31,8 +31,8 @@ import GeometryTypes
 
     @testset "SpotLight with shadows" begin
         vis = Visualizer()
-        open(vis)
         if !haskey(ENV, "CI")
+            open(vis)
             wait(vis)
         end
         add_cats!(vis)
