@@ -8,7 +8,7 @@ function lower end
 
 lower(x::Vector) = x
 lower(x::String) = x
-lower(x::Union{Int32, Int64, Float32, Float64}) = x
+lower(x::Union{Bool, Int32, Int64, Float32, Float64}) = x
 
 function lower(t::Transformation)
     H = [transform_deriv(t, Vec(0., 0, 0)) t(Vec(0., 0, 0));

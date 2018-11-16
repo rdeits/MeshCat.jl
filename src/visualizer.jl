@@ -18,6 +18,7 @@ mutable struct CoreVisualizer
             this.viewer = @new mc.Viewer(element)
             $request_channel[] = String(Date.now())
             window.document.body.style.margin = "0"
+            window.meshcat_viewer = this.viewer
         end)
 
         onjs(command_channel, @js function(val)

@@ -11,7 +11,10 @@ using MeshIO, FileIO
     include("paths.jl")
     include("visualizer.jl")
     include("notebook.jl")
+    include("scenes.jl")
 end
+
+sleep(10)
 
 module ModuleTest
     # Test for any https://github.com/JuliaLang/julia/issues/21653
