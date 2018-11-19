@@ -11,7 +11,7 @@ end
 function open_url(url)
     try
         if Sys.iswindows()
-            run(`start $url`)
+            run(`cmd.exe /C "start $url"`)
         elseif Sys.isapple()
             run(`open $url`)
         elseif Sys.islinux()
