@@ -41,8 +41,8 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ffmpeg; fi
 
 script:
-  - julia --color=yes -e "using Pkg; Pkg.clone(pwd()); Pkg.build(\"${JL_PKG}\")"
-  - $TESTCMD --check-bounds=yes --color=yes -e "using Pkg; Pkg.test(\"${JL_PKG}\", coverage=true)"
+  - julia --color=yes -e 'using Pkg; Pkg.clone(pwd()); Pkg.build("MeshCat")'
+  - $TESTCMD --check-bounds=yes --color=yes -e 'using Pkg; Pkg.test("MeshCat", coverage=true)'
   - julia --color=yes -e 'using MeshCat; MeshCat.develop_meshcat_assets(true)'
   - julia --color=yes -e 'import Pkg; Pkg.build("MeshCat")'
 after_success:
