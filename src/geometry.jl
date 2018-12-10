@@ -29,7 +29,7 @@ end
 center(geometry::HyperRectangle) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperCube) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperSphere) = origin(geometry)
-center(geometry::Cylinder) = origin(geometry) + geometry.extremity / 2
+center(geometry::Cylinder) = (origin(geometry) + geometry.extremity) / 2
 
 """
 $(SIGNATURES)
@@ -48,6 +48,6 @@ intrinsic_transform(g::HyperCube) = Translation(center(g)...)
 
 function intrinsic_transform(g::Cylinder{3})
     # Three.js wants a cylinder to lie along the y axis
-    R = rotation_between(SVector(0, 1, 0), g.extremity)
+    R = rotation_between(SVector(0, 1, 0), g.extremity - origin(g))
     Translation(center(g)) ∘ LinearMap(R)
 end
