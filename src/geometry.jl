@@ -43,7 +43,7 @@ MeshCat origin.
 intrinsic_transform(g) = IdentityTransformation()
 intrinsic_transform(g::HyperRectangle) = Translation(center(g)...)
 intrinsic_transform(g::HyperSphere) = Translation(center(g)...)
-intrinsic_transform(g::HyperEllipsoid) = Translation(center(g)...) ∘ LinearMap(SDiagonal(radii(g)...))
+intrinsic_transform(g::HyperEllipsoid) = Translation(center(g)...) ∘ LinearMap(SMatrix{3, 3}(SDiagonal(radii(g)...)))
 intrinsic_transform(g::HyperCube) = Translation(center(g)...)
 
 function intrinsic_transform(g::Cylinder{3})

@@ -13,7 +13,7 @@ lower(x::Union{Bool, Int32, Int64, Float32, Float64}) = x
 function lower(t::Transformation)
     H = [transform_deriv(t, Vec(0., 0, 0)) t(Vec(0., 0, 0));
      Vec(0, 0, 0, 1)']
-    reshape(convert(Matrix, H), length(H))
+    reshape(H, length(H))
 end
 
 function lower(obj::AbstractObject)
