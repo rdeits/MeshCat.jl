@@ -6,7 +6,6 @@ end
 
 GeometryTypes.origin(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.center
 radii(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.radii
-center(geometry::HyperEllipsoid) = origin(geometry)
 
 @deprecate HyperCylinder(length::T, radius) where {T} Cylinder{3, T}(Point(0., 0., 0.), Point(0, 0, length), radius)
 
@@ -26,10 +25,20 @@ struct Triad <: AbstractGeometry{3, Float64}
     Triad(scale=20.0) = new(scale)
 end
 
+struct Cone{N, T} <: AbstractGeometry{N, T}
+    origin::Point{N, T}
+    apex::Point{N, T}
+    r::T
+end
+
+GeometryTypes.origin(geometry::Cone) = geometry.origin
+
+center(geometry::HyperEllipsoid) = origin(geometry)
 center(geometry::HyperRectangle) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperCube) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperSphere) = origin(geometry)
 center(geometry::Cylinder) = origin(geometry) + geometry.extremity / 2
+center(geometry::Cone) = (origin(geometry) + geometry.apex) / 2
 
 """
 $(SIGNATURES)
@@ -49,5 +58,11 @@ intrinsic_transform(g::HyperCube) = Translation(center(g)...)
 function intrinsic_transform(g::Cylinder{3})
     # Three.js wants a cylinder to lie along the y axis
     R = rotation_between(SVector(0, 1, 0), g.extremity)
+    Translation(center(g)) ∘ LinearMap(R)
+end
+
+function intrinsic_transform(g::Cone{3})
+    # Three.js wants a cone to lie along the y axis
+    R = rotation_between(SVector(0, 1, 0), g.apex - g.origin)
     Translation(center(g)) ∘ LinearMap(R)
 end

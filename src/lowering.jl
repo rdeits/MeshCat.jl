@@ -96,6 +96,18 @@ function lower(g::HyperEllipsoid{3})
     )
 end
 
+function lower(g::Cone{3})
+    # Radius and height are always 1 because we handle these
+    # in intrinsic_transform
+    Dict{String, Any}(
+        "uuid" => string(uuid1()),
+        "type" => "ConeGeometry",
+        "radius" => g.r,
+        "height" => norm(g.apex - g.origin),
+        "radialSegments" => 100,
+    )
+end
+
 function lower(t::Triad)
     attributes = Dict{String, Any}(
         "position" => lower([Point3f0(0, 0, 0), Point3f0(t.scale, 0, 0),

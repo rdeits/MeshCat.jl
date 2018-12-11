@@ -82,6 +82,13 @@ end
             setobject!(v[:triad], Triad(0.2))
             settransform!(v[:triad], Translation(0, 3, 0.2))
         end
+
+        @testset "cone" begin
+            setobject!(v[:cone],
+                Cone(Point(1., 1., 1.), Point(1., 1., 1.2), 0.1),
+                MeshLambertMaterial(color=colorant"indianred"))
+            settransform!(v[:cone], Translation(-1, 2.5, -1))
+        end
     end
 
     @testset "meshes" begin
