@@ -39,7 +39,6 @@ center(geometry::HyperCube) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperSphere) = origin(geometry)
 center(geometry::Cylinder) = (origin(geometry) + geometry.extremity) / 2
 center(geometry::Cone) = (origin(geometry) + geometry.apex) / 2
-center(geometry::Cylinder) = origin(geometry) + geometry.extremity / 2
 
 """
 $(SIGNATURES)
