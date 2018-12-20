@@ -69,7 +69,7 @@ function lower(c::Cylinder{3})
         "type" => "CylinderGeometry",
         "radiusTop" => radius(c),
         "radiusBottom" => radius(c),
-        "height" => max(norm(c.extremity), eps(Float32)),
+        "height" => max(norm(c.extremity - origin(c)), eps(Float32)),
         "radialSegments" => 100,
     )
 end
