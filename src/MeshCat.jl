@@ -18,7 +18,7 @@ using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
 using UUIDs: UUID, uuid1
 using LinearAlgebra: UniformScaling, norm
-using Sockets#: listen
+using Sockets: listen, @ip_str, IPAddr, IPv4, IPv6
 using Base64: base64encode
 using MsgPack: MsgPack, pack, Ext
 

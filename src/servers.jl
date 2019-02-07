@@ -1,7 +1,7 @@
 
 Base.open(vis::Visualizer, args...; kw...) = open(vis.core, args...; kw...)
 
-function Base.open(core::CoreVisualizer, port::Integer, host::IPv4=ip"127.0.0.1")
+function Base.open(core::CoreVisualizer, port::Integer, host::IPAddr=ip"127.0.0.1")
     @async WebIO.webio_serve(Mux.page("/", req -> core.scope), host, port)
     url = "http://127.0.0.1:$port"
     @info("Serving MeshCat visualizer at $url")
