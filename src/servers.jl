@@ -1,11 +1,28 @@
 
+"""
+    open(vis::Visualizer; host::IPAddr = ip"127.0.0.1", start_browser = true,
+                          default_port = 8700, max_retries = 500)
+
+Start a server for the visualizer so that it can be accessed from a browser
+using the given host URL. This method will try to search for an open port,
+starting at `default_port` and then trying `max_retries` additional port
+numbers. If `start_browser` is true, then a new browser window will be opened.
+
+    open(vis::Visualizer, port::Integer; host::IPAddr = ip"127.0.0.1", start_browser = true)
+
+Start a server for the visualizer so that it can be accessed from a browser
+using the given host URL and port. If `start_browser` is true, then a new
+browser window will be opened.
+
+"""
 Base.open(vis::Visualizer, args...; kw...) = open(vis.core, args...; kw...)
 
-function Base.open(core::CoreVisualizer, port::Integer, host::IPAddr=ip"127.0.0.1")
+function Base.open(core::CoreVisualizer, port::Integer;
+                   host::IPAddr = ip"127.0.0.1", start_browser = true)
     @async WebIO.webio_serve(Mux.page("/", req -> core.scope), host, port)
-    url = "http://127.0.0.1:$port"
+    url = "http://$host:$port"
     @info("Serving MeshCat visualizer at $url")
-    open_url(url)
+    start_browser && open_url(url)
 end
 
 function open_url(url)
@@ -24,7 +41,8 @@ function open_url(url)
     end
 end
 
-function Base.open(core::CoreVisualizer; host::IPAddr=ip"127.0.0.1", default_port=8700, max_retries=500)
+function Base.open(core::CoreVisualizer;
+                   host::IPAddr=ip"127.0.0.1", default_port=8700, max_retries=500, kw...)
     for port in default_port:(default_port + max_retries)
         server = try
             listen(host, port)
@@ -38,6 +56,6 @@ function Base.open(core::CoreVisualizer; host::IPAddr=ip"127.0.0.1", default_por
         # some other process grabs the given port in between the close() above
         # and the open() below. But it's unlikely and would not be terribly
         # damaging (the user would just have to call open() again).
-        return open(core, port, host)
+        return open(core, port; host=host, kw...)
     end
 end

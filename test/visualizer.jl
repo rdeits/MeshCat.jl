@@ -74,7 +74,7 @@ end
         end
 
         @testset "more complicated cylinder" begin
-            setobject!(v[:cylinder2], Cylinder(Point(0, 2.5, 0), Point(0.1, 0.1, 0), 0.05))
+            setobject!(v[:cylinder2], Cylinder(Point(0, 2.5, 0), Point(0.1, 2.6, 0), 0.05))
             settransform!(v[:cylinder2], Translation(0, 0, 0.05))
         end
 
