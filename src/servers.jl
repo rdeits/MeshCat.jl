@@ -1,11 +1,11 @@
 
 Base.open(vis::Visualizer, args...; kw...) = open(vis.core, args...; kw...)
 
-function Base.open(core::CoreVisualizer, port::Integer)
+function Base.open(core::CoreVisualizer, port::Integer; start_browser = true)
     @async WebIO.webio_serve(Mux.page("/", req -> core.scope), port)
     url = "http://127.0.0.1:$port"
     @info("Serving MeshCat visualizer at $url")
-    open_url(url)
+    start_browser && open_url(url)
 end
 
 function open_url(url)
@@ -24,7 +24,7 @@ function open_url(url)
     end
 end
 
-function Base.open(core::CoreVisualizer; default_port=8700, max_retries=500)
+function Base.open(core::CoreVisualizer; default_port=8700, max_retries=500, start_browser = true)
     for port in default_port:(default_port + max_retries)
         server = try
             listen(port)
@@ -38,6 +38,6 @@ function Base.open(core::CoreVisualizer; default_port=8700, max_retries=500)
         # some other process grabs the given port in between the close() above
         # and the open() below. But it's unlikely and would not be terribly
         # damaging (the user would just have to call open() again).
-        return open(core, port)
+        return open(core, port, start_browser = start_browser)
     end
 end
