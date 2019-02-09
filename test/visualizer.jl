@@ -144,11 +144,22 @@ end
     end
 
     @testset "lines" begin
-        v = vis[:circular_line]
+        v = vis[:lines]
         settransform!(v, Translation(-1, -1, 0))
-        θ = range(0, stop=2π, length=100)
-        geometry = PointCloud(Point.(0.5 .* sin.(θ), 0, 0.5 .* cos.(θ)))
-        setobject!(v, LineSegments(geometry, LineBasicMaterial()))
+        @testset "LineSegments" begin
+            θ = range(0, stop=2π, length=10)
+            setobject!(v[:line_segments], LineSegments(Point.(0.5 .* sin.(θ), 0, 0.5 .* cos.(θ))))
+        end
+        @testset "Line" begin
+            θ = range(0, stop=2π, length=10)
+            setobject!(v[:line], Line(Point.(0.5 .* sin.(θ), 0, 0.5 .* cos.(θ))))
+            settransform!(v[:line], Translation(0, 0.1, 0))
+        end
+        @testset "LineLoop" begin
+            θ = range(0, stop=π, length=10)
+            setobject!(v[:line_loop], LineLoop(Point.(0.5 .* sin.(θ), 0, 0.5 .* cos.(θ))))
+            settransform!(v[:line_loop], Translation(0, 0.2, 0))
+        end
     end
 
     @testset "Custom geometry primitives" begin
