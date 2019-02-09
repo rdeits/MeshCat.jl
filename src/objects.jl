@@ -34,7 +34,11 @@ end
 
 Points(g, m) = Object(g, m, "Points")
 Points(geometry::GeometryLike; kw...) = Points(geometry, PointsMaterial(kw...))
-LineSegments(g, m) = Object(g, m, "LineSegments")
+
+for line_type in [:LineSegments, :Line, :LineLoop]
+    @eval $line_type(g::AbstractGeometry, m::AbstractMaterial=LineBasicMaterial()) = Object(g, m, $(string(line_type)))
+    @eval $line_type(points::AbstractVector{<:Point}, m::AbstractMaterial=LineBasicMaterial()) = $line_type(PointCloud(points), m)
+end
 
 struct PngImage
     data::Vector{UInt8}

@@ -47,6 +47,8 @@ export Object,
        Triad,
        Mesh,
        Points,
+       Line,
+       LineLoop,
        LineSegments
 
 export PointsMaterial,
