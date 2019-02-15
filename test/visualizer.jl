@@ -109,6 +109,12 @@ end
             settransform!(v[:cat_color], Translation(0, -2.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
         end
 
+        @testset "obj file" begin
+            mesh = MeshFileGeometry(cat_mesh_path)
+            setobject!(v[:cat_from_file], mesh)
+            settransform!(v[:cat_from_file], Translation(0, -3.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
+        end
+
         @testset "textured valkyrie" begin
             head = Mesh(
                 load(joinpath(MeshCat.VIEWER_ROOT, "..", "data", "head_multisense.obj"), GLUVMesh),
@@ -120,6 +126,7 @@ end
             setobject!(v[:valkyrie, :head], head)
             settransform!(v[:valkyrie, :head], Translation(0, 0.5, 0.5))
         end
+
     end
 
     @testset "points" begin

@@ -181,6 +181,15 @@ function lower(cloud::PointCloud)
     )
 end
 
+function lower(geom::MeshFileGeometry)
+    Dict{String, Any}(
+        "uuid" => string(uuid1()),
+        "type" => "_meshfile",
+        "format" => geom.format,
+        "data" => geom.contents)
+end
+
+
 lower(color::Color) = string("0x", hex(convert(RGB, color)))
 
 function lower(material::GenericMaterial)

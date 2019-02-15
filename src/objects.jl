@@ -1,4 +1,4 @@
-const GeometryLike = Union{AbstractGeometry, AbstractMesh}
+const GeometryLike = Union{AbstractGeometry, AbstractMesh, MeshFileGeometry}
 abstract type AbstractObject end
 abstract type AbstractMaterial end
 
