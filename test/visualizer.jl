@@ -109,10 +109,28 @@ end
             settransform!(v[:cat_color], Translation(0, -2.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
         end
 
-        @testset "obj file" begin
-            mesh = MeshFileGeometry(cat_mesh_path)
-            setobject!(v[:cat_from_file], mesh)
-            settransform!(v[:cat_from_file], Translation(0, -3.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
+        @testset "mesh files" begin
+            settransform!(v[:mesh_files], Translation(0, -3.0, 0))
+            base_path = joinpath(@__DIR__, "data", "meshes", "mesh_0_convex_piece_0")
+            @testset "obj" begin
+                path = base_path * ".obj"
+                setobject!(v[:mesh_files, :obj], MeshFileGeometry(path))
+            end
+            @testset "dae" begin
+                path = base_path * ".dae"
+                setobject!(v[:mesh_files, :dae], MeshFileGeometry(path))
+                settransform!(v[:mesh_files, :dae], Translation(0, -0.5, 0))
+            end
+            @testset "stl_ascii" begin
+                path = base_path * ".ascii.stl"
+                setobject!(v[:mesh_files, :stl_ascii], MeshFileGeometry(path))
+                settransform!(v[:mesh_files, :stl_ascii], Translation(0, -1.0, 0))
+            end
+            @testset "stl_binary" begin
+                path = base_path * ".binary.stl"
+                setobject!(v[:mesh_files, :stl_binary], MeshFileGeometry(path))
+                settransform!(v[:mesh_files, :stl_binary], Translation(0, -1.5, 0))
+            end
         end
 
         @testset "textured valkyrie" begin

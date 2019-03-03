@@ -38,7 +38,8 @@ FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 MeshIO = "7269a6da-0436-5bbc-96c2-40638cbb6118"
 Meshing = "e6723b4c-ebff-59f1-b4b7-d97aa5274f73"
 NBInclude = "0db19996-df87-5ea3-a455-e3a50d440464"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "MeshIO", "FileIO", "Meshing", "NBInclude", "Blink", "ColorTypes"]
+test = ["Test", "MeshIO", "FileIO", "Meshing", "NBInclude", "Blink", "ColorTypes", "Pkg"]
