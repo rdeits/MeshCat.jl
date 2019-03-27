@@ -198,6 +198,8 @@ end
         show(devnull, arrow_vis_1)
         setobject!(arrow_vis_1)
         settransform!(arrow_vis_1, Point(0, 1, 0), Vec(1, 1, 1))
+        setobject!(vis[:arrow1_base], HyperSphere(Point(0., 1., 0.), 0.015))
+        setobject!(vis[:arrow1_tip], HyperSphere(Point(1., 2., 1.), 0.015))
 
         arrow_vis_2 = ArrowVisualizer(vis[:arrow2])
         setobject!(arrow_vis_2;
