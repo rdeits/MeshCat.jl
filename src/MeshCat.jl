@@ -32,7 +32,8 @@ export setobject!,
        settransform!,
        delete!,
        setprop!,
-       setanimation!
+       setanimation!,
+       hide!
 
 export AbstractVisualizer,
        AbstractMaterial,
