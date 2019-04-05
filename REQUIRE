@@ -16,6 +16,6 @@ Requires
 # Communication
 MsgPack 0.2
 WebIO  0.7 0.8
-Mux 0.5.2
+Mux 0.7
 JSExpr 0.5
 AssetRegistry 0.1
