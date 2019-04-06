@@ -61,11 +61,13 @@ function WebIO.iframe(core::CoreVisualizer; height="100%", width="100%", minHeig
     onimport(ifr, @js function()
         this.dom.style.height = "100%"
     end)
+    ifr.dom.props[:style] = get(ifr.dom.props, :style, Dict())
     ifr.dom.props[:style]["height"] = height
     ifr.dom.props[:style]["minHeight"] = minHeight
     ifr.dom.props[:style]["width"] = width
     ifr.dom.props[:style]["display"] = "flex"
     ifr.dom.props[:style]["flexDirection"] = "column"
+    ifr.dom.children[1].props[:style] = get(ifr.dom.children[1].props, :style, Dict())
     ifr.dom.children[1].props[:style]["flexGrow"] = "1"
     ifr
 end
@@ -222,4 +224,3 @@ end
 
 Base.getindex(vis::Visualizer, path...) =
     Visualizer(vis.core, joinpath(vis.path, path...))
-
