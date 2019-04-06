@@ -187,11 +187,13 @@ end
     end
 end
 
-@testset "hide!" begin
+@testset "setvisible!" begin
     v = vis[:box_to_hide]
     setobject!(v, HyperRectangle(Vec(0., 0, 0), Vec(0.1, 0.2, 0.3)))
     sleep(1)
-    hide!(v)
+    setvisible!(v, false)
+    sleep(1)
+    setvisible!(v, true)
 end
 
 sleep(5)
