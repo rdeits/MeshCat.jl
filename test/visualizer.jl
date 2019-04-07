@@ -187,6 +187,15 @@ end
     end
 end
 
+@testset "setvisible!" begin
+    v = vis[:box_to_hide]
+    setobject!(v, HyperRectangle(Vec(0., 0, 0), Vec(0.1, 0.2, 0.3)))
+    sleep(1)
+    setvisible!(v, false)
+    sleep(1)
+    setvisible!(v, true)
+end
+
 sleep(5)
 
 if !(Sys.iswindows() && haskey(ENV, "CI"))

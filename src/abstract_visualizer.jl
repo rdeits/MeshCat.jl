@@ -8,6 +8,7 @@ function setprop! end
 function setcontrol! end
 
 
-# Convenient shortcuts for creating new objects
+# Convenient shortcuts
 setobject!(vis::AbstractVisualizer, geom::GeometryLike) = setobject!(vis, Object(geom))
 setobject!(vis::AbstractVisualizer, geom::GeometryLike, material::AbstractMaterial) = setobject!(vis, Object(geom, material))
+setvisible!(vis::AbstractVisualizer, visible::Bool) = setprop!(vis, "visible", visible)
