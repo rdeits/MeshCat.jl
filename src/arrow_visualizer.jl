@@ -25,7 +25,7 @@ function settransform!(vis::ArrowVisualizer, base::Point{3}, vec::Vec{3};
         max_head_radius=2*shaft_radius,
         max_head_length=max_head_radius)
     vec_length = norm(vec)
-    rotation = if vec_length > 0
+    rotation = if vec_length > eps(typeof(vec_length))
         rotation_between(SVector(0., 0., 1.), vec)
     else
         one(RotMatrix3{Float64})
