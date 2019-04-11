@@ -181,6 +181,18 @@ function lower(cloud::PointCloud)
     )
 end
 
+function lower(geom::MeshFileGeometry)
+    Dict{String, Any}(
+        "uuid" => string(uuid1()),
+        "type" => "_meshfile",
+        "format" => geom.format,
+        "data" => pack_mesh_file_data(geom.contents))
+end
+
+# TODO: Unify these two methods once https://github.com/rdeits/meshcat/issues/50 is resolved
+pack_mesh_file_data(s::AbstractString) = s
+pack_mesh_file_data(s::AbstractVector{UInt8}) = PackedVector(s)
+
 lower(color::Color) = string("0x", hex(convert(RGB, color)))
 
 function lower(material::GenericMaterial)

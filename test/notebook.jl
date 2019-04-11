@@ -1,3 +1,3 @@
 using NBInclude
-@nbinclude(joinpath(@__DIR__, "..", "demo.ipynb"))
-@nbinclude(joinpath(@__DIR__, "..", "animation.ipynb"))
+@nbinclude(joinpath(@__DIR__, "..", "notebooks", "demo.ipynb"))
+@nbinclude(joinpath(@__DIR__, "..", "notebooks", "animation.ipynb"))
