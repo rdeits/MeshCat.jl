@@ -28,15 +28,24 @@ function getclip!(vis::AnimationFrameVisualizer)
 end
 
 
+js_quaternion(m::AbstractMatrix) = js_quaternion(RotMatrix(SMatrix{3, 3, eltype(m)}(m)))
 js_quaternion(q::Quat) = [q.x, q.y, q.z, q.w]
 js_quaternion(::UniformScaling) = js_quaternion(Quat(1., 0., 0., 0.))
 js_quaternion(r::Rotation) = js_quaternion(Quat(r))
 js_quaternion(tform::Transformation) = js_quaternion(transform_deriv(tform, SVector(0., 0, 0)))
 
+function js_scaling(tform::AbstractAffineMap)
+    m = transform_deriv(tform, SVector(0., 0, 0))
+    SVector(norm(SVector(m[1, 1], m[2, 1], m[3, 1])),
+            norm(SVector(m[1, 2], m[2, 2], m[3, 2])),
+            norm(SVector(m[1, 3], m[2, 3], m[3, 3])))
+end
+
 js_position(t::Transformation) = convert(Vector, t(SVector(0., 0, 0)))
 
 function settransform!(vis::AnimationFrameVisualizer, tform::Transformation)
     clip = getclip!(vis)
+    _setprop!(clip, vis.current_frame, "scale", "vector3", js_scaling(tform))
     _setprop!(clip, vis.current_frame, "position", "vector3", js_position(tform))
     _setprop!(clip, vis.current_frame, "quaternion", "quaternion", js_quaternion(tform))
 end

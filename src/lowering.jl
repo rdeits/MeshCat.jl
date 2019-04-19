@@ -6,6 +6,7 @@ into `Dict`s matching the JSON structure used by three.js.
 """
 function lower end
 
+lower(x::AbstractVector)::Vector = lower(Vector(x))  # MsgPack.jl expects native Julia vectors
 lower(x::Vector) = x
 lower(x::String) = x
 lower(x::Union{Bool, Int32, Int64, Float32, Float64}) = x

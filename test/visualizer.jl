@@ -193,6 +193,21 @@ end
         settransform!(vis[:custom],  Translation(-0.5, 1.0, 0) ∘ LinearMap(UniformScaling(0.5)))
     end
 
+    @testset "ArrowVisualizer" begin
+        arrow_vis_1 = ArrowVisualizer(vis[:arrow1])
+        show(devnull, arrow_vis_1)
+        setobject!(arrow_vis_1)
+        settransform!(arrow_vis_1, Point(0, 1, 0), Vec(1, 1, 1))
+        setobject!(vis[:arrow1_base], HyperSphere(Point(0., 1., 0.), 0.015))
+        setobject!(vis[:arrow1_tip], HyperSphere(Point(1., 2., 1.), 0.015))
+
+        arrow_vis_2 = ArrowVisualizer(vis[:arrow2])
+        setobject!(arrow_vis_2;
+            shaft_material=MeshLambertMaterial(color=colorant"lime"),
+            head_material=MeshLambertMaterial(color=colorant"indianred"))
+        settransform!(arrow_vis_2, Point(0, 1, 0), Point(1, 1, 1))
+    end
+
     @testset "Animation" begin
         anim = Animation()
         atframe(anim, vis[:shapes], 0) do frame_vis

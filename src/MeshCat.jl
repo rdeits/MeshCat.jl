@@ -6,7 +6,7 @@ using WebIO
 import Mux
 import AssetRegistry
 using GeometryTypes, CoordinateTransformations
-using Rotations: rotation_between, Rotation
+using Rotations: rotation_between, Rotation, Quat
 using Colors: Color, Colorant, RGB, RGBA, alpha, hex
 using StaticArrays: StaticVector, SVector, SDiagonal, SMatrix
 using GeometryTypes: raw
@@ -17,7 +17,7 @@ using Requires: @require
 using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
 using UUIDs: UUID, uuid1
-using LinearAlgebra: UniformScaling, norm
+using LinearAlgebra: UniformScaling, Diagonal, norm
 using Sockets: listen, @ip_str, IPAddr, IPv4, IPv6
 using Base64: base64encode
 using MsgPack: MsgPack, pack, Ext
@@ -64,6 +64,8 @@ export PointsMaterial,
 export Animation,
        atframe
 
+export ArrowVisualizer
+
 include("trees.jl")
 using .SceneTrees
 include("geometry.jl")
@@ -75,6 +77,7 @@ include("lowering.jl")
 include("msgpack.jl")
 include("visualizer.jl")
 include("animation_visualizer.jl")
+include("arrow_visualizer.jl")
 include("servers.jl")
 
 const VIEWER_ROOT = joinpath(@__DIR__, "..", "assets", "meshcat", "dist")
