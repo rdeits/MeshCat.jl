@@ -6,7 +6,7 @@ using WebIO
 import Mux
 import AssetRegistry
 using GeometryTypes, CoordinateTransformations
-using Rotations: rotation_between, Rotation, RotMatrix3
+using Rotations: rotation_between, Rotation, Quat
 using Colors: Color, Colorant, RGB, RGBA, alpha, hex
 using StaticArrays: StaticVector, SVector, SDiagonal, SMatrix
 using GeometryTypes: raw

@@ -25,7 +25,7 @@ function settransform!(vis::ArrowVisualizer, base::Point{3}, vec::Vec{3};
     rotation = if vec_length > eps(typeof(vec_length))
         rotation_between(SVector(0., 0., 1.), vec)
     else
-        one(RotMatrix3{Float64})
+        one(Quat{Float64})
     end |> LinearMap
 
     shaft_length = max(vec_length - max_head_length, 0)
