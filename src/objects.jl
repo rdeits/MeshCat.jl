@@ -59,6 +59,7 @@ end
     depthFunc::Int = 3
     depthTest::Bool = true
     depthWrite::Bool = true
+    linewidth::Float64 = 1.
     vertexColors::Int = 0    # TODO: make an enum
     side::Int = 2            # TODO: make an enum https://github.com/mrdoob/three.js/blob/d55897b8e9b2632896d8ac146a05b3b4be3668f8/src/constants.js#L14
 end
