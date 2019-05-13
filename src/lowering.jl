@@ -206,6 +206,7 @@ function lower(material::GenericMaterial)
         "depthFunc" => material.depthFunc,
         "depthTest" => material.depthTest,
         "depthWrite" => material.depthWrite,
+        "linewidth" => material.linewidth,
         "side" => material.side,
         "vertexColors" => material.vertexColors,
     )
