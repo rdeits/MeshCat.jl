@@ -37,8 +37,11 @@ function settransform!(vis::ArrowVisualizer, base::Point{3}, vec::Vec{3};
         head_length = vec_length - shaft_length
         head_radius = max_head_radius * head_length / max_head_length
         head_scaling = LinearMap(Diagonal(SVector(head_radius, head_radius, head_length)))
-        head_tform = inv(shaft_scaling) ∘ Translation(shaft_length * Vec(0, 0, 1)) ∘ head_scaling
-        # head_tform = Translation(base) ∘ rotation ∘ Translation(shaft_length * Vec(0, 0, 1)) ∘ head_scaling
+        if shaft_length < eps(typeof(head_length))
+            head_tform = LinearMap(Diagonal(SVector(0., 0, 0)))
+        else
+            head_tform = inv(shaft_scaling) ∘ Translation(shaft_length * Vec(0, 0, 1)) ∘ head_scaling
+        end
         settransform!(vis.vis[:head], head_tform)
     end
 

@@ -208,6 +208,13 @@ end
         settransform!(arrow_vis_2, Point(0, 1, 0), Point(1, 1, 1))
     end
 
+    @test "Short Arrows" begin
+        # https://github.com/rdeits/MeshCat.jl/issues/105
+        arrow_vis_1 = ArrowVisualizer(vis[:short_arrow])
+        setobject!(arrow_vis_1)
+        settransform!(arrow_vis_1, Point(0., 0, 0), Vec(0, 0, 0.01))
+    end
+
     @testset "Animation" begin
         anim = Animation()
         atframe(anim, vis[:shapes], 0) do frame_vis
