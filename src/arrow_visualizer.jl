@@ -22,25 +22,32 @@ function settransform!(vis::ArrowVisualizer, base::Point{3}, vec::Vec{3};
         max_head_radius=2*shaft_radius,
         max_head_length=max_head_radius)
     vec_length = norm(vec)
-    rotation = if vec_length > eps(typeof(vec_length))
+    T = typeof(vec_length)
+    rotation = if vec_length > eps(T)
         rotation_between(SVector(0., 0., 1.), vec)
     else
         one(Quat{Float64})
     end |> LinearMap
 
-    shaft_length = max(vec_length - max_head_length, 0)
-    shaft_scaling = LinearMap(Diagonal(SVector(shaft_radius, shaft_radius, shaft_length)))
-    shaft_tform = Translation(base) ∘ rotation ∘ shaft_scaling
-    settransform!(vis.vis, shaft_tform)
+    vis_tform = Translation(base) ∘ rotation
+    settransform!(vis.vis, vis_tform)
 
-    if vec_length > eps(typeof(vec_length))
-        head_length = vec_length - shaft_length
-        head_radius = max_head_radius * head_length / max_head_length
-        head_scaling = LinearMap(Diagonal(SVector(head_radius, head_radius, head_length)))
-        head_tform = inv(shaft_scaling) ∘ Translation(shaft_length * Vec(0, 0, 1)) ∘ head_scaling
-        # head_tform = Translation(base) ∘ rotation ∘ Translation(shaft_length * Vec(0, 0, 1)) ∘ head_scaling
-        settransform!(vis.vis[:head], head_tform)
+    shaft_length = max(vec_length - max_head_length, 0)
+    shaft_scaling_diag = SVector(shaft_radius, shaft_radius, shaft_length)
+    if iszero(shaft_length)
+        # This case is necessary to ensure that the shaft
+        # completely disappears in animations.
+        shaft_scaling_diag = zero(shaft_scaling_diag)
     end
+    shaft_scaling = LinearMap(Diagonal(shaft_scaling_diag))
+    settransform!(vis.vis[:shaft], shaft_scaling)
+
+    head_length = vec_length - shaft_length
+    head_radius = max_head_radius * head_length / max_head_length
+    head_scaling = LinearMap(Diagonal(SVector(head_radius, head_radius, head_length)))
+    head_tform = Translation(shaft_length * Vec(0, 0, 1)) ∘ head_scaling
+    # head_tform = Translation(base) ∘ rotation ∘ Translation(shaft_length * Vec(0, 0, 1)) ∘ head_scaling
+    settransform!(vis.vis[:head], head_tform)
 
     vis
 end
