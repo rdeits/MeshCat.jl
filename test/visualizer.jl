@@ -109,27 +109,45 @@ end
             settransform!(v[:cat_color], Translation(0, -2.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
         end
 
-        @testset "mesh files" begin
-            settransform!(v[:mesh_files], Translation(0, -3.0, 0))
+        @testset "mesh file geometries" begin
+            settransform!(v[:mesh_file_geometries], Translation(0, -3.0, 0))
             base_path = joinpath(@__DIR__, "data", "meshes", "mesh_0_convex_piece_0")
             @testset "obj" begin
                 path = base_path * ".obj"
-                setobject!(v[:mesh_files, :obj], MeshFileGeometry(path))
+                setobject!(v[:mesh_file_geometries, :obj], MeshFileGeometry(path))
             end
             @testset "dae" begin
                 path = base_path * ".dae"
-                setobject!(v[:mesh_files, :dae], MeshFileGeometry(path))
-                settransform!(v[:mesh_files, :dae], Translation(0, -0.5, 0))
+                setobject!(v[:mesh_file_geometries, :dae], MeshFileGeometry(path))
+                settransform!(v[:mesh_file_geometries, :dae], Translation(0, -0.5, 0))
             end
             @testset "stl_ascii" begin
                 path = base_path * ".ascii.stl"
-                setobject!(v[:mesh_files, :stl_ascii], MeshFileGeometry(path))
-                settransform!(v[:mesh_files, :stl_ascii], Translation(0, -1.0, 0))
+                setobject!(v[:mesh_file_geometries, :stl_ascii], MeshFileGeometry(path))
+                settransform!(v[:mesh_file_geometries, :stl_ascii], Translation(0, -1.0, 0))
             end
             @testset "stl_binary" begin
                 path = base_path * ".binary.stl"
-                setobject!(v[:mesh_files, :stl_binary], MeshFileGeometry(path))
-                settransform!(v[:mesh_files, :stl_binary], Translation(0, -1.5, 0))
+                setobject!(v[:mesh_file_geometries, :stl_binary], MeshFileGeometry(path))
+                settransform!(v[:mesh_file_geometries, :stl_binary], Translation(0, -1.5, 0))
+            end
+        end
+
+        @testset "mesh file objects" begin
+            let v = v[:mesh_file_objects]
+                settransform!(v, Translation(0, 3.0, -1.5))
+
+                base_path = joinpath(@__DIR__, "data", "meshes")
+                @testset "obj" begin
+                    path = joinpath(base_path, "cube.obj")
+                    setobject!(v[:obj], MeshFileObject(path))
+                end
+
+                @testset "dae" begin
+                    path = joinpath(base_path, "cube.dae")
+                    setobject!(v[:dae], MeshFileObject(path))
+                    settransform!(v[:dae], Translation(0, -1.5, 0))
+                end
             end
         end
 

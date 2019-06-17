@@ -48,6 +48,7 @@ export Object,
        Triad,
        Mesh,
        MeshFileGeometry,
+       MeshFileObject,
        Points,
        Line,
        LineLoop,
@@ -66,8 +67,12 @@ export Animation,
 
 export ArrowVisualizer
 
+abstract type AbstractObject end
+abstract type AbstractMaterial end
+
 include("trees.jl")
 using .SceneTrees
+include("mesh_files.jl")
 include("geometry.jl")
 include("objects.jl")
 include("animations.jl")

@@ -1,6 +1,4 @@
 const GeometryLike = Union{AbstractGeometry, AbstractMesh, MeshFileGeometry}
-abstract type AbstractObject end
-abstract type AbstractMaterial end
 
 struct Object{G <: GeometryLike, M <: AbstractMaterial} <: AbstractObject
     geometry::G
@@ -76,3 +74,4 @@ LineBasicMaterial(;kw...) = GenericMaterial(_type="LineBasicMaterial"; kw...)
     size::Float32 = 0.002
     vertexColors::Int = 2
 end
+

@@ -40,27 +40,6 @@ center(geometry::HyperSphere) = origin(geometry)
 center(geometry::Cylinder) = (origin(geometry) + geometry.extremity) / 2
 center(geometry::Cone) = (origin(geometry) + geometry.apex) / 2
 
-"""
-An MeshFileGeometry represents a mesh which is stored as the raw contents
-of a file, rather than as a collection of points and vertices. This is useful for
-transparently passing mesh files which we can't load in Julia directly to meshcat.
-"""
-struct MeshFileGeometry{S <: Union{String, Vector{UInt8}}}
-    contents::S
-    format::String
-end
-
-function MeshFileGeometry(filename)
-    ext = lowercase(splitext(filename)[2])
-    if ext ∈ (".obj", ".dae")
-        MeshFileGeometry(open(f -> read(f, String), filename), ext[2:end])
-    elseif ext == ".stl"
-        MeshFileGeometry(open(read, filename), ext[2:end])
-    else
-        throw(ArgumentError("Unsupported extension: $ext. Only .obj, .dae, and .stl meshes can be used to construct MeshFileGeometry"))
-    end
-end
-
 
 """
 $(SIGNATURES)
