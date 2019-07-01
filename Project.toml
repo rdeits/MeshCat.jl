@@ -1,7 +1,7 @@
 name = "MeshCat"
 uuid = "283c5d60-a78f-5afe-a0af-af636b173e11"
 authors = ["Robin Deits <robin.deits@gmail.com>"]
-version = "0.6.0"
+version = "0.7.0"
 
 [deps]
 AssetRegistry = "bf4720bc-e11a-5d0c-854e-bdca1663c893"

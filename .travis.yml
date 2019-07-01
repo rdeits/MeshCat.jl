@@ -3,17 +3,14 @@ language: julia
 matrix:
   include:
     - os: linux
-      julia: 0.7
+      julia: 1.0
       env: TESTCMD="xvfb-run julia"
     - os: linux
-      julia: 1.0
+      julia: 1.1
       env: TESTCMD="xvfb-run julia"
     - os: linux
       julia: nightly
       env: TESTCMD="xvfb-run julia"
-    - os: osx
-      julia: 0.7
-      env: TESTCMD="julia"
     - os: osx
       julia: 1.0
       env: TESTCMD="julia"
