@@ -114,11 +114,7 @@ function send(c::CoreVisualizer, cmd::AbstractCommand)
     nothing
 end
 
-function Base.wait(c::CoreVisualizer)
-    while isempty(c.scope.pool.connections)
-        sleep(0.25)
-    end
-end
+Base.wait(c::CoreVisualizer) = WebIO.ensure_connection(c.scope.pool)
 
 """
     vis = Visualizer()
