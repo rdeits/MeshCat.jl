@@ -185,10 +185,25 @@ end
 function lower(geom::MeshFileGeometry)
     Dict{String, Any}(
         "uuid" => string(uuid1()),
-        "type" => "_meshfile",
+        "type" => "_meshfile_geometry",
         "format" => geom.format,
         "data" => pack_mesh_file_data(geom.contents))
 end
+
+function lower(obj::MeshFileObject)
+    Dict{String, Any}(
+        "metadata" => Dict{String, Any}("version" => 4.5, "type" => "Object"),
+        "geometries" => [],
+        "materials" => [],
+        "object" => Dict{String, Any}(
+            "uuid" => string(uuid1()),
+            "type" => "_meshfile_object",
+            "format" => obj.format,
+            "data" => pack_mesh_file_data(obj.contents),
+            "mtl_library" => obj.mtl_library,
+            "resources" => obj.resources))
+end
+
 
 # TODO: Unify these two methods once https://github.com/rdeits/meshcat/issues/50 is resolved
 pack_mesh_file_data(s::AbstractString) = s
@@ -228,7 +243,7 @@ end
 function lower(img::PngImage)
     Dict{String, Any}(
         "uuid" => string(uuid1()),
-        "url" => string("data:image/png;base64,", base64encode(img.data))
+        "url" => data_uri(img.data)
     )
 end
 
