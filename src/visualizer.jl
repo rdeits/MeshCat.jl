@@ -11,7 +11,6 @@ mutable struct CoreVisualizer
         command_channel = Observable(scope, "meshcat-command", UInt8[])
         request_channel = Observable(scope, "meshcat-request", "")
         controls_channel = Observable(scope, "meshcat-controls", [])
-        viewer_name = "meshcat_viewer_$(scope.id)"
 
         onimport(scope, @js function(mc)
             @var element = this.dom.children[0]
