@@ -60,15 +60,15 @@ function WebIO.iframe(core::CoreVisualizer; height="100%", width="100%", minHeig
     ifr = WebIO.iframe(core.scope)
     onimport(ifr, @js function()
         this.dom.style.height = "100%"
+        window.foo = this
+        this.dom.children[0].children[0].style.flexGrow = "1"
     end)
     style = get!(Dict, ifr.dom.props, :style)
-    style["height"] = height
-    style["minHeight"] = minHeight
-    style["width"] = width
-    style["display"] = "flex"
-    style["flexDirection"] = "column"
-    child_style = get!(Dict, ifr.dom.children[1].props, :style)
-    child_style["flexGrow"] = "1"
+    style[:height] = height
+    style[:minHeight] = minHeight
+    style[:width] = width
+    style[:display] = "flex"
+    style[:flexDirection] = "column"
     ifr
 end
 
@@ -114,11 +114,7 @@ function send(c::CoreVisualizer, cmd::AbstractCommand)
     nothing
 end
 
-function Base.wait(c::CoreVisualizer)
-    while isempty(c.scope.pool.connections)
-        sleep(0.25)
-    end
-end
+Base.wait(c::CoreVisualizer) = WebIO.ensure_connection(c.scope.pool)
 
 """
     vis = Visualizer()
