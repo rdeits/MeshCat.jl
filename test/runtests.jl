@@ -12,6 +12,7 @@ using MeshIO, FileIO
     include("visualizer.jl")
     include("notebook.jl")
     include("scenes.jl")
+    include("wait.jl")
 end
 
 sleep(10)
