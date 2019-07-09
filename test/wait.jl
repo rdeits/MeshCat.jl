@@ -4,16 +4,16 @@
     @testset "with setobject" begin
         vis = Visualizer()
         setobject!(vis, Triad(1.0))
-        open(vis)
         if !haskey(ENV, "CI")
+            open(vis)
             wait(vis)
         end
     end
 
     @testset "without setobject" begin
         vis = Visualizer()
-        open(vis)
         if !haskey(ENV, "CI")
+            open(vis)
             wait(vis)
         end
     end
