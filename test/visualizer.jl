@@ -230,7 +230,7 @@ end
         settransform!(arrow_vis_2, Point(0, 1, 0), Point(1, 1, 1))
     end
 
-    @testset "Animation" begin
+    @testset "Animation (old style)" begin
         anim = Animation()
         atframe(anim, vis[:shapes], 0) do frame_vis
             settransform!(frame_vis[:box], Translation(0., 0, 0))
@@ -241,9 +241,25 @@ end
         atframe(anim, vis, 0) do framevis
             setprop!(framevis["/Cameras/default/rotated/<object>"], "zoom", 1)
         end
-
         atframe(anim, vis, 30) do framevis
             setprop!(framevis["/Cameras/default/rotated/<object>"], "zoom", 0.5)
+        end
+        setanimation!(vis, anim)
+    end
+
+    @testset "Animation (new style)" begin
+        anim = Animation()
+        atframe(anim, 0) do
+            settransform!(vis[:shapes][:box], Translation(0., 0, 0))
+        end
+        atframe(anim, 30) do
+            settransform!(vis[:shapes][:box], Translation(2., 0, 0) ∘ LinearMap(RotZ(π/2)))
+        end
+        atframe(anim, 0) do
+            setprop!(vis["/Cameras/default/rotated/<object>"], "zoom", 1)
+        end
+        atframe(anim, 30) do
+            setprop!(vis["/Cameras/default/rotated/<object>"], "zoom", 0.5)
         end
         setanimation!(vis, anim)
     end
