@@ -63,7 +63,8 @@ export PointsMaterial,
        PngImage
 
 export Animation,
-       atframe
+       atframe,
+       @animation
 
 export ArrowVisualizer
 
@@ -82,6 +83,7 @@ include("lowering.jl")
 include("msgpack.jl")
 include("visualizer.jl")
 include("animation_visualizer.jl")
+include("animation_cassette.jl")
 include("arrow_visualizer.jl")
 include("servers.jl")
 
