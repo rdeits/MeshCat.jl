@@ -19,7 +19,6 @@ end
 
 Animation(fps::Int=30) = Animation(Dict{Path, AnimationClip}(), fps)
 
-
 function convert_frames_to_video(tar_file_path::AbstractString, output_path::AbstractString="output.mp4"; framerate=60, overwrite=false)
     output_path = abspath(output_path)
     if !isfile(tar_file_path)
