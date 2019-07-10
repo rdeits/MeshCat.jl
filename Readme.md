@@ -25,11 +25,11 @@ That means that MeshCat should play well with other tools in the JuliaGeometry e
 
 ## Basic Usage
 
-For detailed examples of usage, check out [demo.ipynb](demo.ipynb).
+For detailed examples of usage, check out [demo.ipynb](notebooks/demo.ipynb).
 
 ## Animation
 
-To learn about the animation system (introduced in MeshCat.jl v0.2.0), see [animation.ipynb](animation.ipynb).
+To learn about the animation system (introduced in MeshCat.jl v0.2.0), see [animation.ipynb](notebooks/animation.ipynb).
 
 # Related Projects
 
