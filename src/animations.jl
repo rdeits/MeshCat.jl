@@ -48,13 +48,13 @@ Animation(fps::Int=30) = Animation(Dict{Path, AnimationClip}(), fps)
 
 function Base.merge!(a::Animation, others::Animation...)
     for other in others
-        # @assert a.default_framerate == other.default_framerate
+        @assert a.default_framerate == other.default_framerate
         merge!(merge!, a.clips, other.clips) # merge clips recursively
     end
     return a
 end
 
-Base.merge(a::Animation, others::Animation...) = merge!(Animation(), a, others...)
+Base.merge(a::Animation, others::Animation...) = merge!(Animation(a.default_framerate), a, others...)
 
 function convert_frames_to_video(tar_file_path::AbstractString, output_path::AbstractString="output.mp4"; framerate=60, overwrite=false)
     output_path = abspath(output_path)
