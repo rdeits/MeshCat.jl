@@ -5,6 +5,7 @@ module MeshCat
 using WebIO
 import Mux
 import AssetRegistry
+import Cassette
 using GeometryTypes, CoordinateTransformations
 using Rotations: rotation_between, Rotation, Quat
 using Colors: Color, Colorant, RGB, RGBA, alpha, hex
@@ -63,7 +64,8 @@ export PointsMaterial,
        PngImage
 
 export Animation,
-       atframe
+       atframe,
+       @animation
 
 export ArrowVisualizer
 
@@ -81,7 +83,7 @@ include("abstract_visualizer.jl")
 include("lowering.jl")
 include("msgpack.jl")
 include("visualizer.jl")
-include("animation_visualizer.jl")
+include("atframe.jl")
 include("arrow_visualizer.jl")
 include("servers.jl")
 
