@@ -26,6 +26,7 @@ WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
 
 [compat]
 AssetRegistry = "0.1"
+Cassette = "≥ 0.2.5"
 GeometryTypes = "0.6, 0.7"
 JSExpr = "0.3, 0.5"
 Mux = "0.7"

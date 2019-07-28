@@ -28,9 +28,9 @@ uuid = "00ebfdb7-1f24-5e51-bd34-a7502290713f"
 version = "0.6.0"
 
 [[Cassette]]
-git-tree-sha1 = "2f5d4d747eb39ce6410438993e00ccd5a0f4bc27"
+git-tree-sha1 = "09aed2c4093e9ed29b08f6660ad959fcb6847cd1"
 uuid = "7057c7e9-c182-5462-911a-8362d720325c"
-version = "0.2.4"
+version = "0.2.5"
 
 [[ColorTypes]]
 deps = ["FixedPointNumbers", "Random"]
@@ -159,10 +159,10 @@ uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[MacroTools]]
-deps = ["CSTParser", "Compat", "DataStructures", "Test"]
-git-tree-sha1 = "daecd9e452f38297c686eba90dba2a6d5da52162"
+deps = ["CSTParser", "Compat", "DataStructures", "Test", "Tokenize"]
+git-tree-sha1 = "d6e9dedb8c92c3465575442da456aec15a89ff76"
 uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
-version = "0.5.0"
+version = "0.5.1"
 
 [[Markdown]]
 deps = ["Base64"]
