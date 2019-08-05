@@ -9,6 +9,9 @@ matrix:
       julia: 1.1
       env: TESTCMD="xvfb-run julia"
     - os: linux
+      julia: 1.2
+      env: TESTCMD="xvfb-run julia"
+    - os: linux
       julia: nightly
       env: TESTCMD="xvfb-run julia"
     - os: osx
