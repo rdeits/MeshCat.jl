@@ -13,7 +13,11 @@ wider_js_type(x) = x
 
 function Base.insert!(track::AnimationTrack, frame::Integer, value)
     i = searchsortedfirst(track.events, frame; by=first)
-    insert!(track.events, i, frame => value)
+    if i <= length(track.events) && first(track.events[i]) == frame
+        track.events[i] = frame => value
+    else
+        insert!(track.events, i, frame => value)
+    end
     return track
 end
 
@@ -24,10 +28,10 @@ function Base.merge!(a::AnimationTrack{T}, others::AnimationTrack{T}...) where T
         @assert other.name == a.name
         @assert other.jstype == a.jstype
         events_temp = similar(events, length(events) + length(other.events))
-        mergesorted!(events_temp, events, other.events)
+        mergesorted!(events_temp, events, other.events; by=first)
         events = events_temp
     end
-    a.events = events
+    a.events = unique(first, a.events) # TODO: use unique! in ≥ 1.1
     return a
 end
 
