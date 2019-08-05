@@ -270,6 +270,26 @@ end
     end
 end
 
+@testset "AnimationTrack" begin
+    track1 = MeshCat.AnimationTrack{Float64}("foo", "bar")
+    @test track1.name == "foo"
+    @test track1.jstype == "bar"
+    insert!(track1, 0, 32.0)
+    @test track1.events == [0 => 32.0]
+    insert!(track1, 2, 64.0)
+    @test track1.events == [0 => 32.0, 2 => 64.0]
+    insert!(track1, 2, 65.0)
+    @test track1.events == [0 => 32.0, 2 => 65.0]
+
+    track2 = MeshCat.AnimationTrack{Float64}("foo", "bar")
+    insert!(track2, 1, 17.0)
+    insert!(track2, 2, 66.0)
+    insert!(track2, 5, 1.0)
+
+    merge!(track1, track2)
+    @test track1.events == [0 => 32.0, 1 => 17.0, 2 => 66.0, 5 => 1.0]
+end
+
 @testset "setvisible!" begin
     v = vis[:box_to_hide]
     setobject!(v, HyperRectangle(Vec(0., 0, 0), Vec(0.1, 0.2, 0.3)))
