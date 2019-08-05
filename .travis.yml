@@ -42,6 +42,8 @@ before_install:
 
 script:
   - julia --color=yes -e "using Pkg; if VERSION >= v\"1.1.0-rc1\"; Pkg.build(verbose=true); else Pkg.build(); end"
+  # work-around for https://github.com/JuliaWeb/MbedTLS.jl/issues/193
+  - julia --color=yes -e "using Pkg; if VERSION >= v\"1.2.0"; Pkg.update(\"MbedTLS\"); end"
   - $TESTCMD --check-bounds=yes --color=yes -e 'using Pkg; Pkg.test("MeshCat", coverage=true)'
   - julia --color=yes -e 'using MeshCat; MeshCat.develop_meshcat_assets(true)'
   - julia --color=yes -e 'import Pkg; Pkg.build("MeshCat")'
