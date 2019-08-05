@@ -248,20 +248,25 @@ end
     end
 
     @testset "Animation (new style)" begin
-        anim = Animation()
-        atframe(anim, 0) do
+        anim1 = Animation()
+        atframe(anim1, 0) do
             settransform!(vis[:shapes][:box], Translation(0., 0, 0))
         end
-        atframe(anim, 30) do
+        atframe(anim1, 30) do
             settransform!(vis[:shapes][:box], Translation(2., 0, 0) ∘ LinearMap(RotZ(π/2)))
         end
-        atframe(anim, 0) do
+        setanimation!(vis, anim1)
+        anim2 = Animation()
+        atframe(anim2, 0) do
             setprop!(vis["/Cameras/default/rotated/<object>"], "zoom", 1)
         end
-        atframe(anim, 30) do
+        atframe(anim2, 30) do
             setprop!(vis["/Cameras/default/rotated/<object>"], "zoom", 0.5)
         end
-        setanimation!(vis, anim)
+        setanimation!(vis, anim2)
+        anim_combined = merge(anim1, anim2)
+        @test Set(Iterators.flatten((keys(anim1.clips), keys(anim2.clips)))) == Set(keys(anim_combined.clips))
+        setanimation!(vis, anim_combined)
     end
 end
 
