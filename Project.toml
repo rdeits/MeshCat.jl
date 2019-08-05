@@ -14,6 +14,7 @@ DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 GeometryTypes = "4d00f742-c7ba-57c2-abde-4428a4b178cb"
 JSExpr = "97c1335a-c9c5-57fe-bc5d-ec35cebe8660"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+MbedTLS = "739be429-bea8-5141-9913-cc70e7f3736d"
 MsgPack = "99f44e22-a591-53d1-9472-aa23ef4bd671"
 Mux = "a975b10e-0019-58db-a62f-e48ff68538c9"
 Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
@@ -32,6 +33,7 @@ JSExpr = "0.3, 0.5"
 Mux = "0.7"
 WebIO = "0.8"
 julia = "0.7, 1"
+MbedTLS = "≥ 0.7" # for https://github.com/JuliaWeb/MbedTLS.jl/issues/193
 
 [extras]
 Blink = "ad839575-38b3-5650-b840-f874b8c74a25"
