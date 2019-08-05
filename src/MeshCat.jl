@@ -72,6 +72,7 @@ export ArrowVisualizer
 abstract type AbstractObject end
 abstract type AbstractMaterial end
 
+include("util.jl")
 include("trees.jl")
 using .SceneTrees
 include("mesh_files.jl")
