@@ -17,15 +17,17 @@ function Base.insert!(track::AnimationTrack, frame::Integer, value)
     return track
 end
 
-function Base.merge!(a::AnimationTrack, others::AnimationTrack...)
+function Base.merge!(a::AnimationTrack{T}, others::AnimationTrack{T}...) where T
+    l = length(a)
+    events = copy(a.events)
     for other in others
         @assert other.name == a.name
         @assert other.jstype == a.jstype
-        for i in eachindex(other.events)
-            # TODO: improve performance.
-            insert!(a, other.events[i])
-        end
+        events_temp = similar(events, length(events) + length(other.events))
+        mergesorted!(events_temp, events, other.events)
+        events = events_temp
     end
+    a.events = events
     return a
 end
 
