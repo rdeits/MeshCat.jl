@@ -1,18 +1,10 @@
-function _setprop!(track::AnimationTrack, frame::Integer, value)
-    i = searchsortedfirst(track.frames, frame)
-    insert!(track.frames, i, frame)
-    insert!(track.values, i, value)
-end
-
-wider_js_type(::Type{<:Integer}) = Float64  # Javascript thinks everything is a `double`
-wider_js_type(::Type{Float64}) = Float64
-wider_js_type(x) = x
-
 function _setprop!(clip::AnimationClip, frame::Integer, prop::AbstractString, jstype::AbstractString, value)
+    T = wider_js_type(typeof(value))
     track = get!(clip.tracks, prop) do
-        AnimationTrack(prop, jstype, Int[], wider_js_type(typeof(value))[])
+        AnimationTrack{T}(prop, jstype)
     end
-    _setprop!(track, frame, value)
+    insert!(track, frame, value)
+    return nothing
 end
 
 function getclip!(animation::Animation, path::Path)
