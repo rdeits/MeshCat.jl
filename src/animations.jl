@@ -2,14 +2,18 @@
 struct AnimationTrack{T}
     name::String
     jstype::String
-    frames::Vector{Int}
-    values::Vector{T}
+    events::Vector{Pair{Int, T}} # frame => value
 end
 
+AnimationTrack{T}(name::String, jstype::String) where {T} = AnimationTrack(name, jstype, Pair{Int, T}[])
+
+wider_js_type(::Type{<:Integer}) = Float64  # Javascript thinks everything is a `double`
+wider_js_type(::Type{Float64}) = Float64
+wider_js_type(x) = x
+
 function Base.insert!(track::AnimationTrack, frame::Integer, value)
-    i = searchsortedfirst(track.frames, frame)
-    insert!(track.frames, i, frame)
-    insert!(track.values, i, value)
+    i = searchsortedfirst(track.events, frame; by=first)
+    insert!(track.events, i, frame => value)
     return track
 end
 
@@ -46,9 +50,9 @@ function Base.merge!(a::AnimationTrack, others::AnimationTrack...)
     for other in others
         @assert other.name == a.name
         @assert other.jstype == a.jstype
-        for i in eachindex(other.frames, other.values)
+        for i in eachindex(other.events)
             # TODO: improve performance.
-            insert!(a, other.frames[i], other.values[i])
+            insert!(a, other.events[i])
         end
     end
     return a

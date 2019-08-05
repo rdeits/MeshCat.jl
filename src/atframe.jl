@@ -1,10 +1,7 @@
-wider_js_type(::Type{<:Integer}) = Float64  # Javascript thinks everything is a `double`
-wider_js_type(::Type{Float64}) = Float64
-wider_js_type(x) = x
-
 function _setprop!(clip::AnimationClip, frame::Integer, prop::AbstractString, jstype::AbstractString, value)
+    T = wider_js_type(typeof(value))
     track = get!(clip.tracks, prop) do
-        AnimationTrack(prop, jstype, Int[], wider_js_type(typeof(value))[])
+        AnimationTrack{T}(prop, jstype)
     end
     insert!(track, frame, value)
     return nothing

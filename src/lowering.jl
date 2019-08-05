@@ -323,9 +323,9 @@ function lower(track::AnimationTrack)
         "name" => string(".", track.name),
         "type" => track.jstype,
         "keys" => [Dict{String, Any}(
-            "time" => track.frames[i],
-            "value" => lower(track.values[i])
-        ) for i in eachindex(track.frames)]
+            "time" => frame,
+            "value" => lower(value)
+        ) for (frame, value) in track.events]
     )
 end
 
