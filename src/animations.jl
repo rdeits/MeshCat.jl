@@ -17,7 +17,7 @@ function Base.insert!(track::AnimationTrack, frame::Integer, value)
     return track
 end
 
-@inline function mergesorted!(dest::AbstractVector, a, b, lt=isless)
+@inline function mergesorted!(dest::AbstractVector, a, b; by=identity, lt=isless)
     i = 1
     it_a = iterate(a)
     it_b = iterate(b)
@@ -29,7 +29,7 @@ end
             return dest
         end
         val_b, state_b = it_b
-        if lt(val_b, val_a)
+        if lt(by(val_b), by(val_a))
             dest[i] = val_b
             it_b = iterate(b, state_b)
         else
