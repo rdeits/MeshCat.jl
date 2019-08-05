@@ -7,10 +7,6 @@ end
 
 AnimationTrack{T}(name::String, jstype::String) where {T} = AnimationTrack(name, jstype, Pair{Int, T}[])
 
-wider_js_type(::Type{<:Integer}) = Float64  # Javascript thinks everything is a `double`
-wider_js_type(::Type{Float64}) = Float64
-wider_js_type(x) = x
-
 function Base.insert!(track::AnimationTrack, frame::Integer, value)
     i = searchsortedfirst(track.events, frame; by=first)
     if i <= length(track.events) && first(track.events[i]) == frame
@@ -22,16 +18,17 @@ function Base.insert!(track::AnimationTrack, frame::Integer, value)
 end
 
 function Base.merge!(a::AnimationTrack{T}, others::AnimationTrack{T}...) where T
-    l = length(a)
-    events = copy(a.events)
+    l = length(a.events)
     for other in others
         @assert other.name == a.name
         @assert other.jstype == a.jstype
-        events_temp = similar(events, length(events) + length(other.events))
-        mergesorted!(events_temp, events, other.events; by=first)
-        events = events_temp
+        l += length(other.events)
     end
-    a.events = unique(first, a.events) # TODO: use unique! in ≥ 1.1
+    events = similar(a.events, l)
+    mergesorted!(events, a.events, Iterators.flatten((other.events for other in others)))
+    combine!(events, by=first, combine=(a, b) -> b)
+    resize!(a.events, length(events))
+    copyto!(a.events, events)
     return a
 end
 
