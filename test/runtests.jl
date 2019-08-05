@@ -6,6 +6,8 @@ using CoordinateTransformations
 using Colors
 using MeshIO, FileIO
 
+include("util.jl")
+
 @testset "MeshCat" begin
     include("video_rendering.jl")
     include("paths.jl")

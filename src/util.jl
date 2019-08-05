@@ -1,4 +1,6 @@
-# TODO: Base PR
+# Port of possible implementation of std::merge (second version),
+# https://en.cppreference.com/w/cpp/algorithm/merge
+# TODO: contribute to base.
 @inline function mergesorted!(dest::AbstractVector, a, b; by=identity, lt=isless)
     i = 1
     it_a = iterate(a)
@@ -6,7 +8,8 @@
     while it_a !== nothing
         val_a, state_a = it_a
         if it_b === nothing
-            dest[i += 1] = val_a
+            dest[i] = val_a
+            i += 1
             copyto!(dest, i, Iterators.rest(a, state_a))
             return dest
         end
@@ -22,7 +25,8 @@
     end
     if it_b !== nothing
         val_b, state_b = it_b
-        dest[i += 1] = val_b
+        dest[i] = val_b
+        i += 1
         copyto!(dest, i, Iterators.rest(b, state_b))
     end
     return dest
