@@ -6,3 +6,11 @@ GeometryTypes = "4d00f742-c7ba-57c2-abde-4428a4b178cb"
 MeshCat = "283c5d60-a78f-5afe-a0af-af636b173e11"
 MeshIO = "7269a6da-0436-5bbc-96c2-40638cbb6118"
 Meshing = "e6723b4c-ebff-59f1-b4b7-d97aa5274f73"
+
+[compat]
+Colors = "0.9"
+CoordinateTransformations = "0.5"
+FileIO = "1"
+GeometryTypes = "0.7"
+MeshIO = "0.3"
+Meshing = "0.4"
