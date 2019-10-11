@@ -7,7 +7,7 @@ mutable struct CoreVisualizer
     controls::Dict{String, Tuple{Observable, AbstractControl}}
 
     function CoreVisualizer()
-        scope = WebIO.Scope(imports=ASSET_KEYS)
+        scope = WebIO.Scope(imports=ASSET_KEYS, outbox=Channel{Any}(Inf))
         command_channel = Observable(scope, "meshcat-command", UInt8[])
         request_channel = Observable(scope, "meshcat-request", "")
         controls_channel = Observable(scope, "meshcat-controls", [])
@@ -115,16 +115,8 @@ end
 
 function Base.wait(c::CoreVisualizer)
     pool = c.scope.pool
-    while true
-        while isready(pool.new_connections)
-            push!(pool.connections, take!(pool.new_connections))
-        end
-        if !isempty(pool.connections)
-            break
-        else
-            sleep(0.25)
-        end
-    end
+    WebIO.ensure_connection(pool)
+    nothing
 end
 
 """
