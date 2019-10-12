@@ -21,7 +21,7 @@ using UUIDs: UUID, uuid1
 using LinearAlgebra: UniformScaling, Diagonal, norm
 using Sockets: listen, @ip_str, IPAddr, IPv4, IPv6
 using Base64: base64encode
-using MsgPack: MsgPack, pack, Ext
+using MsgPack: MsgPack, pack
 
 import Base: delete!
 
