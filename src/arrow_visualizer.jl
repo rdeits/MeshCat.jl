@@ -53,5 +53,5 @@ function settransform!(vis::ArrowVisualizer, base::Point{3}, vec::Vec{3};
 end
 
 function settransform!(vis::ArrowVisualizer, base::Point{3}, tip::Point{3}; kwargs...)
-    settransform!(vis, base, Vec(tip - base))
+    settransform!(vis, base, Vec(tip - base); kwargs...)
 end
