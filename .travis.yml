@@ -36,16 +36,6 @@ branches:
   only:
     - master
 
-addons:
-  apt:
-    sources:
-      - trusty-media
-    packages:
-      - ffmpeg
-
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ffmpeg; fi
-
 script:
   - julia --color=yes -e "using Pkg; if VERSION >= v\"1.1.0-rc1\"; Pkg.build(verbose=true); else Pkg.build(); end"
   - $TESTCMD --check-bounds=yes --color=yes -e 'using Pkg; Pkg.test("MeshCat", coverage=true)'
