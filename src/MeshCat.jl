@@ -6,6 +6,7 @@ using WebIO
 import Mux
 import AssetRegistry
 import Cassette
+import FFMPEG
 using GeometryTypes, CoordinateTransformations
 using Rotations: rotation_between, Rotation, Quat
 using Colors: Color, Colorant, RGB, RGBA, alpha, hex
