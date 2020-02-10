@@ -117,7 +117,11 @@ end
 
 function Base.write(core::CoreVisualizer, data)
     for connection in core.connections
-        WebSockets.writeguarded(connection, data)
+        if isopen(connection)
+            WebSockets.writeguarded(connection, data)
+        else
+            delete!(core.connections, connection)
+        end
     end
 end
 
