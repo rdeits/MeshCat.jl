@@ -20,25 +20,6 @@ struct SetProperty{T} <: AbstractCommand
     value::T
 end
 
-abstract type AbstractControl end
-
-struct Button <: AbstractControl
-    observer::Observable
-    name::String
-end
-
-struct NumericControl{T} <: AbstractControl
-    observer::Observable
-    name::String
-    value::T
-    min::T
-    max::T
-end
-
-struct SetControl <: AbstractCommand
-    control::AbstractControl
-end
-
 struct SetAnimation{A <: Animation} <: AbstractCommand
     animation::A
     play::Bool

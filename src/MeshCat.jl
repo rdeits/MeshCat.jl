@@ -2,9 +2,7 @@ __precompile__()
 
 module MeshCat
 
-using WebIO
 import Mux
-import AssetRegistry
 import Cassette
 import FFMPEG
 using GeometryTypes, CoordinateTransformations
@@ -14,7 +12,6 @@ using StaticArrays: StaticVector, SVector, SDiagonal, SMatrix
 using GeometryTypes: raw
 using Parameters: @with_kw
 using DocStringExtensions: SIGNATURES
-using JSExpr: @js, @new, @var
 using Requires: @require
 using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd
@@ -87,6 +84,7 @@ include("msgpack.jl")
 include("visualizer.jl")
 include("atframe.jl")
 include("arrow_visualizer.jl")
+include("ijulia.jl")
 include("servers.jl")
 
 const VIEWER_ROOT = joinpath(@__DIR__, "..", "assets", "meshcat", "dist")
@@ -111,8 +109,6 @@ function develop_meshcat_assets(skip_confirmation=false)
     rm(joinpath(meshcat_dir, "..", "meshcat.stamp"))
 end
 
-const ASSET_KEYS = String[]
-
 function __init__()
     main_js = abspath(joinpath(VIEWER_ROOT, "main.min.js"))
     if !isfile(main_js)
@@ -120,14 +116,13 @@ function __init__()
         main.min.js not found at $main_js.
         Please build MeshCat using `import Pkg; Pkg.build("MeshCat")`""")
     end
-    push!(ASSET_KEYS, AssetRegistry.register(main_js))
 
     @require Blink="ad839575-38b3-5650-b840-f874b8c74a25" begin
         function Base.open(core::CoreVisualizer, w::Blink.AtomShell.Window)
             # Ensure the window is ready
             Blink.js(w, "ok")
             # Set its contents
-            Blink.body!(w, core.scope)
+            Blink.loadurl(w, url(core))
             w
         end
     end
