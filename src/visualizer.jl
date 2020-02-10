@@ -5,32 +5,15 @@ import Mux.WebSockets
 
 struct CoreVisualizer
     tree::SceneNode
-    command_channel::Channel{Vector{UInt8}}
-    new_connections::Channel{Bool}
-    queues::Dict{Any, Any}
+    connections::Set{Any}
     host::IPAddr
     port::Int
 
     function CoreVisualizer(host::IPAddr = ip"127.0.0.1", default_port=8700)
-        cmd = Channel{Vector{UInt8}}(typemax(Int))
-        new_connections = Channel{Bool}(typemax(Int))
-        queues = Dict()
+        connections = Set([])
         tree = SceneNode()
         port = find_open_port(host, default_port, 500)
-        core = new(tree, cmd, new_connections, queues,
-                   host, port)
-        @async while true
-            if isempty(queues)
-                wait(new_connections)
-            end
-            while isready(new_connections)
-                take!(new_connections)
-            end
-            message = take!(cmd)
-            for queue in values(queues)
-                put!(queue, message)
-            end
-        end
+        core = new(tree, connections, host, port)
         start_server(core)
         return core
     end
@@ -97,19 +80,9 @@ end
 
 function add_connection!(core::CoreVisualizer, req)
     connection = req[:socket]
-    queue = Channel{Vector{UInt8}}(0)
-    core.queues[connection] = queue
-    put!(core.new_connections, true)
-    send_scene(core)
-    while true
-        message = take!(queue)
-        if isopen(connection)
-            WebSockets.writeguarded(connection, message)
-        else
-            break
-        end
-    end
-    delete!(core.queues, connection)
+    push!(core.connections, connection)
+    send_scene(core, connection)
+    wait()
 end
 
 function update_tree!(core::CoreVisualizer, cmd::SetObject, data)
@@ -131,26 +104,33 @@ end
 update_tree!(core::CoreVisualizer, cmd::SetAnimation, data) = nothing
 update_tree!(core::CoreVisualizer, cmd::SetProperty, data) = nothing
 
-function send_scene(core::CoreVisualizer)
+function send_scene(core::CoreVisualizer, connection)
     foreach(core.tree) do node
         if node.object !== nothing
-            put!(core.command_channel, node.object)
+            WebSockets.writeguarded(connection, node.object)
         end
         if node.transform !== nothing
-            put!(core.command_channel, node.transform)
+            WebSockets.writeguarded(connection, node.transform)
         end
     end
 end
 
-function send(c::CoreVisualizer, cmd::AbstractCommand)
+function Base.write(core::CoreVisualizer, data)
+    for connection in core.connections
+        WebSockets.writeguarded(connection, data)
+    end
+end
+
+function send(core::CoreVisualizer, cmd::AbstractCommand)
     data = pack(lower(cmd))
-    update_tree!(c, cmd, data)
-    put!(c.command_channel, data)
+    update_tree!(core, cmd, data)
+    write(core, data)
+
     nothing
 end
 
-function Base.wait(c::CoreVisualizer)
-    while isempty(c.queues)
+function Base.wait(core::CoreVisualizer)
+    while isempty(core.connections)
         sleep(0.5)
     end
 end
