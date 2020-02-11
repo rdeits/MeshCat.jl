@@ -58,20 +58,3 @@ function atframe(f, animation::Animation, frame::Integer)
     Cassette.overdub(AnimationCtx(metadata=(animation, frame)), f)
     return animation
 end
-
-function atframe(f::Function, anim::Animation, path::Path, frame::Integer)
-    error("""
-    atframe(f::Function, anim::Animation, path::Path, frame::Integer) is no longer supported.
-    Please see the updated animation example notebook.
-    """)
-end
-
-function atframe(f::Function, anim::Animation, vis::Visualizer, frame::Integer)
-    Base.depwarn("""
-    atframe(f::Function, anim::Animation, vis::Visualizer, frame::Integer) is deprecated.
-    Please use atframe(g, anim, frame) instead, where g is similar to f but takes
-    no arguments and should call methods on vis.
-    See also the updated animation example notebook.
-    """, :atframe)
-    atframe(() -> f(vis), anim, frame)
-end

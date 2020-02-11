@@ -42,7 +42,6 @@ export AbstractVisualizer,
 
 export Object,
        HyperEllipsoid,
-       HyperCylinder,
        PointCloud,
        Cone,
        Triad,
