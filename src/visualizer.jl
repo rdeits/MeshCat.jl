@@ -80,12 +80,18 @@ function add_connection!(core::CoreVisualizer, req)
     wait()
 end
 
+
+
 function update_tree!(core::CoreVisualizer, cmd::SetObject, data)
     core.tree[cmd.path].object = data
 end
 
 function update_tree!(core::CoreVisualizer, cmd::SetTransform, data)
     core.tree[cmd.path].transform = data
+end
+
+function update_tree!(core::CoreVisualizer, cmd::SetProperty, data)
+    core.tree[cmd.path].properties[cmd.property] = data
 end
 
 function update_tree!(core::CoreVisualizer, cmd::Delete, data)
@@ -97,7 +103,6 @@ function update_tree!(core::CoreVisualizer, cmd::Delete, data)
 end
 
 update_tree!(core::CoreVisualizer, cmd::SetAnimation, data) = nothing
-update_tree!(core::CoreVisualizer, cmd::SetProperty, data) = nothing
 
 function send_scene(core::CoreVisualizer, connection)
     foreach(core.tree) do node
@@ -106,6 +111,9 @@ function send_scene(core::CoreVisualizer, connection)
         end
         if node.transform !== nothing
             WebSockets.writeguarded(connection, node.transform)
+        end
+        for data in values(node.properties)
+            WebSockets.writeguarded(connection, data)
         end
     end
 end
