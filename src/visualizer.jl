@@ -1,8 +1,3 @@
-using MsgPack
-using Mux
-using Logging
-import Mux.WebSockets
-
 struct CoreVisualizer
     tree::SceneNode
     connections::Set{Any}
@@ -48,16 +43,16 @@ function start_server(core::CoreVisualizer)
         end
     end
     default = "index.html"
-    @app h = (
+    Mux.@app h = (
         Mux.defaults,
-        page("/index.html", req -> read_asset("index.html")),
-        page("/main.js", req -> read_asset("main.js")),
-        page("/main.min.js", req -> read_asset("main.min.js")),
-        page("/", req -> read_asset(default)),
+        Mux.page("/index.html", req -> read_asset("index.html")),
+        Mux.page("/main.js", req -> read_asset("main.js")),
+        Mux.page("/main.min.js", req -> read_asset("main.min.js")),
+        Mux.page("/", req -> read_asset(default)),
         Mux.notfound());
-    @app w = (
+    Mux.@app w = (
         Mux.wdefaults,
-        route("/", req -> add_connection!(core, req)),
+        Mux.route("/", req -> add_connection!(core, req)),
         Mux.wclose,
         Mux.notfound());
     @async begin

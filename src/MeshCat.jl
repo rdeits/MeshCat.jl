@@ -1,10 +1,5 @@
-__precompile__()
-
 module MeshCat
 
-import Mux
-import Cassette
-import FFMPEG
 using GeometryTypes, CoordinateTransformations
 using Rotations: rotation_between, Rotation, Quat
 using Colors: Color, Colorant, RGB, RGBA, alpha, hex
@@ -20,12 +15,18 @@ using LinearAlgebra: UniformScaling, Diagonal, norm
 using Sockets: listen, @ip_str, IPAddr, IPv4, IPv6
 using Base64: base64encode
 using MsgPack: MsgPack, pack
+import Mux
+import Logging
+import Mux.WebSockets
+import Cassette
+import FFMPEG
+
 
 import Base: delete!
 
 export Visualizer,
-       ViewerWindow,
-       IJuliaCell
+       IJuliaCell,
+       render
 
 export setobject!,
        settransform!,
