@@ -25,10 +25,13 @@ Base.setindex(p::Path, x, i::Int) = p.entries[i] = x
 mutable struct SceneNode
     object::Union{Vector{UInt8}, Nothing}
     transform::Union{Vector{UInt8}, Nothing}
+    properties::Dict{String, Vector{UInt8}}
     children::Dict{String, SceneNode}
 end
 
-SceneNode() = SceneNode(nothing, nothing, Dict{String, SceneNode}())
+SceneNode() = SceneNode(nothing, nothing,
+                        Dict{String, Vector{UInt8}}(),
+                        Dict{String, SceneNode}())
 
 Base.getindex(s::SceneNode, name::AbstractString) = get!(SceneNode, s.children, name)
 function Base.delete!(s::SceneNode, name::AbstractString)
