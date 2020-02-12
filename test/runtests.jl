@@ -17,8 +17,6 @@ include("util.jl")
     include("wait.jl")
 end
 
-sleep(10)
-
 module ModuleTest
     # Test for any https://github.com/JuliaLang/julia/issues/21653
     # related issues when MeshCat is included in another module

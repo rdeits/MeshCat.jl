@@ -1,76 +1,84 @@
-mutable struct CoreVisualizer
-    scope::WebIO.Scope
+struct CoreVisualizer
     tree::SceneNode
-    command_channel::Observable{Vector{UInt8}}
-    request_channel::Observable{String}
-    controls_channel::Observable{Vector{Any}}
-    controls::Dict{String, Tuple{Observable, AbstractControl}}
+    connections::Set{Any}
+    host::IPAddr
+    port::Int
 
-    function CoreVisualizer()
-        scope = WebIO.Scope(imports=ASSET_KEYS, outbox=Channel{Any}(Inf))
-        command_channel = Observable(scope, "meshcat-command", UInt8[])
-        request_channel = Observable(scope, "meshcat-request", "")
-        controls_channel = Observable(scope, "meshcat-controls", [])
-
-        onimport(scope, @js function(mc)
-            @var element = this.dom.children[0]
-            this.viewer = @new mc.Viewer(element)
-            $request_channel[] = String(Date.now())
-            window.document.body.style.margin = "0"
-            window.meshcat_viewer = this.viewer
-        end)
-
-        onjs(command_channel, @js function(val)
-            this.viewer.handle_command_message(Dict(:data => val))
-        end)
-        scope = scope(dom"div.meshcat-viewer"(
-            style=Dict(
-                :width => "100vw",
-                :height => "100vh",
-                :position => "absolute",
-                :left => 0,
-                :right => 0,
-                :margin => 0,
-            )
-        ))
-        scope.dom.props[:style][:overflow] = "hidden"
-
+    function CoreVisualizer(host::IPAddr = ip"127.0.0.1", default_port=8700)
+        connections = Set([])
         tree = SceneNode()
-        controls = Dict{String, Observable}()
-        vis = new(scope, tree, command_channel, request_channel, controls_channel, controls)
-        on(request_channel) do x
-            send_scene(vis)
-        end
-
-        on(controls_channel) do msg
-            name::String, value = msg
-            if haskey(vis.controls, name)
-                @async vis.controls[name] = value
-                # Base.invokelatest(setindex!, vis.controls[name], value)
-            end
-        end
-        vis
+        port = find_open_port(host, default_port, 500)
+        core = new(tree, connections, host, port)
+        start_server(core)
+        return core
     end
 end
 
-WebIO.render(core::CoreVisualizer) = core.scope
-
-function WebIO.iframe(core::CoreVisualizer; height="100%", width="100%", minHeight="400px")
-    ifr = WebIO.iframe(core.scope)
-    onimport(ifr, @js function()
-        this.dom.style.height = "100%"
-        window.foo = this
-        this.dom.children[0].children[0].style.flexGrow = "1"
-    end)
-    style = get!(Dict, ifr.dom.props, :style)
-    style[:height] = height
-    style[:minHeight] = minHeight
-    style[:width] = width
-    style[:display] = "flex"
-    style[:flexDirection] = "column"
-    ifr
+function find_open_port(host, default_port, max_retries)
+    for port in default_port:(default_port + max_retries)
+        server = try
+            listen(host, port)
+        catch e
+            if e isa Base.IOError
+                continue
+            end
+        end
+        close(server)
+        # It is *possible* that a race condition could occur here, in which
+        # some other process grabs the given port in between the close() above
+        # and the open() below. But it's unlikely and would not be terribly
+        # damaging (the user would just have to call open() again).
+        return port
+    end
 end
 
+function start_server(core::CoreVisualizer)
+    asset_files = Set(["index.html", "main.min.js", "main.js"])
+
+    function read_asset(file)
+        if file in asset_files
+            return open(s -> read(s, String), joinpath(VIEWER_ROOT, file))
+        else
+            return "Not found"
+        end
+    end
+    default = "index.html"
+    Mux.@app h = (
+        Mux.defaults,
+        Mux.page("/index.html", req -> read_asset("index.html")),
+        Mux.page("/main.js", req -> read_asset("main.js")),
+        Mux.page("/main.min.js", req -> read_asset("main.min.js")),
+        Mux.page("/", req -> read_asset(default)),
+        Mux.notfound());
+    Mux.@app w = (
+        Mux.wdefaults,
+        Mux.route("/", req -> add_connection!(core, req)),
+        Mux.wclose,
+        Mux.notfound());
+    @async begin
+        # Suppress noisy unhelpful log messages from HTTP.jl, e.g.
+        # https://github.com/JuliaWeb/HTTP.jl/issues/392
+        Logging.with_logger(Logging.NullLogger()) do
+            WebSockets.serve(
+            WebSockets.ServerWS(
+                Mux.http_handler(h),
+                Mux.ws_handler(w),
+            ), core.port);
+        end
+    end
+    @info "MeshCat server started. You can open the visualizer by visiting the following URL in your browser:\n$(url(core))"
+end
+
+function url(core::CoreVisualizer)
+    "http://localhost:$(core.port[])"
+end
+
+function add_connection!(core::CoreVisualizer, req)
+    connection = req[:socket]
+    push!(core.connections, connection)
+    send_scene(core, connection)
+    wait()
+end
 
 function update_tree!(core::CoreVisualizer, cmd::SetObject, data)
     core.tree[cmd.path].object = data
@@ -88,35 +96,42 @@ function update_tree!(core::CoreVisualizer, cmd::Delete, data)
     end
 end
 
-update_tree!(core::CoreVisualizer, cmd::SetControl, data) = nothing
 update_tree!(core::CoreVisualizer, cmd::SetAnimation, data) = nothing
 update_tree!(core::CoreVisualizer, cmd::SetProperty, data) = nothing
 
-function send_scene(core::CoreVisualizer)
+function send_scene(core::CoreVisualizer, connection)
     foreach(core.tree) do node
         if node.object !== nothing
-            core.command_channel[] = node.object
+            WebSockets.writeguarded(connection, node.object)
         end
         if node.transform !== nothing
-            core.command_channel[] = node.transform
+            WebSockets.writeguarded(connection, node.transform)
         end
     end
-    for (name, (obs, control)) in core.controls
-        send(core, SetControl(control))
+end
+
+function Base.write(core::CoreVisualizer, data)
+    for connection in core.connections
+        if isopen(connection)
+            WebSockets.writeguarded(connection, data)
+        else
+            delete!(core.connections, connection)
+        end
     end
 end
 
-function send(c::CoreVisualizer, cmd::AbstractCommand)
+function send(core::CoreVisualizer, cmd::AbstractCommand)
     data = pack(lower(cmd))
-    update_tree!(c, cmd, data)
-    c.command_channel[] = data
+    update_tree!(core, cmd, data)
+    write(core, data)
+
     nothing
 end
 
-function Base.wait(c::CoreVisualizer)
-    pool = c.scope.pool
-    WebIO.ensure_connection(pool)
-    nothing
+function Base.wait(core::CoreVisualizer)
+    while isempty(core.connections)
+        sleep(0.5)
+    end
 end
 
 """
@@ -146,9 +161,9 @@ execution until the browser window has opened.
 """
 Base.wait(v::Visualizer) = wait(v.core)
 
-IJuliaCell(vis::Visualizer; kw...) = iframe(vis.core; kw...)
+# IJuliaCell(vis::Visualizer; kw...) = iframe(vis.core; kw...)
 
-Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer with path $(v.path)")
+Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer with path $(v.path) at $(url(v.core))")
 
 """
 $(SIGNATURES)
@@ -199,20 +214,6 @@ with the Base.setproperty! function introduced in Julia v0.7)
 """
 function setprop!(vis::Visualizer, property::AbstractString, value)
     send(vis.core, SetProperty(vis.path, property, value))
-    vis
-end
-
-function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable)
-    control = Button(vis.core.controls_channel, name)
-    vis.core.controls[name] = (obs, control)
-    send(vis.core, SetControl(control))
-    vis
-end
-
-function setcontrol!(vis::Visualizer, name::AbstractString, obs::Observable, value, min=zero(value), max=one(value))
-    control = NumericControl(vis.core.controls_channel, name, value, min, max)
-    vis.core.controls[name] = (obs, control)
-    send(vis.core, SetControl(control))
     vis
 end
 

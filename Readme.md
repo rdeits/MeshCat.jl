@@ -12,6 +12,7 @@ The MeshCat viewer runs entirely in the browser, with no external dependencies. 
 * Inside a Jupyter Notebook with [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
 * In a standalone window with [Blink.jl](https://github.com/JunoLab/Blink.jl)
 * Inside the [Juno IDE](http://junolab.org/)
+* Inside the VSCode editor with the [julia-vscode](https://www.julia-vscode.org/) extension.
 
 As much as possible, MeshCat.jl tries to use existing implementations of its fundamental types. In particular, we use:
 
