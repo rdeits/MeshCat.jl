@@ -7,8 +7,6 @@ end
 GeometryTypes.origin(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.center
 radii(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.radii
 
-@deprecate HyperCylinder(length::T, radius) where {T} Cylinder{3, T}(Point(0., 0., 0.), Point(0, 0, length), radius)
-
 struct PointCloud{T, Point <: StaticVector{3, T}, C <: Colorant} <: AbstractGeometry{3, T}
     position::Vector{Point}
     color::Vector{C}
