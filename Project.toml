@@ -26,7 +26,7 @@ WebSockets = "104b5d7c-a370-577a-8038-80a2059c5097"
 
 [compat]
 BinDeps = "1"
-Cassette = "0.2.5"
+Cassette = "0.2.5, 0.3"
 Colors = "0.9, 0.10, 0.11"
 CoordinateTransformations = "0.5"
 DocStringExtensions = "0.5, 0.6, 0.7, 0.8"
