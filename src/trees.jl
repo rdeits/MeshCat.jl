@@ -26,11 +26,13 @@ mutable struct SceneNode
     object::Union{Vector{UInt8}, Nothing}
     transform::Union{Vector{UInt8}, Nothing}
     properties::Dict{String, Vector{UInt8}}
+    animation::Union{Vector{UInt8}, Nothing}
     children::Dict{String, SceneNode}
 end
 
 SceneNode() = SceneNode(nothing, nothing,
                         Dict{String, Vector{UInt8}}(),
+                        nothing,
                         Dict{String, SceneNode}())
 
 Base.getindex(s::SceneNode, name::AbstractString) = get!(SceneNode, s.children, name)
