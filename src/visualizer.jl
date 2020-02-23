@@ -102,7 +102,10 @@ function update_tree!(core::CoreVisualizer, cmd::Delete, data)
     end
 end
 
-update_tree!(core::CoreVisualizer, cmd::SetAnimation, data) = nothing
+function update_tree!(core::CoreVisualizer, cmd::SetAnimation, data)
+    core.tree.animation = data
+end
+
 
 function send_scene(core::CoreVisualizer, connection)
     foreach(core.tree) do node
@@ -114,6 +117,9 @@ function send_scene(core::CoreVisualizer, connection)
         end
         for data in values(node.properties)
             WebSockets.writeguarded(connection, data)
+        end
+        if node.animation !== nothing
+            WebSockets.writeguarded(connection, node.animation)
         end
     end
 end

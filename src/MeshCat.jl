@@ -26,7 +26,9 @@ import Base: delete!
 
 export Visualizer,
        IJuliaCell,
-       render
+       render,
+       render_static,
+       static_html
 
 export setobject!,
        settransform!,
