@@ -6,13 +6,10 @@ matrix:
       julia: 1.0
       env: TESTCMD="xvfb-run julia"
     - os: linux
-      julia: 1.1
-      env: TESTCMD="xvfb-run julia"
-    - os: linux
-      julia: 1.2
-      env: TESTCMD="xvfb-run julia"
-    - os: linux
       julia: 1.3
+      env: TESTCMD="xvfb-run julia"
+    - os: linux
+      julia: 1.4
       env: TESTCMD="xvfb-run julia"
     - os: linux
       julia: nightly
