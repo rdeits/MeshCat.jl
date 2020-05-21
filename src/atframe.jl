@@ -1,6 +1,18 @@
 wider_js_type(::Type{<:Integer}) = Float64  # Javascript thinks everything is a `double`
 wider_js_type(::Type{Float64}) = Float64
+wider_js_type(::Type{Bool}) = Bool
 wider_js_type(x) = x
+
+const DEFAULT_PROPERTY_TYPES = Dict{String, String}(
+    "scale" => "vector3",
+    "position" => "vector3",
+    "quaternion" => "quaternion",
+    "visible" => "bool",
+)
+
+function get_property_type(property_name::AbstractString)
+    get(DEFAULT_PROPERTY_TYPES, property_name, "number")
+end
 
 function _setprop!(clip::AnimationClip, frame::Integer, prop::AbstractString, jstype::AbstractString, value)
     T = wider_js_type(typeof(value))
@@ -45,7 +57,7 @@ end
 function Cassette.overdub(ctx::AnimationCtx, ::typeof(setprop!), vis::Visualizer, prop::AbstractString, value)
     animation, frame = ctx.metadata
     clip = getclip!(animation, vis.path)
-    _setprop!(clip, frame, prop, "number", value)
+    _setprop!(clip, frame, prop, get_property_type(prop), value)
 end
 
 function Cassette.overdub(ctx::AnimationCtx, ::typeof(setprop!), vis::Visualizer, prop::AbstractString, jstype::AbstractString, value)
