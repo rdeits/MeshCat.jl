@@ -5,6 +5,7 @@ using GeometryTypes
 using CoordinateTransformations
 using Colors
 using MeshIO, FileIO
+using Rotations
 
 include("util.jl")
 

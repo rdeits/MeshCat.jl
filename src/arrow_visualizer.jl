@@ -26,7 +26,7 @@ function settransform!(vis::ArrowVisualizer, base::Point{3}, vec::Vec{3};
     rotation = if vec_length > eps(T)
         rotation_between(SVector(0., 0., 1.), vec)
     else
-        one(Quat{Float64})
+        one(UnitQuaternion{Float64})
     end |> LinearMap
 
     vis_tform = Translation(base) ∘ rotation
