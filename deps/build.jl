@@ -2,7 +2,7 @@ using Base.Filesystem
 using BinDeps: unpack_cmd, download_cmd
 
 
-const meshcat_sha = "7bd957ac09609d1195a4be07307cc6cdf90db3e8"
+const meshcat_sha = "02b605b6def67f198d7a86ae60c8bb977ba7ef13"
 const meshcat_url = "https://github.com/rdeits/meshcat/archive/$meshcat_sha.zip"
 
 const assets_dir = normpath(joinpath(@__DIR__, "..", "assets"))
