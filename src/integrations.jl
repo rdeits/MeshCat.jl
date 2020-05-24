@@ -2,7 +2,7 @@ function setup_integrations()
     @require Blink="ad839575-38b3-5650-b840-f874b8c74a25" begin
         function Base.open(core::CoreVisualizer, w::Blink.AtomShell.Window)
             # Ensure the window is ready
-            Blink.js(w, "ok")
+            Blink.wait(w)
             # Set its contents
             Blink.loadurl(w, url(core))
             w
