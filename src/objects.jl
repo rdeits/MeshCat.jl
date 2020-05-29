@@ -1,5 +1,8 @@
 const GeometryLike = Union{AbstractGeometry, AbstractMesh, MeshFileGeometry}
 
+"""
+Represents a three.js Object, consisting of a geometry and a material.
+"""
 struct Object{G <: GeometryLike, M <: AbstractMaterial} <: AbstractObject
     geometry::G
     material::M

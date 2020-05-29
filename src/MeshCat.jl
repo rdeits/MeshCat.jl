@@ -1,12 +1,12 @@
 module MeshCat
 
 using GeometryTypes, CoordinateTransformations
-using Rotations: rotation_between, Rotation, UnitQuaternion 
+using Rotations: rotation_between, Rotation, UnitQuaternion
 using Colors: Color, Colorant, RGB, RGBA, alpha, hex
 using StaticArrays: StaticVector, SVector, SDiagonal, SMatrix
 using GeometryTypes: raw
 using Parameters: @with_kw
-using DocStringExtensions: SIGNATURES
+using DocStringExtensions: SIGNATURES, TYPEDSIGNATURES
 using Requires: @require
 using Base.Filesystem: rm
 using BinDeps: download_cmd, unpack_cmd

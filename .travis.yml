@@ -1,6 +1,6 @@
 ## Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
-matrix:
+jobs:
   include:
     - os: linux
       julia: 1.0
@@ -23,6 +23,14 @@ matrix:
     - os: osx
       julia: nightly
       env: TESTCMD="julia"
+    - stage: "Documentation"
+      julia: 1.4
+      os: linux
+      script:
+        - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
+                                               Pkg.instantiate()'
+        - julia --project=docs/ docs/make.jl
+      after_success: skip
   allow_failures:
     - julia: nightly
 

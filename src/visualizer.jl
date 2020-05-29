@@ -1,3 +1,7 @@
+"""
+Low-level type which manages the actual meshcat server. See [`Visualizer`](@ref)
+for the public-facing interface.
+"""
 struct CoreVisualizer
     tree::SceneNode
     connections::Set{Any}
@@ -80,8 +84,6 @@ function add_connection!(core::CoreVisualizer, req)
     wait()
 end
 
-
-
 function update_tree!(core::CoreVisualizer, cmd::SetObject, data)
     core.tree[cmd.path].object = data
 end
@@ -157,7 +159,8 @@ Useful methods:
 
     vis[:group1] # get a new visualizer representing a sub-tree of the scene
     setobject!(vis, geometry) # set the object shown by this visualizer's sub-tree of the scene
-    settransform!(vis], tform) # set the transformation of this visualizer's sub-tree of the scene
+    settransform!(vis, tform) # set the transformation of this visualizer's sub-tree of the scene
+    setvisible!(vis, false) # hide this part of the scene
 """
 struct Visualizer <: AbstractVisualizer
     core::CoreVisualizer
@@ -167,7 +170,7 @@ end
 Visualizer() = Visualizer(CoreVisualizer(), ["meshcat"])
 
 """
-$(SIGNATURES)
+$(TYPEDSIGNATURES)
 
 Wait until at least one browser has connected to the
 visualizer's server. This is useful in scripts to delay
@@ -180,11 +183,12 @@ Base.wait(v::Visualizer) = wait(v.core)
 Base.show(io::IO, v::Visualizer) = print(io, "MeshCat Visualizer with path $(v.path) at $(url(v.core))")
 
 """
-$(SIGNATURES)
-
 Set the object at this visualizer's path. This replaces whatever
-geometry was presently at that path. To draw multiple geometries,
-place them at different paths by using the slicing notation:
+geometry was presently at that path.
+
+$(TYPEDSIGNATURES)
+
+To draw multiple geometries, place them at different paths by using the slicing notation:
 
     setobject!(vis[:group1][:box1], geometry1)
     setobject!(vis[:group1][:box2], geometry2)
@@ -195,13 +199,14 @@ function setobject!(vis::Visualizer, obj::AbstractObject)
 end
 
 """
-$(SIGNATURES)
+Set the transform of this visualizer's path. This can be done before or after
+adding an object at that path.
 
-Set the transform of this visualizer's path. This can be done
-before or after adding an object at that path. The overall transform
-of an object is the composition of the transforms of all of its parents,
-so setting the transform of `vis[:group1]` affects the poses of the objects
-at `vis[:group1][:box1]` and `vis[:group1][:box2]`.
+$(TYPEDSIGNATURES)
+
+The overall transform of an object is the composition of the transforms of all
+of its parents, so setting the transform of `vis[:group1]` affects the poses of
+the objects at `vis[:group1][:box1]` and `vis[:group1][:box2]`.
 """
 function settransform!(vis::Visualizer, tform::Transformation)
     send(vis.core, SetTransform(tform, vis.path))
@@ -209,9 +214,9 @@ function settransform!(vis::Visualizer, tform::Transformation)
 end
 
 """
-$(SIGNATURES)
-
 Delete the geometry at this visualizer's path and all of its descendants.
+
+$(TYPEDSIGNATURES)
 """
 function delete!(vis::Visualizer)
     send(vis.core, Delete(vis.path))
@@ -219,9 +224,9 @@ function delete!(vis::Visualizer)
 end
 
 """
-$(SIGNATURES)
-
 Set a single property for the object at the given path.
+
+$(TYPEDSIGNATURES)
 
 (this is named setprop! instead of setproperty! to avoid confusion
 with the Base.setproperty! function introduced in Julia v0.7)
@@ -231,10 +236,24 @@ function setprop!(vis::Visualizer, property::AbstractString, value)
     vis
 end
 
+"""
+Set the currently playing animation in the visualizer.
+
+$(TYPEDSIGNATURES)
+
+"""
 function setanimation!(vis::Visualizer, anim::Animation; play::Bool=true, repetitions::Integer=1)
     cmd = SetAnimation(anim, play, repetitions)
     send(vis.core, cmd)
 end
 
+"""
+Get a new `Visualizer` representing a sub-tree of the same scene.
+
+$(TYPEDSIGNATURES)
+
+For example, if you have `vis::Visualizer` with path `/meshcat/foo`, you can do
+`vis[:bar]` to get a new `Visualizer` with path `/meshcat/foo/bar`.
+"""
 Base.getindex(vis::Visualizer, path...) =
     Visualizer(vis.core, joinpath(vis.path, path...))

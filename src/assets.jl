@@ -1,3 +1,12 @@
+"""
+Use git to clone the meshcat javascript assets repository for local development.
+
+$(SIGNATURES)
+
+You should only do this if you plan on editing the javascript or HTML components of
+meshcat itself. To undo this operation, you will need to delete the `assets/meshcat`
+folder and then run `using Pkg; Pkg.build("MeshCat")`
+"""
 function develop_meshcat_assets(skip_confirmation=false)
     meshcat_dir = abspath(joinpath(@__DIR__, "..", "assets", "meshcat"))
     if !skip_confirmation
