@@ -224,6 +224,8 @@ function lower(material::GenericMaterial)
         "linewidth" => material.linewidth,
         "side" => material.side,
         "vertexColors" => material.vertexColors,
+        "wireframe" => material.wireframe,
+        "wireframeLinewidth" => material.wireframeLinewidth,
     )
     if material.map !== nothing
         data["map"] = lower(material.map)
