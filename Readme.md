@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/rdeits/MeshCat.jl.svg?branch=master)](https://travis-ci.com/rdeits/MeshCat.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/uasj23i8s14pw852?svg=true)](https://ci.appveyor.com/project/rdeits/meshcat-jl)
 [![codecov.io](https://codecov.io/github/rdeits/MeshCat.jl/coverage.svg?branch=master)](https://codecov.io/github/rdeits/MeshCat.jl?branch=master)
+[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://rdeits.github.com/MeshCat.jl/dev)
 
 [MeshCat](https://github.com/rdeits/meshcat) is a remotely-controllable 3D viewer, built on top of [three.js](https://threejs.org/). The viewer contains a tree of objects and transformations (i.e. a scene graph) and allows those objects and transformations to be added and manipulated with simple commands. This makes it easy to create 3D visualizations of geometries, mechanisms, and robots. MeshCat.jl runs on macOS, Linux, and Windows.
 
