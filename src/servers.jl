@@ -1,5 +1,9 @@
 using Sockets: connect
 
+"""
+Open the visualizer. By default, this will launch your default web browser
+pointing to the visualizer's URL.
+"""
 Base.open(vis::Visualizer, args...; kw...) = open(vis.core, args...; kw...)
 
 function wait_for_server(core::CoreVisualizer, timeout=100)

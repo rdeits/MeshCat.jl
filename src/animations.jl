@@ -1,4 +1,3 @@
-
 struct AnimationTrack{T}
     name::String
     jstype::String
@@ -51,8 +50,19 @@ struct Animation
     default_framerate::Int
 end
 
+"""
+Create a new animation. See [`atframe`](@ref) to adjust object poses or properties
+in that animation.
+
+$(TYPEDSIGNATURES)
+"""
 Animation(fps::Int=30) = Animation(Dict{Path, AnimationClip}(), fps)
 
+"""
+Merge multiple animations, storing the result in `a`.
+
+$(TYPEDSIGNATURES)
+"""
 function Base.merge!(a::Animation, others::Animation...)
     for other in others
         @assert a.default_framerate == other.default_framerate
@@ -61,8 +71,32 @@ function Base.merge!(a::Animation, others::Animation...)
     return a
 end
 
+"""
+Merge two or more animations, returning a new animation.
+
+$(TYPEDSIGNATURES)
+
+The animations may involve the same properties or different properties
+(animations of the same property on the same path will have their events
+interleaved). All animations must have the same framerate.
+"""
 Base.merge(a::Animation, others::Animation...) = merge!(Animation(a.default_framerate), a, others...)
 
+"""
+Convert the `.tar` file of still images produced by the meshcat "record" feature
+into a video.
+
+$(TYPEDSIGNATURES)
+
+To record an animation which has been played in the meshcat visualizer, click
+"Open Controls", then navigate to the "Animations" folder and click "record".
+This will step through the animation frame-by-frame and then prompt you to
+download a `.tar` file containing the resulting frames. You can then pass the
+path to that `.tar` file to this function to produce a video.
+
+This uses FFMPEG.jl internally, so you do *not* need to have installed ffmpeg
+manually.
+"""
 function convert_frames_to_video(tar_file_path::AbstractString, output_path::AbstractString="output.mp4"; framerate=60, overwrite=false)
     output_path = abspath(output_path)
     if !isfile(tar_file_path)

@@ -1,0 +1,6 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+MeshCat = "283c5d60-a78f-5afe-a0af-af636b173e11"
+
+[compat]
+Documenter = "0.24"

@@ -66,6 +66,33 @@ function Cassette.overdub(ctx::AnimationCtx, ::typeof(setprop!), vis::Visualizer
     _setprop!(clip, frame, prop, jstype, value)
 end
 
+"""
+Call the given function `f`, but intercept any `settransform!` or `setprop!` calls
+and apply them to the given animation at the given frame instead.
+
+$(TYPEDSIGNATURES)
+
+Usage:
+
+```
+vis = Visualizer()
+setobject!(vis[:cube], HyperCube(Vec(0.0, 0.0, 0.0), 0.5))
+
+anim = Animation()
+
+# At frame 0, set the cube's position to be the origin
+atframe(anim, 0) do
+    settransform!(vis[:cube], Translation(0.0, 0.0, 0.0))
+end
+
+# At frame 30, set the cube's position to be [1, 0, 0]
+atframe(anim, 30) do
+    settransform!(vis[:cube], Translation(1.0, 0.0, 0.0))
+end
+
+setanimation!(vis, anim)
+```
+"""
 function atframe(f, animation::Animation, frame::Integer)
     Cassette.overdub(AnimationCtx(metadata=(animation, frame)), f)
     return animation

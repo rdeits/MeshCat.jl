@@ -2,6 +2,12 @@ module SceneTrees
 
 export SceneNode, Path
 
+"""
+Represents a path within a meshcat visualizer. Constructing this is generally
+not necessary in user code. Instead, given a visualizer `vis` with path
+`/meshcat/foo`, you can do `vis[:bar]` to get a visualizer with path
+`/meshcat/foo/bar`.
+"""
 struct Path <: AbstractVector{String}
     entries::Vector{String}
 end
