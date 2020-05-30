@@ -1,10 +1,33 @@
 module MeshCat
 
-using GeometryTypes, CoordinateTransformations
+using GeometryBasics: GeometryBasics,
+  AbstractGeometry,
+  AbstractMesh,
+  AbstractNgonFace,
+  AbstractFace,
+  Cylinder,
+  GLTriangleFace,
+  GeometryPrimitive,
+  HyperRectangle,
+  HyperSphere,
+  NgonFace,
+  OffsetInteger,
+  Point,
+  Point3f0,
+  Polytope,
+  SimplexFace,
+  Vec,
+  decompose,
+  origin,
+  radius,
+  texturecoordinates,
+  raw,
+  widths
+
+using CoordinateTransformations
 using Rotations: rotation_between, Rotation, UnitQuaternion
 using Colors: Color, Colorant, RGB, RGBA, alpha, hex
 using StaticArrays: StaticVector, SVector, SDiagonal, SMatrix
-using GeometryTypes: raw
 using Parameters: @with_kw
 using DocStringExtensions: SIGNATURES, TYPEDSIGNATURES
 using Requires: @require
@@ -47,7 +70,7 @@ export Object,
        PointCloud,
        Cone,
        Triad,
-       Mesh,
+       MeshObject,
        MeshFileGeometry,
        MeshFileObject,
        Points,

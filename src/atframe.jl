@@ -76,7 +76,7 @@ Usage:
 
 ```
 vis = Visualizer()
-setobject!(vis[:cube], HyperCube(Vec(0.0, 0.0, 0.0), 0.5))
+setobject!(vis[:cube], Rect(Vec(0.0, 0.0, 0.0), Vec(0.5, 0.5, 0.5)))
 
 anim = Animation()
 

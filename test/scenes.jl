@@ -2,16 +2,15 @@ using Test
 using MeshCat
 using FileIO
 using CoordinateTransformations
-import GeometryTypes
 
 # Demonstrate a couple of different lighting configurations, and
 # show how the lighting settings can be manipulated programmatically.
 @testset "Lighting Scenes" begin
-    cat_mesh_path = joinpath(dirname(pathof(GeometryTypes)), "..", "test", "data", "cat.obj")
+    cat_mesh_path = joinpath(@__DIR__, "data", "meshes", "cat.obj")
     cat = load(cat_mesh_path)
 
     function add_cats!(vis::Visualizer)
-        setobject!(vis["floor"], HyperRectangle(Vec(-10, -10, -0.01), Vec(20, 20, 0.01)))
+        setobject!(vis["floor"], Rect(Vec(-10, -10, -0.01), Vec(20, 20, 0.01)))
         for x in range(-5, stop=5, step=2)
             for y in range(-5, stop=5, step=2)
                 setobject!(vis["cat"][string(x)][string(y)], cat)

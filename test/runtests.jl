@@ -1,7 +1,7 @@
 using Test
 using LinearAlgebra: UniformScaling
 using MeshCat
-using GeometryTypes
+using GeometryBasics
 using CoordinateTransformations
 using Colors
 using MeshIO, FileIO
