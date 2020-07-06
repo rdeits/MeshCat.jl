@@ -1,7 +1,7 @@
 module MeshCat
 
 using GeometryTypes, CoordinateTransformations
-using Rotations: rotation_between, Rotation, UnitQuaternion
+using Rotations: rotation_between, Rotation, RotMatrix, UnitQuaternion
 using Colors: Color, Colorant, RGB, RGBA, alpha, hex
 using StaticArrays: StaticVector, SVector, SDiagonal, SMatrix
 using GeometryTypes: raw
