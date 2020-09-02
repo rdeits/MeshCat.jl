@@ -1,7 +1,7 @@
 name = "MeshCat"
 uuid = "283c5d60-a78f-5afe-a0af-af636b173e11"
 authors = ["Robin Deits <robin.deits@gmail.com>"]
-version = "0.11.2"
+version = "0.11.3"
 
 [deps]
 Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
