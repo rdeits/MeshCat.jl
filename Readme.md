@@ -7,13 +7,14 @@
 
 [MeshCat](https://github.com/rdeits/meshcat) is a remotely-controllable 3D viewer, built on top of [three.js](https://threejs.org/). The viewer contains a tree of objects and transformations (i.e. a scene graph) and allows those objects and transformations to be added and manipulated with simple commands. This makes it easy to create 3D visualizations of geometries, mechanisms, and robots. MeshCat.jl runs on macOS, Linux, and Windows.
 
-The MeshCat viewer runs entirely in the browser, with no external dependencies. All files are served locally, so no internet connection is required. Communication between the browser and your Julia code is managed by [WebIO.jl](https://github.com/JuliaGizmos/WebIO.jl). That means that MeshCat should work anywhere WebIO works:
+The MeshCat viewer runs entirely in the browser, with no external dependencies. All files are served locally, so no internet connection is required. Communication between the browser and your Julia code is managed by [HTTP.jl](https://github.com/JuliaWeb/HTTP.jl). That means that MeshCat should work:
 
 * In a normal browser tab
 * Inside a Jupyter Notebook with [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
 * In a standalone window with [Blink.jl](https://github.com/JunoLab/Blink.jl)
 * Inside the [Juno IDE](http://junolab.org/)
 * Inside the VSCode editor with the [julia-vscode](https://www.julia-vscode.org/) extension.
+* In a standalone window with [ElectronDisplay.jl](https://github.com/queryverse/ElectronDisplay.jl)
 
 As much as possible, MeshCat.jl tries to use existing implementations of its fundamental types. In particular, we use:
 
