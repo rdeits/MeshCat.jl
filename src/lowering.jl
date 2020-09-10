@@ -287,11 +287,17 @@ function lower(cmd::Delete)
 end
 
 function lower(cmd::SetProperty)
+    # The background controls expect [r, g, b] arrays rather than hex codes.
+    value = cmd.value
+    if cmd.property ∈ ("top_color", "bottom_color")
+        rgb = RGB(value)
+        value = round.(Int, 255 .* [red(rgb), green(rgb), blue(rgb)])
+    end
     Dict{String, Any}(
         "type" => "set_property",
         "path" => lower(cmd.path),
         "property" => lower(cmd.property),
-        "value" => lower(cmd.value)
+        "value" => lower(value)
     )
 end
 

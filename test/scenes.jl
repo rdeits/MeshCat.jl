@@ -46,3 +46,24 @@ import GeometryTypes
         setprop!(vis["/Lights/AmbientLight/<object>"], "intensity", 0.44)
     end
 end
+
+@testset "Background" begin
+    @testset "Background color" begin
+        vis = Visualizer()
+        if !haskey(ENV, "CI")
+            open(vis)
+            wait(vis)
+        end
+        setprop!(vis["/Background"], "top_color", colorant"red")
+    end
+
+    @testset "Background hidden" begin
+        vis = Visualizer()
+        if !haskey(ENV, "CI")
+            open(vis)
+            wait(vis)
+        end
+        setprop!(vis["/Background"], "visible", false)
+    end
+
+end
