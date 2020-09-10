@@ -67,14 +67,14 @@ function start_server(core::CoreVisualizer)
             WebSockets.ServerWS(
                 Mux.http_handler(h),
                 Mux.ws_handler(w),
-            ), core.port);
+            ), core.host, core.port);
         end
     end
     @info "MeshCat server started. You can open the visualizer by visiting the following URL in your browser:\n$(url(core))"
 end
 
 function url(core::CoreVisualizer)
-    "http://localhost:$(core.port[])"
+    "http://$(core.host):$(core.port[])"
 end
 
 function add_connection!(core::CoreVisualizer, req)
