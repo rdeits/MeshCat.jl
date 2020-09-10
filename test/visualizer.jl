@@ -1,5 +1,5 @@
 using Blink
-import GeometryTypes
+import GeometryBasics
 
 notinstalled = !AtomShell.isinstalled()
 notinstalled && AtomShell.install()
@@ -28,29 +28,29 @@ end
 struct CustomGeometry <: GeometryPrimitive{3, Float64}
 end
 
-GeometryTypes.isdecomposable(::Type{<:Face}, ::CustomGeometry) = true
-function GeometryTypes.decompose(::Type{F}, c::CustomGeometry) where {F <: Face}
-    [convert(F, Face(1,2,3))]
+# GeometryBasics.isdecomposable(::Type{<:Face}, ::CustomGeometry) = true
+function GeometryBasics.decompose(::Type{F}, c::CustomGeometry) where {F <: NgonFace}
+    [convert(F, NgonFace(1,2,3))]
 end
-GeometryTypes.isdecomposable(::Type{<:Point}, ::CustomGeometry) = true
-function GeometryTypes.decompose(::Type{P}, c::CustomGeometry) where {P <: Point}
+# GeometryBasics.isdecomposable(::Type{<:Point}, ::CustomGeometry) = true
+function GeometryBasics.decompose(::Type{P}, c::CustomGeometry) where {P <: Point}
     convert(Vector{P}, [Point(0., 0, 0), Point(0., 1, 0), Point(0., 0, 1)])
 end
 
 @testset "self-contained visualizer" begin
-    cat_mesh_path = joinpath(dirname(pathof(GeometryTypes)), "..", "test", "data", "cat.obj")
+    cat_mesh_path = joinpath(@__DIR__, "data", "meshes", "cat.obj")
 
     @testset "shapes" begin
         v = vis[:shapes]
         delete!(v)
         settransform!(v, Translation(1., 0, 0))
         @testset "box" begin
-            setobject!(v[:box], HyperRectangle(Vec(0., 0, 0), Vec(0.1, 0.2, 0.3)))
+            setobject!(v[:box], Rect(Vec(0., 0, 0), Vec(0.1, 0.2, 0.3)))
             settransform!(v[:box], Translation(-0.05, -0.1, 0))
         end
 
         @testset "cylinder" begin
-            setobject!(v[:cylinder], Mesh(
+            setobject!(v[:cylinder], MeshObject(
                Cylinder(Point(0., 0, 0), Point(0, 0, 0.2), 0.1),
                MeshLambertMaterial(color=colorant"lime")))
             settransform!(v[:cylinder], Translation(0, 0.5, 0.0))
@@ -69,7 +69,7 @@ end
         end
 
         @testset "cube" begin
-            setobject!(v[:cube], HyperCube(Vec(-0.1, -0.1, 0), 0.2), MeshBasicMaterial())
+            setobject!(v[:cube], Rect(Vec(-0.1, -0.1, 0), Vec(0.2, 0.2, 0.2)), MeshBasicMaterial())
             settransform!(v[:cube], Translation(0, 2.0, 0))
         end
 
@@ -102,10 +102,8 @@ end
         @testset "cat_color" begin
             mesh = load(cat_mesh_path)
             color = RGBA{Float32}(0.5, 0.5, 0.5, 0.5)
-            mesh_color = HomogenousMesh(vertices=mesh.vertices, faces=mesh.faces, color=color)
-            object = Object(mesh_color)
-            @test MeshCat.material(object).color == color
-            mesh_color = setobject!(v[:cat_color], mesh_color)
+            setobject!(v[:cat_color], mesh,
+                       MeshLambertMaterial(color=color))
             settransform!(v[:cat_color], Translation(0, -2.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
         end
 
@@ -152,14 +150,13 @@ end
         end
 
         @testset "textured valkyrie" begin
-            head = Mesh(
-                load(joinpath(MeshCat.VIEWER_ROOT, "..", "data", "head_multisense.obj"), GLUVMesh),
-                MeshLambertMaterial(
-                    map=Texture(
-                        image=PngImage(joinpath(MeshCat.VIEWER_ROOT, "..", "data", "HeadTextureMultisense.png"))
-                    )
-                ))
-            setobject!(v[:valkyrie, :head], head)
+            geometry = load(joinpath(MeshCat.VIEWER_ROOT, "..", "data", "head_multisense.obj"))
+            material = MeshLambertMaterial(
+                map=Texture(
+                    image=PngImage(joinpath(MeshCat.VIEWER_ROOT, "..", "data", "HeadTextureMultisense.png"))
+                )
+            )
+            setobject!(v[:valkyrie, :head], geometry, material)
             settransform!(v[:valkyrie, :head], Translation(0, 0.5, 0.5))
         end
 
@@ -195,7 +192,7 @@ end
         end
         @testset "Line" begin
             θ = range(0, stop=2π, length=10)
-            setobject!(v[:line], Line(Point.(0.5 .* sin.(θ), 0, 0.5 .* cos.(θ))))
+            setobject!(v[:line], MeshCat.Line(Point.(0.5 .* sin.(θ), 0, 0.5 .* cos.(θ))))
             settransform!(v[:line], Translation(0, 0.1, 0))
         end
         @testset "LineLoop" begin
@@ -275,7 +272,7 @@ end
 
 @testset "setvisible!" begin
     v = vis[:box_to_hide]
-    setobject!(v, HyperRectangle(Vec(0., 0, 0), Vec(0.1, 0.2, 0.3)))
+    setobject!(v, Rect(Vec(0., 0, 0), Vec(0.1, 0.2, 0.3)))
     sleep(1)
     setvisible!(v, false)
     sleep(1)

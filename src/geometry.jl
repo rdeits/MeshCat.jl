@@ -7,7 +7,7 @@ struct HyperEllipsoid{N, T} <: GeometryPrimitive{N, T}
     radii::Vec{N, T}
 end
 
-GeometryTypes.origin(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.center
+GeometryBasics.origin(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.center
 radii(geometry::HyperEllipsoid{N, T}) where {N, T} = geometry.radii
 
 """
@@ -17,8 +17,8 @@ You can set the color of each point indepenedntly when you construct a PointClou
 or you can set the overall point color by passing a `PointsMaterial` as the material
 when you call `setobject!(vis, point_cloud, material)`
 """
-struct PointCloud{T, Point <: StaticVector{3, T}, C <: Colorant} <: AbstractGeometry{3, T}
-    position::Vector{Point}
+struct PointCloud{T, PointType <: StaticVector{3, T}, C <: Colorant} <: AbstractGeometry{3, T}
+    position::Vector{PointType}
     color::Vector{C}
 end
 
@@ -48,11 +48,10 @@ struct Cone{N, T} <: AbstractGeometry{N, T}
     r::T
 end
 
-GeometryTypes.origin(geometry::Cone) = geometry.origin
+GeometryBasics.origin(geometry::Cone) = geometry.origin
 
 center(geometry::HyperEllipsoid) = origin(geometry)
 center(geometry::HyperRectangle) = minimum(geometry) + 0.5 * widths(geometry)
-center(geometry::HyperCube) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperSphere) = origin(geometry)
 center(geometry::Cylinder) = (origin(geometry) + geometry.extremity) / 2
 center(geometry::Cone) = (origin(geometry) + geometry.apex) / 2
@@ -62,16 +61,15 @@ center(geometry::Cone) = (origin(geometry) + geometry.apex) / 2
 $(SIGNATURES)
 
 Different tools disagree about what various geometric primitives mean. For example,
-GeometryTypes.jl considers the "origin" of a cube to be its bottom-left corner, where
+GeometryBasics.jl considers the "origin" of a cube to be its bottom-left corner, where
 DrakeVisualizer and MeshCat consider its origin to be the center. The
-intrinsic_transform(g) returns the transform from the GeometryTypes origin to the
+intrinsic_transform(g) returns the transform from the GeometryBasics origin to the
 MeshCat origin.
 """
 intrinsic_transform(g) = IdentityTransformation()
 intrinsic_transform(g::HyperRectangle) = Translation(center(g)...)
 intrinsic_transform(g::HyperSphere) = Translation(center(g)...)
 intrinsic_transform(g::HyperEllipsoid) = Translation(center(g)...) ∘ LinearMap(SMatrix{3, 3}(SDiagonal(radii(g)...)))
-intrinsic_transform(g::HyperCube) = Translation(center(g)...)
 
 function intrinsic_transform(g::Cylinder{3})
     # Three.js wants a cylinder to lie along the y axis

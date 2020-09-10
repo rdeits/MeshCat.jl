@@ -16,22 +16,16 @@ threejs_type(o::Object) = o._type
 defaultmaterial(args...; kw...) = MeshLambertMaterial(args...; kw...)
 
 # Default object types for geometries, point clouds, and triads
-Object(g::GeometryLike) = Mesh(g)
-Object(g::GeometryLike, m::AbstractMaterial) = Mesh(g, m)
+Object(g::GeometryLike) = MeshObject(g)
+Object(g::GeometryLike, m::AbstractMaterial) = MeshObject(g, m)
 Object(c::PointCloud) = Points(c)
 Object(c::PointCloud, m::AbstractMaterial) = Points(c, m)
 Object(t::Triad) = LineSegments(t, LineBasicMaterial(vertexColors=2))
 
-Mesh(g, m) = Object(g, m, "Mesh")
-Mesh(geometry::GeometryLike) = Mesh(geometry, defaultmaterial())
+@deprecate Mesh(args...) MeshObject(args...)
 
-function Mesh(g::HomogenousMesh)
-    if g.color == nothing
-        Mesh(g, defaultmaterial())
-    else
-        Mesh(g, defaultmaterial(color=g.color))
-    end
-end
+MeshObject(g, m) = Object(g, m, "Mesh")
+MeshObject(geometry::GeometryLike) = MeshObject(geometry, defaultmaterial())
 
 Points(g, m) = Object(g, m, "Points")
 Points(geometry::GeometryLike; kw...) = Points(geometry, PointsMaterial(kw...))

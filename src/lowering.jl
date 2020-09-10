@@ -1,4 +1,3 @@
-
 """
 Convert a geometry, material, object, or transform into the appropriate
 plain data structures expected by three.js. Most objects are lowered
@@ -61,8 +60,6 @@ function lower(box::HyperRectangle{3})
         "depth" => max(w[3], eps(Float32))
     )
 end
-
-lower(cube::HyperCube{3}) = lower(HyperRectangle(origin(cube), widths(cube)))
 
 function lower(c::Cylinder{3})
     Dict{String, Any}(
@@ -143,28 +140,35 @@ function lower(points::Vector{P}) where {P <: Union{StaticVector, Colorant}}
     )
 end
 
-to_zero_index(f::Face{N}) where {N} = SVector(raw.(convert(Face{N, OffsetInteger{-1, UInt32}}, f)))
+to_zero_index(f::AbstractNgonFace{N}) where {N} = SVector(raw.(convert(NgonFace{N, OffsetInteger{-1, UInt32}}, f)))
 
-lower(faces::Vector{<:Face}) = lower(to_zero_index.(faces))
+lower(faces::Vector{<:AbstractFace}) = lower(to_zero_index.(faces))
 
-function lower(mesh::AbstractMesh)
+function lower(mesh::AbstractVector{<:Polytope})
     attributes = Dict{String, Any}(
-        "position" => lower(convert(Vector{Point3f0}, vertices(mesh)))
+        "position" => lower(convert(Vector{Point3f0}, decompose(Point3f0, mesh)))
     )
-    if hastexturecoordinates(mesh)
-        attributes["uv"] = lower(texturecoordinates(mesh))
+    uv = texturecoordinates(mesh)
+    if uv !== nothing
+        attributes["uv"] = lower(uv)
     end
     Dict{String, Any}(
         "uuid" => string(uuid1()),
         "type" => "BufferGeometry",
         "data" => Dict{String, Any}(
             "attributes" => attributes,
-            "index" => lower(faces(mesh))
+            "index" => lower(decompose(GLTriangleFace, mesh))
         )
     )
 end
 
-lower(g::GeometryPrimitive) = lower(GLPlainMesh(g))  # Fallback for everything else (like Polyhedra.jl's Polyhedron types)
+"""
+Fallback for everything else (like Polyhedra.jl's Polyhedron types)
+
+$(TYPEDSIGNATURES)
+"""
+lower(g::GeometryPrimitive) = lower(GeometryBasics.Mesh(
+    decompose(Point3f0, g), decompose(GLTriangleFace, g)))
 
 function lower(cloud::PointCloud)
     attributes = Dict{String, Any}(
@@ -337,4 +341,3 @@ function lower(cmd::SetAnimation)
         )
     )
 end
-
