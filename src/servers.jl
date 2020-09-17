@@ -27,9 +27,9 @@ function wait_for_server(core::CoreVisualizer, timeout=100)
     end
 end
 
-function Base.open(core::CoreVisualizer)
+function Base.open(core::CoreVisualizer; start_browser::Bool = true)
     wait_for_server(core)
-    open_url(url(core))
+    start_browser && open_url(url(core))
 end
 
 function open_url(url)
