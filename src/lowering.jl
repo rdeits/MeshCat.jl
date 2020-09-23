@@ -144,10 +144,17 @@ to_zero_index(f::AbstractNgonFace{N}) where {N} = SVector(raw.(convert(NgonFace{
 
 lower(faces::Vector{<:AbstractFace}) = lower(to_zero_index.(faces))
 
-function lower(mesh::AbstractVector{<:Polytope})
+function lower(mesh_meta::M) where {M <: AbstractMesh}
+    mesh = metafree(mesh_meta)
     attributes = Dict{String, Any}(
-        "position" => lower(convert(Vector{Point3f0}, decompose(Point3f0, mesh)))
+        "position" => lower(convert(Vector{Point3f0}, decompose(Point3f0, mesh))),
     )
+    if M <: MeshMeta
+        metadata = meta(mesh_meta)
+        if hasfield(typeof(metadata), :vertexColors)
+            attributes["color"] = lower(convert(Vector{RGB{Float32}}, metadata.vertexColors))
+        end
+    end
     uv = texturecoordinates(mesh)
     if uv !== nothing
         attributes["uv"] = lower(uv)
@@ -175,7 +182,7 @@ function lower(cloud::PointCloud)
         "position" => lower(convert(Vector{Point3f0}, cloud.position)),
     )
     if !isempty(cloud.color)
-        attributes["color"] = lower(cloud.color)
+        attributes["color"] = lower(convert(Vector{RGB{Float32}}, cloud.color))
     end
     Dict{String, Any}(
         "uuid" => string(uuid1()),

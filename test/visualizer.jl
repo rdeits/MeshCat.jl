@@ -160,6 +160,20 @@ end
             settransform!(v[:valkyrie, :head], Translation(0, 0.5, 0.5))
         end
 
+        @testset "mesh with vertex colors" begin
+            # Create a simple mesh with a single triangle
+            geometry = GeometryBasics.Mesh(
+                [Point(0., 0, 0), Point(1., 0, 0), Point(1., 1, 0)],
+                [NgonFace(1, 2, 3)])
+            # Wrap that mesh with metadata encoding the vertex colors
+            mesh_meta = meta(geometry, vertexColors=[RGB(1, 0, 0), RGB(0, 1, 0), RGB(0, 0, 1)])
+            # Create a Gouraud-shaded material with vertex coloring enabled
+            material = MeshLambertMaterial(vertexColors=true)
+            # Add it to the scene
+            setobject!(v[:vertex_color_mesh], mesh_meta, material)
+            settransform!(v[:vertex_color_mesh], Translation(1, -1.5, 0))
+        end
+
     end
 
     @testset "points" begin
