@@ -14,7 +14,9 @@ using CoordinateTransformations
         for x in range(-5, stop=5, step=2)
             for y in range(-5, stop=5, step=2)
                 setobject!(vis["cat"][string(x)][string(y)], cat)
-                settransform!(vis["cat"][string(x)][string(y)], Translation(x, y, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
+                settransform!(vis["cat"][string(x)][string(y)],
+                    Translation(x, y, 0) ∘
+                    LinearMap(RotZ(Float64(π))) ∘ LinearMap(RotX(π/2)))
             end
         end
     end
