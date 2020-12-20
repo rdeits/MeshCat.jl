@@ -96,7 +96,7 @@ end
         @testset "cat" begin
             mesh = load(cat_mesh_path)
             setobject!(v[:cat], mesh)
-            settransform!(v[:cat], Translation(0, -1, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
+            settransform!(v[:cat], Translation(0, -1, 0) ∘ LinearMap(RotZ(Float64(π))) ∘ LinearMap(RotX(π/2)))
         end
 
         @testset "cat_color" begin
@@ -104,7 +104,7 @@ end
             color = RGBA{Float32}(0.5, 0.5, 0.5, 0.5)
             setobject!(v[:cat_color], mesh,
                        MeshLambertMaterial(color=color))
-            settransform!(v[:cat_color], Translation(0, -2.0, 0) ∘ LinearMap(RotZ(π)) ∘ LinearMap(RotX(π/2)))
+            settransform!(v[:cat_color], Translation(0, -2.0, 0) ∘ LinearMap(RotZ(Float64(π))) ∘ LinearMap(RotX(π/2)))
         end
 
         @testset "mesh file geometries" begin
