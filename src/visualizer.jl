@@ -108,6 +108,9 @@ function update_tree!(core::CoreVisualizer, cmd::SetAnimation, data)
     core.tree.animation = data
 end
 
+function update_tree!(core::CoreVisualizer, cmd::TakeScreenshot, data)
+    core.tree.animation = data
+end
 
 function send_scene(core::CoreVisualizer, connection)
     foreach(core.tree) do node
@@ -245,6 +248,16 @@ $(TYPEDSIGNATURES)
 function setanimation!(vis::Visualizer, anim::Animation; play::Bool=true, repetitions::Integer=1)
     cmd = SetAnimation(anim, play, repetitions)
     send(vis.core, cmd)
+end
+
+"""
+Take a screenshot of the current visualizer.
+
+$(TYPEDSIGNATURES)
+"""
+function takescreenshot!(vis::Visualizer)
+    send(vis.core, TakeScreenshot())
+    vis
 end
 
 """

@@ -348,3 +348,9 @@ function lower(cmd::SetAnimation)
         )
     )
 end
+
+function lower(cmd::TakeScreenshot)
+    Dict{String,Any}(
+        "type" => "take_screenshot"
+    )
+end
