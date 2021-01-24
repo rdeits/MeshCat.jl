@@ -28,4 +28,4 @@ end
 
 SetAnimation(anim::Animation; play=true, repetitions=1) = SetAnimation(anim, play, repetitions)
 
-struct TakeScreenshot <: AbstractCommand end
+struct SaveImage <: AbstractCommand end

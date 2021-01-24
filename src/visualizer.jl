@@ -108,8 +108,8 @@ function update_tree!(core::CoreVisualizer, cmd::SetAnimation, data)
     core.tree.animation = data
 end
 
-function update_tree!(core::CoreVisualizer, cmd::TakeScreenshot, data)
-    core.tree.animation = data
+function update_tree!(core::CoreVisualizer, cmd::SaveImage, data)
+    nothing
 end
 
 function send_scene(core::CoreVisualizer, connection)
@@ -251,12 +251,12 @@ function setanimation!(vis::Visualizer, anim::Animation; play::Bool=true, repeti
 end
 
 """
-Take a screenshot of the current visualizer.
+Takes a screenshot of the current visualizer and saves it as an image to the disk.
 
 $(TYPEDSIGNATURES)
 """
-function takescreenshot!(vis::Visualizer)
-    send(vis.core, TakeScreenshot())
+function save_image(vis::Visualizer)
+    send(vis.core, SaveImage())
     vis
 end
 
