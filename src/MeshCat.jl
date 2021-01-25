@@ -61,6 +61,7 @@ export setobject!,
        delete!,
        setprop!,
        setanimation!,
+       save_image,
        setvisible!
 
 export AbstractVisualizer,

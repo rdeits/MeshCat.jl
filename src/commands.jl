@@ -28,3 +28,4 @@ end
 
 SetAnimation(anim::Animation; play=true, repetitions=1) = SetAnimation(anim, play, repetitions)
 
+struct SaveImage <: AbstractCommand end

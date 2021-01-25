@@ -348,3 +348,9 @@ function lower(cmd::SetAnimation)
         )
     )
 end
+
+function lower(cmd::SaveImage)
+    Dict{String,Any}(
+        "type" => "save_image"
+    )
+end
