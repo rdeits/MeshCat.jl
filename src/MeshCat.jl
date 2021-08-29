@@ -119,7 +119,7 @@ include("servers.jl")
 include("assets.jl")
 include("integrations.jl")
 
-const VIEWER_ROOT = joinpath(first(readdir(artifact"meshcat", join=true)), "dist")
+const VIEWER_ROOT = joinpath(last(readdir(artifact"meshcat", join=true)), "dist")
 
 function __init__()
     main_js = abspath(joinpath(VIEWER_ROOT, "main.min.js"))
