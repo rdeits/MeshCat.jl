@@ -41,6 +41,7 @@ using LinearAlgebra: UniformScaling, Diagonal, norm
 using Sockets: listen, @ip_str, IPAddr, IPv4, IPv6
 using Base64: base64encode
 using MsgPack: MsgPack, pack
+using Pkg.Artifacts: @artifact_str
 import Mux
 import Logging
 import Mux.WebSockets
@@ -118,7 +119,7 @@ include("servers.jl")
 include("assets.jl")
 include("integrations.jl")
 
-const VIEWER_ROOT = joinpath(@__DIR__, "..", "assets", "meshcat", "dist")
+const VIEWER_ROOT = joinpath(first(readdir(artifact"meshcat", join=true)), "dist")
 
 function __init__()
     main_js = abspath(joinpath(VIEWER_ROOT, "main.min.js"))
