@@ -1,0 +1,6 @@
+[meshcat]
+git-tree-sha1 = "345af6ef1eb6b9e3a18f356247e698368b4409a9"
+
+    [[meshcat.download]]
+    url = "https://github.com/rdeits/meshcat/tarball/d4e13682b879185672a9b555aed5c2c072e7f151"
+    sha256 = "03733e0969fbef65acaf0f16a806ae1e46025e0383261b16ded5bfe3821a6372"

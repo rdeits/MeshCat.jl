@@ -300,9 +300,9 @@ end
 function lower(cmd::SetProperty)
     # The background controls expect [r, g, b] arrays rather than hex codes.
     value = cmd.value
-    if cmd.property ∈ ("top_color", "bottom_color")
-        rgb = RGB(value)
-        value = round.(Int, 255 .* [red(rgb), green(rgb), blue(rgb)])
+    if cmd.property ∈ ("color", "top_color", "bottom_color")
+        rgb = RGBA(value)
+        value = Float32.([red(rgb), green(rgb), blue(rgb), alpha(rgb)])
     end
     Dict{String, Any}(
         "type" => "set_property",

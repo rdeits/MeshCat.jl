@@ -252,10 +252,10 @@ end
         setanimation!(vis, anim1)
         anim2 = Animation()
         atframe(anim2, 0) do
-            setprop!(vis["/Cameras/default/rotated/<object>"], "zoom", 1)
+            settransform!(vis["/Cameras/default"], Translation(0, 0, -0.5))
         end
         atframe(anim2, 30) do
-            setprop!(vis["/Cameras/default/rotated/<object>"], "zoom", 0.5)
+            settransform!(vis["/Cameras/default"], Translation(0, 0, 0.5))
         end
         setanimation!(vis, anim2)
         anim_combined = merge(anim1, anim2)
