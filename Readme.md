@@ -58,7 +58,7 @@ open(vis)
 ### Cube
 
 ```julia
-using GeometryTypes
+using GeometryBasics
 using CoordinateTransformations
 
 setobject!(vis, HyperRectangle(Vec(0., 0, 0), Vec(1., 1, 1)))
