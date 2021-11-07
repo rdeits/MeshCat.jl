@@ -23,7 +23,7 @@ jobs:
             prefix: xvfb-run
         exclude:
             - os: windows-latest
-              julia: '1.5'
+              version: '1.5'
 
     steps:
       - uses: actions/checkout@v2
