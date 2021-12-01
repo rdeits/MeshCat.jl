@@ -30,9 +30,9 @@ function getclip!(animation::Animation, path::Path)
 end
 
 js_quaternion(m::AbstractMatrix) = js_quaternion(RotMatrix(SMatrix{3, 3, eltype(m)}(m)))
-js_quaternion(q::UnitQuaternion) = [q.x, q.y, q.z, q.w]
-js_quaternion(::UniformScaling) = js_quaternion(UnitQuaternion(1., 0., 0., 0.))
-js_quaternion(r::Rotation) = js_quaternion(UnitQuaternion(r))
+js_quaternion(q::QuatRotation) = [q.q.v1, q.q.v2, q.q.v3, q.q.s]
+js_quaternion(::UniformScaling) = js_quaternion(QuatRotation(1., 0., 0., 0.))
+js_quaternion(r::Rotation) = js_quaternion(QuatRotation(r))
 js_quaternion(tform::Transformation) = js_quaternion(transform_deriv(tform, SVector(0., 0, 0)))
 
 function js_scaling(tform::AbstractAffineMap)
