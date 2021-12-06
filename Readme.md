@@ -17,7 +17,7 @@ The MeshCat viewer runs entirely in the browser, with no external dependencies. 
 
 As much as possible, MeshCat.jl tries to use existing implementations of its fundamental types. In particular, we use:
 
-* Geometric primitives and meshes from [GeometryTypes.jl](https://github.com/JuliaGeometry/GeometryTypes.jl)
+* Geometric primitives and meshes from [GeometryBasics.jl](https://github.com/JuliaGeometry/GeometryBasics.jl)
 * Colors from [ColorTypes.jl](https://github.com/JuliaGraphics/ColorTypes.jl)
 * Affine transformations from [CoordinateTransformations.jl](https://github.com/FugroRoames/CoordinateTransformations.jl/)
 
