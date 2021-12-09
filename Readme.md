@@ -71,7 +71,7 @@ settransform!(vis, Translation(-0.5, -0.5, 0))
 
 ```julia
 using ColorTypes
-verts = rand(Point3f0, 100_000)
+verts = rand(Point3f, 100_000)
 colors = [RGB(p...) for p in verts]
 setobject!(vis, PointCloud(verts, colors))
 ```

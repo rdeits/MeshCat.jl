@@ -108,9 +108,9 @@ end
 
 function lower(t::Triad)
     attributes = Dict{String, Any}(
-        "position" => lower([Point3f0(0, 0, 0), Point3f0(t.scale, 0, 0),
-                             Point3f0(0, 0, 0), Point3f0(0, t.scale, 0),
-                             Point3f0(0, 0, 0), Point3f0(0, 0, t.scale)]),
+        "position" => lower([Point3f(0, 0, 0), Point3f(t.scale, 0, 0),
+                             Point3f(0, 0, 0), Point3f(0, t.scale, 0),
+                             Point3f(0, 0, 0), Point3f(0, 0, t.scale)]),
         "color" => lower([RGB{Float32}(1,0,0), RGB{Float32}(1,0.6000000238418579,0),
                           RGB{Float32}(0,1,0), RGB{Float32}(0.6000000238418579,1,0),
                           RGB{Float32}(0,0,1), RGB{Float32}(0,0.6000000238418579,1)])
@@ -147,7 +147,7 @@ lower(faces::Vector{<:AbstractFace}) = lower(to_zero_index.(faces))
 function lower(mesh_meta::M) where {M <: AbstractMesh}
     mesh = metafree(mesh_meta)
     attributes = Dict{String, Any}(
-        "position" => lower(convert(Vector{Point3f0}, decompose(Point3f0, mesh))),
+        "position" => lower(convert(Vector{Point3f}, decompose(Point3f, mesh))),
     )
     if M <: MeshMeta
         metadata = meta(mesh_meta)
@@ -175,11 +175,11 @@ Fallback for everything else (like Polyhedra.jl's Polyhedron types)
 $(TYPEDSIGNATURES)
 """
 lower(g::GeometryPrimitive) = lower(GeometryBasics.Mesh(
-    decompose(Point3f0, g), decompose(GLTriangleFace, g)))
+    decompose(Point3f, g), decompose(GLTriangleFace, g)))
 
 function lower(cloud::PointCloud)
     attributes = Dict{String, Any}(
-        "position" => lower(convert(Vector{Point3f0}, cloud.position)),
+        "position" => lower(convert(Vector{Point3f}, cloud.position)),
     )
     if !isempty(cloud.color)
         attributes["color"] = lower(convert(Vector{RGB{Float32}}, cloud.color))

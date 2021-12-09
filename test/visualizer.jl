@@ -180,7 +180,7 @@ end
         v = vis[:points]
         settransform!(v, Translation(-1, 0, 0))
         @testset "random points" begin
-            verts = rand(Point3f0, 100000);
+            verts = rand(Point3f, 100000);
             colors = reinterpret(RGB{Float32}, verts);
             setobject!(v[:random], PointCloud(verts, colors))
             settransform!(v[:random], Translation(-0.5, -0.5, 0))
@@ -191,7 +191,7 @@ end
         v = vis[:points_with_material]
         settransform!(v, Translation(-1.5, -2.5, 0))
         material = PointsMaterial(color=RGBA(0,0,1,0.5))
-        cloud = PointCloud(rand(Point3f0, 5000))
+        cloud = PointCloud(rand(Point3f, 5000))
         obj = Object(cloud, material)
         @test MeshCat.threejs_type(obj) == "Points"
         setobject!(v, cloud, material)
