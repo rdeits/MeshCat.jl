@@ -1,8 +1,12 @@
 using Blink
 import GeometryBasics
 
-notinstalled = !AtomShell.isinstalled()
-notinstalled && AtomShell.install()
+# `AtomShell.install()` was removed in Blink.jl v0.12.6
+# https://github.com/JuliaGizmos/Blink.jl/pull/296
+if isdefined(AtomShell, :install)
+    notinstalled = !AtomShell.isinstalled()
+    notinstalled && AtomShell.install()
+end
 
 window = Window()
 vis = Visualizer()
@@ -295,7 +299,6 @@ end
 
 sleep(5)
 
-if !(Sys.iswindows() && haskey(ENV, "CI"))
-    # this also fails on appveyor, and again I have no way to debug it
+if isdefined(AtomShell, :install) && !(Sys.iswindows() && haskey(ENV, "CI"))
     notinstalled && AtomShell.uninstall()
 end
