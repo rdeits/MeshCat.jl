@@ -1,8 +1,12 @@
 using Blink
 import GeometryBasics
 
-notinstalled = !AtomShell.isinstalled()
-notinstalled && AtomShell.install()
+# `AtomShell.install()` was removed in Blink.jl v0.12.6
+# https://github.com/JuliaGizmos/Blink.jl/pull/296
+if isdefined(AtomShell, :install)
+    notinstalled = !AtomShell.isinstalled()
+    notinstalled && AtomShell.install()
+end
 
 window = Window()
 vis = Visualizer()
