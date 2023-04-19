@@ -299,7 +299,6 @@ end
 
 sleep(5)
 
-if !(Sys.iswindows() && haskey(ENV, "CI"))
-    # this also fails on appveyor, and again I have no way to debug it
+if isdefined(AtomShell, :install) && !(Sys.iswindows() && haskey(ENV, "CI"))
     notinstalled && AtomShell.uninstall()
 end
