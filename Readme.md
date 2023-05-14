@@ -80,6 +80,9 @@ setobject!(vis, PointCloud(verts, colors))
 
 ### Contours
 
+> **Warning**
+> Following the transition from `GeometryTypes` to `GeometryBasics`, this example is no longer working because the `SignedDistanceField` function is not included in `GeometryBasics`. See https://github.com/rdeits/MeshCat.jl/issues/239.
+
 ```julia
 # Visualize a mesh from the level set of a function
 using Meshing
