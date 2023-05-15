@@ -107,7 +107,7 @@ function convert_frames_to_video(tar_file_path::AbstractString, output_path::Abs
     end
 
     mktempdir() do tmpdir
-        run(unpack_cmd(tar_file_path, tmpdir, ".tar", nothing))
+        Tar.extract(tar_file_path, tmpdir)
         cmd = ["-r", string(framerate), "-i", "%07d.png", "-vcodec", "libx264", "-preset", "slow", "-crf", "18"]
         if overwrite
             push!(cmd, "-y")
