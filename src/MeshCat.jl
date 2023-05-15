@@ -35,7 +35,6 @@ using Parameters: @with_kw
 using DocStringExtensions: SIGNATURES, TYPEDSIGNATURES
 using Requires: @require
 using Base.Filesystem: rm
-using BinDeps: download_cmd, unpack_cmd
 using UUIDs: UUID, uuid1
 using LinearAlgebra: UniformScaling, Diagonal, norm
 using Sockets: listen, @ip_str, IPAddr, IPv4, IPv6
@@ -47,6 +46,7 @@ import Logging
 import Mux.WebSockets
 import Cassette
 import FFMPEG
+import Tar
 
 
 import Base: delete!
