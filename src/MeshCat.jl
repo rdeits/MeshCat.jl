@@ -41,11 +41,10 @@ using Sockets: listen, @ip_str, IPAddr, IPv4, IPv6
 using Base64: base64encode
 using MsgPack: MsgPack, pack
 using Pkg.Artifacts: @artifact_str
-import Mux
-import Logging
-import Mux.WebSockets
 import Cassette
 import FFMPEG
+import HTTP
+import Logging
 import Tar
 
 

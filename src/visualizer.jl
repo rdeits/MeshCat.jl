@@ -4,7 +4,7 @@ for the public-facing interface.
 """
 struct CoreVisualizer
     tree::SceneNode
-    connections::Set{Any}
+    connections::Set{HTTP.WebSockets.WebSocket}
     host::IPAddr
     port::Int
 
@@ -37,37 +37,27 @@ function find_open_port(host, default_port, max_retries)
 end
 
 function start_server(core::CoreVisualizer)
-    asset_files = Set(["index.html", "main.min.js", "main.js"])
+    asset_files = ["index.html", "main.min.js", "main.js"]
 
-    function read_asset(file)
-        if file in asset_files
-            return open(s -> read(s, String), joinpath(VIEWER_ROOT, file))
-        else
-            return "Not found"
-        end
+    read_asset(file) = open(s -> read(s, String), joinpath(VIEWER_ROOT, file))
+
+    router = HTTP.Router()
+    for file in asset_files
+        HTTP.register!(router, "GET", "/$(file)",
+                       req -> HTTP.Response(200, read_asset(file)))
     end
-    default = "index.html"
-    Mux.@app h = (
-        Mux.defaults,
-        Mux.page("/index.html", req -> read_asset("index.html")),
-        Mux.page("/main.js", req -> read_asset("main.js")),
-        Mux.page("/main.min.js", req -> read_asset("main.min.js")),
-        Mux.page("/", req -> read_asset(default)),
-        Mux.notfound());
-    Mux.@app w = (
-        Mux.wdefaults,
-        Mux.route("/", req -> add_connection!(core, req)),
-        Mux.wclose,
-        Mux.notfound());
-    @async begin
-        # Suppress noisy unhelpful log messages from HTTP.jl, e.g.
-        # https://github.com/JuliaWeb/HTTP.jl/issues/392
-        Logging.with_logger(Logging.NullLogger()) do
-            WebSockets.serve(
-            WebSockets.ServerWS(
-                Mux.http_handler(h),
-                Mux.ws_handler(w),
-            ), core.host, core.port);
+    HTTP.register!(router, "GET", "/",
+                   req -> HTTP.Response(200, read_asset("index.html")))
+
+    server = HTTP.listen!(core.host, core.port) do http
+        if HTTP.WebSockets.isupgrade(http.message)
+            HTTP.WebSockets.upgrade(http) do websocket
+                push!(core.connections, websocket)
+                send_scene(core, websocket)
+                wait()
+            end
+        else
+            HTTP.streamhandler(router)(http)
         end
     end
     @info "MeshCat server started. You can open the visualizer by visiting the following URL in your browser:\n$(url(core))"
@@ -75,13 +65,6 @@ end
 
 function url(core::CoreVisualizer)
     "http://$(core.host):$(core.port[])"
-end
-
-function add_connection!(core::CoreVisualizer, req)
-    connection = req[:socket]
-    push!(core.connections, connection)
-    send_scene(core, connection)
-    wait()
 end
 
 function update_tree!(core::CoreVisualizer, cmd::SetObject, data)
@@ -115,26 +98,26 @@ end
 function send_scene(core::CoreVisualizer, connection)
     foreach(core.tree) do node
         if node.object !== nothing
-            WebSockets.writeguarded(connection, node.object)
+            HTTP.WebSockets.send(connection, node.object)
         end
         if node.transform !== nothing
-            WebSockets.writeguarded(connection, node.transform)
+            HTTP.WebSockets.send(connection, node.transform)
         end
         for data in values(node.properties)
-            WebSockets.writeguarded(connection, data)
+            HTTP.WebSockets.send(connection, data)
         end
         if node.animation !== nothing
-            WebSockets.writeguarded(connection, node.animation)
+            HTTP.WebSockets.send(connection, node.animation)
         end
     end
 end
 
 function Base.write(core::CoreVisualizer, data)
-    for connection in core.connections
-        if isopen(connection)
-            WebSockets.writeguarded(connection, data)
+    for websocket in core.connections
+        if HTTP.WebSockets.isclosed(websocket)
+            delete!(core.connections, websocket)
         else
-            delete!(core.connections, connection)
+            HTTP.WebSockets.send(websocket, data)
         end
     end
 end
