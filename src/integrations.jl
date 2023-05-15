@@ -1,10 +1,7 @@
 function setup_integrations()
-    @require Blink="ad839575-38b3-5650-b840-f874b8c74a25" begin
-        function Base.open(core::CoreVisualizer, w::Blink.AtomShell.Window)
-            # Ensure the window is ready
-            Blink.wait(w)
-            # Set its contents
-            Blink.loadurl(w, url(core))
+    @require Electron="a1bb12fb-d4d1-54b4-b10a-ee7951ef7ad3" begin
+        function Base.open(core::CoreVisualizer, w::Electron.Application)
+            Electron.Window(w, Electron.URI(url(core)))
             w
         end
     end
