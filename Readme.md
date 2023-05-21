@@ -80,15 +80,13 @@ setobject!(vis, PointCloud(verts, colors))
 
 ### Contours
 
-> **Warning**
-> Following the transition from `GeometryTypes` to `GeometryBasics`, this example is no longer working because the `SignedDistanceField` function is not included in `GeometryBasics`. See https://github.com/rdeits/MeshCat.jl/issues/239.
-
 ```julia
 # Visualize a mesh from the level set of a function
-using Meshing
+using Meshing: MarchingTetrahedra
+using GeometryBasics: Mesh, HyperRectangle
 f = x -> sum(sin, 5 * x)
-sdf = SignedDistanceField(f, HyperRectangle(Vec(-1, -1, -1), Vec(2, 2, 2)))
-mesh = HomogenousMesh(sdf, MarchingTetrahedra())
+mesh = Mesh(f, HyperRectangle(Vec(-1, -1, -1), Vec(2, 2, 2)),
+            MarchingTetrahedra())
 setobject!(vis, mesh,
            MeshPhongMaterial(color=RGBA{Float32}(1, 0, 0, 0.5)))
 ```
