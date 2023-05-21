@@ -112,12 +112,25 @@ function send_scene(core::CoreVisualizer, connection)
     end
 end
 
+function disconnect!(core::CoreVisualizer, websocket::HTTP.WebSockets.WebSocket)
+    delete!(core.connections, websocket)
+end
+
+
 function Base.write(core::CoreVisualizer, data)
     for websocket in core.connections
         if HTTP.WebSockets.isclosed(websocket)
-            delete!(core.connections, websocket)
+            disconnect!(core, websocket)
         else
-            HTTP.WebSockets.send(websocket, data)
+            try
+                HTTP.WebSockets.send(websocket, data)
+            catch e
+                if isa(e, Base.IOError)
+                    disconnect!(core, websocket)
+                else
+                    rethrow(e)
+                end
+            end
         end
     end
 end
