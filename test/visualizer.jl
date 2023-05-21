@@ -1,24 +1,14 @@
-using Blink
+using Electron: Application
 import GeometryBasics
 
-# `AtomShell.install()` was removed in Blink.jl v0.12.6
-# https://github.com/JuliaGizmos/Blink.jl/pull/296
-if isdefined(AtomShell, :install)
-    notinstalled = !AtomShell.isinstalled()
-    notinstalled && AtomShell.install()
-end
-
-window = Window()
+app = Application()
 vis = Visualizer()
 
 if !haskey(ENV, "CI")
     open(vis)
 end
 
-if !(Sys.iswindows() && haskey(ENV, "CI"))
-    # this gets stuck on windows CI, but I don't know why
-    open(vis, window)
-end
+open(vis, app)
 
 if !haskey(ENV, "CI")
     wait(vis)
@@ -299,6 +289,4 @@ end
 
 sleep(5)
 
-if isdefined(AtomShell, :install) && !(Sys.iswindows() && haskey(ENV, "CI"))
-    notinstalled && AtomShell.uninstall()
-end
+close(app)
