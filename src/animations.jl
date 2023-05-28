@@ -93,11 +93,14 @@ To record an animation which has been played in the meshcat visualizer, click
 This will step through the animation frame-by-frame and then prompt you to
 download a `.tar` file containing the resulting frames. You can then pass the
 path to that `.tar` file to this function to produce a video.
+You can pass additional arguments for the video conversion, for 
+example, `conversion_args=("-pix_fmt", "yuv420p")` to create videos playable in 
+Windows.
 
 This uses FFMPEG.jl internally, so you do *not* need to have installed ffmpeg
 manually.
 """
-function convert_frames_to_video(tar_file_path::AbstractString, output_path::AbstractString="output.mp4"; framerate=60, overwrite=false)
+function convert_frames_to_video(tar_file_path::AbstractString, output_path::AbstractString="output.mp4"; framerate=60, overwrite=false, conversion_args=())
     output_path = abspath(output_path)
     if !isfile(tar_file_path)
         error("Could not find the input file $tar_file_path")
@@ -108,7 +111,7 @@ function convert_frames_to_video(tar_file_path::AbstractString, output_path::Abs
 
     mktempdir() do tmpdir
         Tar.extract(tar_file_path, tmpdir)
-        cmd = ["-r", string(framerate), "-i", "%07d.png", "-vcodec", "libx264", "-preset", "slow", "-crf", "18"]
+        cmd = ["-r", string(framerate), "-i", "%07d.png", "-vcodec", "libx264", "-preset", "slow", "-crf", "18", conversion_args...]
         if overwrite
             push!(cmd, "-y")
         end
