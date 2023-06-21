@@ -79,6 +79,7 @@ export Object,
        MeshFileObject,
        Points,
        Line,
+       Line2,
        LineLoop,
        LineSegments
 
@@ -86,7 +87,7 @@ export PointsMaterial,
        MeshLambertMaterial,
        MeshBasicMaterial,
        MeshPhongMaterial,
-       LineBasicMaterial,
+       LineMaterial,
        Texture,
        PngImage
 

@@ -20,7 +20,7 @@ Object(g::GeometryLike) = MeshObject(g)
 Object(g::GeometryLike, m::AbstractMaterial) = MeshObject(g, m)
 Object(c::PointCloud) = Points(c)
 Object(c::PointCloud, m::AbstractMaterial) = Points(c, m)
-Object(t::Triad) = LineSegments(t, LineBasicMaterial(vertexColors=2))
+Object(t::Triad) = LineSegments(t, LineMaterial(vertexColors=2))
 
 @deprecate Mesh(args...) MeshObject(args...)
 
@@ -30,9 +30,9 @@ MeshObject(geometry::GeometryLike) = MeshObject(geometry, defaultmaterial())
 Points(g, m) = Object(g, m, "Points")
 Points(geometry::GeometryLike; kw...) = Points(geometry, PointsMaterial(kw...))
 
-for line_type in [:LineSegments, :Line, :LineLoop]
-    @eval $line_type(g::AbstractGeometry, m::AbstractMaterial=LineBasicMaterial()) = Object(g, m, $(string(line_type)))
-    @eval $line_type(points::AbstractVector{<:Point}, m::AbstractMaterial=LineBasicMaterial()) = $line_type(PointCloud(points), m)
+for line_type in [:Line, :Line2, :LineLoop, :LineSegments]
+    @eval $line_type(g::AbstractGeometry, m::AbstractMaterial=LineMaterial()) = Object(g, m, $(string(line_type)))
+    @eval $line_type(points::AbstractVector{<:Point}, m::AbstractMaterial=LineMaterial()) = $line_type(PointCloud(points), m)
 end
 
 struct PngImage
@@ -66,7 +66,7 @@ threejs_type(m::GenericMaterial) = m._type
 MeshBasicMaterial(;kw...) = GenericMaterial(_type="MeshBasicMaterial"; kw...)
 MeshLambertMaterial(;kw...) = GenericMaterial(_type="MeshLambertMaterial"; kw...)
 MeshPhongMaterial(;kw...) = GenericMaterial(_type="MeshPhongMaterial"; kw...)
-LineBasicMaterial(;kw...) = GenericMaterial(_type="LineBasicMaterial"; kw...)
+LineMaterial(;kw...) = GenericMaterial(_type="LineMaterial"; kw...)
 
 @with_kw struct PointsMaterial <: AbstractMaterial
     color::RGBA{Float32}=RGB(1., 1., 1.)
