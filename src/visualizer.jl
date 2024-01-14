@@ -7,13 +7,13 @@ mutable struct CoreVisualizer
     connections::Set{HTTP.WebSockets.WebSocket}
     const host::IPAddr
     const port::Int
-    server::Union{Nothing,HTTP.Server}
+    server::HTTP.Server
 
     function CoreVisualizer(host::IPAddr = ip"127.0.0.1", default_port=8700)
         connections = Set([])
         tree = SceneNode()
         port = find_open_port(host, default_port, 500)
-        core = new(tree, connections, host, port, nothing)
+        core = new(tree, connections, host, port)
         core.server = start_server(core)
         return core
     end
