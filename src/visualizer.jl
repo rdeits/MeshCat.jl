@@ -7,13 +7,15 @@ struct CoreVisualizer
     connections::Set{HTTP.WebSockets.WebSocket}
     host::IPAddr
     port::Int
+    server::HTTP.Server
 
     function CoreVisualizer(host::IPAddr = ip"127.0.0.1", default_port=8700)
         connections = Set([])
         tree = SceneNode()
         port = find_open_port(host, default_port, 500)
-        core = new(tree, connections, host, port)
-        start_server(core)
+        server = start_server(tree, connections, host, port)
+        core = new(tree, connections, host, port, server)
+        @info "MeshCat server started. You can open the visualizer by visiting the following URL in your browser:\n$(url(core))"
         return core
     end
 end
@@ -36,7 +38,7 @@ function find_open_port(host, default_port, max_retries)
     end
 end
 
-function start_server(core::CoreVisualizer)
+function start_server(tree, connections, host::IPAddr, port::Int)
     asset_files = ["index.html", "main.min.js", "main.js"]
 
     read_asset(file) = open(s -> read(s, String), joinpath(VIEWER_ROOT, file))
@@ -49,18 +51,24 @@ function start_server(core::CoreVisualizer)
     HTTP.register!(router, "GET", "/",
                    req -> HTTP.Response(200, read_asset("index.html")))
 
-    server = HTTP.listen!(core.host, core.port) do http
+    server = HTTP.listen!(host, port) do http
         if HTTP.WebSockets.isupgrade(http.message)
             HTTP.WebSockets.upgrade(http) do websocket
-                push!(core.connections, websocket)
-                send_scene(core, websocket)
+                push!(connections, websocket)
+                send_scene(tree, websocket)
                 wait()
             end
         else
             HTTP.streamhandler(router)(http)
         end
     end
-    @info "MeshCat server started. You can open the visualizer by visiting the following URL in your browser:\n$(url(core))"
+end
+
+function close_server!(core::CoreVisualizer)
+    if !isnothing(core.server) && isopen(core.server)
+        HTTP.close(core.server)
+        @info "MeshCat server closed."
+    end
 end
 
 function url(core::CoreVisualizer)
@@ -95,8 +103,8 @@ function update_tree!(core::CoreVisualizer, cmd::SaveImage, data)
     nothing
 end
 
-function send_scene(core::CoreVisualizer, connection)
-    foreach(core.tree) do node
+function send_scene(tree::SceneNode, connection)
+    foreach(tree) do node
         if node.object !== nothing
             HTTP.WebSockets.send(connection, node.object)
         end

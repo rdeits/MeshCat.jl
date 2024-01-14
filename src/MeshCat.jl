@@ -130,5 +130,7 @@ function __init__()
     setup_integrations()
 end
 
+# Code to "exercise" the package - see https://julialang.github.io/PrecompileTools.jl/stable/
+include("./precompile.jl")
 
 end
