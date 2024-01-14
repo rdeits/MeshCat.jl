@@ -2,20 +2,19 @@
 Low-level type which manages the actual meshcat server. See [`Visualizer`](@ref)
 for the public-facing interface.
 """
-struct CoreVisualizer
+mutable struct CoreVisualizer
     tree::SceneNode
     connections::Set{HTTP.WebSockets.WebSocket}
-    host::IPAddr
-    port::Int
-    server::HTTP.Server
+    const host::IPAddr
+    const port::Int
+    server::Union{Nothing,HTTP.Server}
 
     function CoreVisualizer(host::IPAddr = ip"127.0.0.1", default_port=8700)
         connections = Set([])
         tree = SceneNode()
         port = find_open_port(host, default_port, 500)
-        server = start_server(tree, connections, host, port)
-        core = new(tree, connections, host, port, server)
-        @info "MeshCat server started. You can open the visualizer by visiting the following URL in your browser:\n$(url(core))"
+        core = new(tree, connections, host, port, nothing)
+        core.server = start_server(core)
         return core
     end
 end
@@ -38,7 +37,7 @@ function find_open_port(host, default_port, max_retries)
     end
 end
 
-function start_server(tree, connections, host::IPAddr, port::Int)
+function start_server(core::CoreVisualizer)
     asset_files = ["index.html", "main.min.js", "main.js"]
 
     read_asset(file) = open(s -> read(s, String), joinpath(VIEWER_ROOT, file))
@@ -51,17 +50,19 @@ function start_server(tree, connections, host::IPAddr, port::Int)
     HTTP.register!(router, "GET", "/",
                    req -> HTTP.Response(200, read_asset("index.html")))
 
-    server = HTTP.listen!(host, port) do http
+    server = HTTP.listen!(core.host, core.port) do http
         if HTTP.WebSockets.isupgrade(http.message)
             HTTP.WebSockets.upgrade(http) do websocket
-                push!(connections, websocket)
-                send_scene(tree, websocket)
+                push!(core.connections, websocket)
+                send_scene(core.tree, websocket)
                 wait()
             end
         else
             HTTP.streamhandler(router)(http)
         end
     end
+    @info "MeshCat server started. You can open the visualizer by visiting the following URL in your browser:\n$(url(core))"
+    return server
 end
 
 function close_server!(core::CoreVisualizer)
