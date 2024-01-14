@@ -5,8 +5,8 @@ for the public-facing interface.
 mutable struct CoreVisualizer
     tree::SceneNode
     connections::Set{HTTP.WebSockets.WebSocket}
-    const host::IPAddr
-    const port::Int
+    host::IPAddr
+    port::Int
     server::HTTP.Server
 
     function CoreVisualizer(host::IPAddr = ip"127.0.0.1", default_port=8700)
