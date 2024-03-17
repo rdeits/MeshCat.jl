@@ -2,18 +2,19 @@
 Low-level type which manages the actual meshcat server. See [`Visualizer`](@ref)
 for the public-facing interface.
 """
-struct CoreVisualizer
+mutable struct CoreVisualizer
     tree::SceneNode
     connections::Set{HTTP.WebSockets.WebSocket}
     host::IPAddr
     port::Int
+    server::HTTP.Server
 
     function CoreVisualizer(host::IPAddr = ip"127.0.0.1", default_port=8700)
         connections = Set([])
         tree = SceneNode()
         port = find_open_port(host, default_port, 500)
         core = new(tree, connections, host, port)
-        start_server(core)
+        core.server = start_server(core)
         return core
     end
 end
@@ -53,7 +54,7 @@ function start_server(core::CoreVisualizer)
         if HTTP.WebSockets.isupgrade(http.message)
             HTTP.WebSockets.upgrade(http) do websocket
                 push!(core.connections, websocket)
-                send_scene(core, websocket)
+                send_scene(core.tree, websocket)
                 wait()
             end
         else
@@ -61,6 +62,14 @@ function start_server(core::CoreVisualizer)
         end
     end
     @info "MeshCat server started. You can open the visualizer by visiting the following URL in your browser:\n$(url(core))"
+    return server
+end
+
+function close_server!(core::CoreVisualizer)
+    if !isnothing(core.server) && isopen(core.server)
+        HTTP.close(core.server)
+        @info "MeshCat server closed."
+    end
 end
 
 function url(core::CoreVisualizer)
@@ -95,8 +104,8 @@ function update_tree!(core::CoreVisualizer, cmd::SaveImage, data)
     nothing
 end
 
-function send_scene(core::CoreVisualizer, connection)
-    foreach(core.tree) do node
+function send_scene(tree::SceneNode, connection)
+    foreach(tree) do node
         if node.object !== nothing
             HTTP.WebSockets.send(connection, node.object)
         end
