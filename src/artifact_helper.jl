@@ -1,7 +1,7 @@
 using Tar, Inflate, SHA
 
 function artifact_helper(sha::AbstractString)
-    url = "https://github.com/rdeits/meshcat/tarball/$sha"
+    url = "https://github.com/meshcat-dev/meshcat/tarball/$sha"
     filename = download(url)
 
     println("""
