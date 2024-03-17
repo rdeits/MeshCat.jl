@@ -216,7 +216,7 @@ function lower(obj::MeshFileObject)
 end
 
 
-# TODO: Unify these two methods once https://github.com/rdeits/meshcat/issues/50 is resolved
+# TODO: Unify these two methods once https://github.com/meshcat-dev/meshcat/issues/50 is resolved
 pack_mesh_file_data(s::AbstractString) = s
 pack_mesh_file_data(s::AbstractVector{UInt8}) = PackedVector(s)
 

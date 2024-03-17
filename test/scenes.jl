@@ -39,11 +39,11 @@ using CoordinateTransformations
         add_cats!(vis)
         setprop!(vis["/Lights/SpotLight"], "visible", true)
         # To understand why we need the <object> here, see the documentation for
-        # set_property at https://github.com/rdeits/meshcat
+        # set_property at https://github.com/meshcat-dev/meshcat
         setprop!(vis["/Lights/SpotLight/<object>"], "castShadow", true)
         setprop!(vis["/Lights/DirectionalLight"], "visible", false)
         # To understand why we need the <object> here, see the documentation for
-        # set_property at https://github.com/rdeits/meshcat
+        # set_property at https://github.com/meshcat-dev/meshcat
         setprop!(vis["/Lights/AmbientLight/<object>"], "intensity", 0.44)
     end
 end

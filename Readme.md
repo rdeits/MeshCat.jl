@@ -4,7 +4,7 @@
 [![codecov.io](https://codecov.io/github/rdeits/MeshCat.jl/coverage.svg?branch=master)](https://codecov.io/github/rdeits/MeshCat.jl?branch=master)
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://rdeits.github.com/MeshCat.jl/dev)
 
-[MeshCat](https://github.com/rdeits/meshcat) is a remotely-controllable 3D viewer, built on top of [three.js](https://threejs.org/). The viewer contains a tree of objects and transformations (i.e. a scene graph) and allows those objects and transformations to be added and manipulated with simple commands. This makes it easy to create 3D visualizations of geometries, mechanisms, and robots. MeshCat.jl runs on macOS, Linux, and Windows.
+[MeshCat](https://github.com/meshcat-dev/meshcat) is a remotely-controllable 3D viewer, built on top of [three.js](https://threejs.org/). The viewer contains a tree of objects and transformations (i.e. a scene graph) and allows those objects and transformations to be added and manipulated with simple commands. This makes it easy to create 3D visualizations of geometries, mechanisms, and robots. MeshCat.jl runs on macOS, Linux, and Windows.
 
 The MeshCat viewer runs entirely in the browser, with no external dependencies. All files are served locally, so no internet connection is required. Communication between the browser and your Julia code is managed by [HTTP.jl](https://github.com/JuliaWeb/HTTP.jl). That means that MeshCat should work:
 
@@ -39,7 +39,7 @@ MeshCat.jl is a successor to [DrakeVisualizer.jl](https://github.com/rdeits/Drak
 
 You may also want to check out:
 
-* [meshcat-python](https://github.com/rdeits/meshcat-python): the Python implementation of the same protocol
+* [meshcat-python](https://github.com/meshcat-dev/meshcat-python): the Python implementation of the same protocol
 * [MeshCatMechanisms.jl](https://github.com/rdeits/MeshCatMechanisms.jl) extensions to MeshCat.jl for visualizing mechanisms, robots, and URDFs
 
 # Examples
