@@ -23,6 +23,6 @@ function develop_meshcat_assets(skip_confirmation=false)
     end
     println("Removing $meshcat_dir")
     rm(meshcat_dir, force=true, recursive=true)
-    run(`git clone https://github.com/rdeits/meshcat $meshcat_dir`)
+    run(`git clone https://github.com/meshcat-dev/meshcat $meshcat_dir`)
     rm(joinpath(meshcat_dir, "..", "meshcat.stamp"))
 end
