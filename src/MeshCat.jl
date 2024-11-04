@@ -41,7 +41,6 @@ using Sockets: listen, @ip_str, IPAddr, IPv4, IPv6
 using Base64: base64encode
 using MsgPack: MsgPack, pack
 using Pkg.Artifacts: @artifact_str
-import Cassette
 import FFMPEG
 import HTTP
 import Logging
@@ -102,6 +101,35 @@ abstract type AbstractMaterial end
 include("util.jl")
 include("trees.jl")
 using .SceneTrees
+
+struct AnimationContext
+    animation
+    frame::Int
+end
+
+"""
+Low-level type which manages the actual meshcat server. See [`Visualizer`](@ref)
+for the public-facing interface.
+"""
+mutable struct CoreVisualizer
+    tree::SceneNode
+    connections::Set{HTTP.WebSockets.WebSocket}
+    host::IPAddr
+    port::Int
+    server::HTTP.Server
+    animation_contexts::Vector{AnimationContext}
+
+    function CoreVisualizer(host::IPAddr = ip"127.0.0.1", default_port=8700)
+        connections = Set([])
+        tree = SceneNode()
+        port = find_open_port(host, default_port, 500)
+        core = new(tree, connections, host, port)
+        core.server = start_server(core)
+        core.animation_contexts = AnimationContext[]
+        return core
+    end
+end
+
 include("mesh_files.jl")
 include("geometry.jl")
 include("objects.jl")
