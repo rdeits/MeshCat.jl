@@ -236,7 +236,7 @@ end
     end
 
     @testset "Animation" begin
-        anim1 = Animation()
+        anim1 = Animation(vis)
         atframe(anim1, 0) do
             settransform!(vis[:shapes][:box], Translation(0., 0, 0))
         end
@@ -244,7 +244,7 @@ end
             settransform!(vis[:shapes][:box], Translation(2., 0, 0) ∘ LinearMap(RotZ(π/2)))
         end
         setanimation!(vis, anim1)
-        anim2 = Animation()
+        anim2 = Animation(vis)
         atframe(anim2, 0) do
             setprop!(vis["/Cameras/default/rotated/<object>"], "zoom", 1)
         end

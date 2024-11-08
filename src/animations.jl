@@ -46,17 +46,19 @@ function Base.merge!(a::AnimationClip, others::AnimationClip...)
 end
 
 struct Animation
-    clips::Dict{Path, AnimationClip}
+    visualizer::CoreVisualizer
     default_framerate::Int
+    clips::Dict{Path, AnimationClip}
+
+    """
+    Create a new animation. See [`atframe`](@ref) to adjust object poses or properties
+    in that animation.
+
+    $(TYPEDSIGNATURES)
+    """
+    Animation(visualizer::CoreVisualizer; fps=30) = new(visualizer, fps, Dict())
 end
 
-"""
-Create a new animation. See [`atframe`](@ref) to adjust object poses or properties
-in that animation.
-
-$(TYPEDSIGNATURES)
-"""
-Animation(fps::Int=30) = Animation(Dict{Path, AnimationClip}(), fps)
 
 """
 Merge multiple animations, storing the result in `a`.
@@ -65,6 +67,7 @@ $(TYPEDSIGNATURES)
 """
 function Base.merge!(a::Animation, others::Animation...)
     for other in others
+        @assert a.visualizer === other.visualizer
         @assert a.default_framerate == other.default_framerate
         merge!(merge!, a.clips, other.clips) # merge clips recursively
     end
@@ -80,7 +83,7 @@ The animations may involve the same properties or different properties
 (animations of the same property on the same path will have their events
 interleaved). All animations must have the same framerate.
 """
-Base.merge(a::Animation, others::Animation...) = merge!(Animation(a.default_framerate), a, others...)
+Base.merge(a::Animation, others::Animation...) = merge!(Animation(a.visualizer; fps=a.default_framerate), a, others...)
 
 """
 Convert the `.tar` file of still images produced by the meshcat "record" feature

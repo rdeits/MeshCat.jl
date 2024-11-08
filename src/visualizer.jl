@@ -1,24 +1,3 @@
-"""
-Low-level type which manages the actual meshcat server. See [`Visualizer`](@ref)
-for the public-facing interface.
-"""
-mutable struct CoreVisualizer
-    tree::SceneNode
-    connections::Set{HTTP.WebSockets.WebSocket}
-    host::IPAddr
-    port::Int
-    server::HTTP.Server
-
-    function CoreVisualizer(host::IPAddr = ip"127.0.0.1", default_port=8700)
-        connections = Set([])
-        tree = SceneNode()
-        port = find_open_port(host, default_port, 500)
-        core = new(tree, connections, host, port)
-        core.server = start_server(core)
-        return core
-    end
-end
-
 function find_open_port(host, default_port, max_retries)
     for port in default_port:(default_port + max_retries)
         server = try
@@ -217,7 +196,15 @@ of its parents, so setting the transform of `vis[:group1]` affects the poses of
 the objects at `vis[:group1][:box1]` and `vis[:group1][:box2]`.
 """
 function settransform!(vis::Visualizer, tform::Transformation)
-    send(vis.core, SetTransform(tform, vis.path))
+    if !isempty(vis.core.animation_contexts)
+        ctx = last(vis.core.animation_contexts)
+        clip = getclip!(ctx.animation, vis.path)
+        _setprop!(clip, ctx.frame, "scale", "vector3", js_scaling(tform))
+        _setprop!(clip, ctx.frame, "position", "vector3", js_position(tform))
+        _setprop!(clip, ctx.frame, "quaternion", "quaternion", js_quaternion(tform))
+    else
+        send(vis.core, SetTransform(tform, vis.path))
+    end
     vis
 end
 
@@ -240,7 +227,29 @@ $(TYPEDSIGNATURES)
 with the Base.setproperty! function introduced in Julia v0.7)
 """
 function setprop!(vis::Visualizer, property::AbstractString, value)
-    send(vis.core, SetProperty(vis.path, property, value))
+    if !isempty(vis.core.animation_contexts)
+        ctx = last(vis.core.animation_contexts)
+        clip = getclip!(ctx.animation, vis.path)
+        _setprop!(clip, ctx.frame, property, get_property_type(property), value)
+    else
+        send(vis.core, SetProperty(vis.path, property, value))
+    end
+    vis
+end
+
+"""
+Variation of `setprop!` which accepts an explicit type for the underlying JS property. This property type is only used within an animation context.
+
+$(TYPEDSIGNATURES)
+"""
+function setprop!(vis::Visualizer, property::AbstractString, jstype::AbstractString, value)
+    if !isempty(vis.core.animation_contexts)
+        ctx = last(vis.core.animation_contexts)
+        clip = getclip!(ctx.animation, vis.path)
+        _setprop!(clip, ctx.frame, property, jstype, value)
+    else
+        send(vis.core, SetProperty(vis.path, property, value))
+    end
     vis
 end
 
@@ -275,3 +284,5 @@ For example, if you have `vis::Visualizer` with path `/meshcat/foo`, you can do
 """
 Base.getindex(vis::Visualizer, path...) =
     Visualizer(vis.core, joinpath(vis.path, path...))
+
+Animation(vis::Visualizer, args...; kw...) = Animation(vis.core, args...; kw...)
