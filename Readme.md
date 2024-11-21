@@ -82,11 +82,13 @@ setobject!(vis, PointCloud(verts, colors))
 
 ```julia
 # Visualize a mesh from the level set of a function
-using Meshing: MarchingTetrahedra
-using GeometryBasics: Mesh, HyperRectangle
+using Meshing: MarchingTetrahedra, isosurface
+using GeometryBasics: Mesh, Point, TriangleFace, Vec
+xr, yr, zr = ntuple(_ -> LinRange(-1, 1, 50), 3)  # domain for the SDF evaluation
 f = x -> sum(sin, 5 * x)
-mesh = Mesh(f, HyperRectangle(Vec(-1, -1, -1), Vec(2, 2, 2)),
-            MarchingTetrahedra())
+sdf = [f(Vec(x,y,z)) for x in xr, y in yr, z in zr]
+vts, fcs = isosurface(sdf, MarchingTetrahedra(), xr, yr, zr)
+mesh = Mesh(Point.(vts), TriangleFace.(fcs))
 setobject!(vis, mesh,
            MeshPhongMaterial(color=RGBA{Float32}(1, 0, 0, 0.5)))
 ```
