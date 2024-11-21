@@ -83,11 +83,7 @@ setobject!(vis, PointCloud(verts, colors))
 ```julia
 # Visualize a mesh from the level set of a function
 using Meshing: MarchingTetrahedra, isosurface
-using GeometryBasics:
-    Mesh,
-    TriangleFace,
-    Vec,
-    Point
+using GeometryBasics: Mesh, Point, TriangleFace, Vec
 xr,yr,zr = ntuple(_->LinRange(-1,1,50),3)
 f = x -> sum(sin, 5 * x)
 sdf = [f(Vec(x,y,z)) for x in xr, y in yr, z in zr]
