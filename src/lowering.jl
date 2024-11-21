@@ -61,7 +61,7 @@ function lower(box::HyperRectangle{3})
     )
 end
 
-function lower(c::Cylinder{3})
+function lower(c::Cylinder)
     Dict{String, Any}(
         "uuid" => string(uuid1()),
         "type" => "CylinderGeometry",
@@ -144,27 +144,25 @@ to_zero_index(f::AbstractNgonFace{N}) where {N} = SVector(raw.(convert(NgonFace{
 
 lower(faces::Vector{<:AbstractFace}) = lower(to_zero_index.(faces))
 
-function lower(mesh_meta::M) where {M <: AbstractMesh}
-    mesh = metafree(mesh_meta)
+function lower(meta_mesh::M) where {M <: AbstractMesh}
     attributes = Dict{String, Any}(
-        "position" => lower(convert(Vector{Point3f}, decompose(Point3f, mesh))),
+        "position" => lower(convert(Vector{Point3f}, decompose(Point3f, meta_mesh))),
     )
-    if M <: MeshMeta
-        metadata = meta(mesh_meta)
-        if hasfield(typeof(metadata), :vertexColors)
-            attributes["color"] = lower(convert(Vector{RGB{Float32}}, metadata.vertexColors))
+    if M <: MetaMesh
+        if haskey(meta_mesh, :vertexColors)
+            attributes["color"] = lower(convert(Vector{RGB{Float32}}, meta_mesh[:vertexColors]))
         end
     end
-    uv = texturecoordinates(mesh)
+    uv = texturecoordinates(meta_mesh)
     if uv !== nothing
-        attributes["uv"] = lower(uv)
+        attributes["uv"] = lower(GeometryBasics.values(uv))
     end
     Dict{String, Any}(
         "uuid" => string(uuid1()),
         "type" => "BufferGeometry",
         "data" => Dict{String, Any}(
             "attributes" => attributes,
-            "index" => lower(decompose(GLTriangleFace, mesh))
+            "index" => lower(decompose(GLTriangleFace, meta_mesh))
         )
     )
 end

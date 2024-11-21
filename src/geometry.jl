@@ -71,7 +71,7 @@ intrinsic_transform(g::HyperRectangle) = Translation(center(g)...)
 intrinsic_transform(g::HyperSphere) = Translation(center(g)...)
 intrinsic_transform(g::HyperEllipsoid) = Translation(center(g)...) ∘ LinearMap(SMatrix{3, 3}(SDiagonal(radii(g)...)))
 
-function intrinsic_transform(g::Cylinder{3})
+function intrinsic_transform(g::Cylinder)
     # Three.js wants a cylinder to lie along the y axis
     R = rotation_between(SVector(0, 1, 0), g.extremity - origin(g))
     Translation(center(g)) ∘ LinearMap(R)

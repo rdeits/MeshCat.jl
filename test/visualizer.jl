@@ -160,11 +160,11 @@ end
                 [Point(0., 0, 0), Point(1., 0, 0), Point(1., 1, 0)],
                 [NgonFace(1, 2, 3)])
             # Wrap that mesh with metadata encoding the vertex colors
-            mesh_meta = meta(geometry, vertexColors=[RGB(1, 0, 0), RGB(0, 1, 0), RGB(0, 0, 1)])
+            meta_mesh = MetaMesh(geometry, vertexColors=[RGB(1, 0, 0), RGB(0, 1, 0), RGB(0, 0, 1)])
             # Create a Gouraud-shaded material with vertex coloring enabled
             material = MeshLambertMaterial(vertexColors=true)
             # Add it to the scene
-            setobject!(v[:vertex_color_mesh], mesh_meta, material)
+            setobject!(v[:vertex_color_mesh], meta_mesh, material)
             settransform!(v[:vertex_color_mesh], Translation(1, -1.5, 0))
         end
 
