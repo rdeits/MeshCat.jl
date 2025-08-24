@@ -1,6 +1,7 @@
 using Test
 using LinearAlgebra: UniformScaling
 using MeshCat
+using MeshCat: Cone # GeometryBasics also exports Cone
 using GeometryBasics
 using CoordinateTransformations
 using Colors
