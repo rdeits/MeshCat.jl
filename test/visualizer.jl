@@ -144,10 +144,10 @@ end
         end
 
         @testset "textured valkyrie" begin
-            geometry = load(joinpath(MeshCat.VIEWER_ROOT, "..", "data", "head_multisense.obj"))
+            geometry = load(joinpath(MeshCat.VIEWER_ROOT(), "..", "data", "head_multisense.obj"))
             material = MeshLambertMaterial(
                 map=Texture(
-                    image=PngImage(joinpath(MeshCat.VIEWER_ROOT, "..", "data", "HeadTextureMultisense.png"))
+                    image=PngImage(joinpath(MeshCat.VIEWER_ROOT(), "..", "data", "HeadTextureMultisense.png"))
                 )
             )
             setobject!(v[:valkyrie, :head], geometry, material)

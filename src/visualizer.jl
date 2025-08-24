@@ -17,17 +17,13 @@ function find_open_port(host, default_port, max_retries)
 end
 
 function start_server(core::CoreVisualizer)
-    asset_files = ["index.html", "main.min.js", "main.js"]
-
-    read_asset(file) = open(s -> read(s, String), joinpath(VIEWER_ROOT, file))
-
     router = HTTP.Router()
-    for file in asset_files
-        HTTP.register!(router, "GET", "/$(file)",
-                       req -> HTTP.Response(200, read_asset(file)))
-    end
+    HTTP.register!(router, "GET", "/main.min.js",
+                    req -> HTTP.Response(200, MAIN_JS_STRING))
+    HTTP.register!(router, "GET", "/index.html",
+                    req -> HTTP.Response(200, INDEX_HTML_STRING))
     HTTP.register!(router, "GET", "/",
-                   req -> HTTP.Response(200, read_asset("index.html")))
+                   req -> HTTP.Response(200, INDEX_HTML_STRING))
 
     server = HTTP.listen!(core.host, core.port) do http
         if HTTP.WebSockets.isupgrade(http.message)
