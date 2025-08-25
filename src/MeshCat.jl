@@ -39,7 +39,7 @@ using LinearAlgebra: UniformScaling, Diagonal, norm
 using Sockets: listen, @ip_str, IPAddr, IPv4, IPv6
 using Base64: base64encode
 using MsgPack: MsgPack, pack
-using Pkg.Artifacts: @artifact_str
+using Artifacts: @artifact_str
 import FFMPEG
 import HTTP
 import Logging
