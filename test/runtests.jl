@@ -7,6 +7,9 @@ using CoordinateTransformations
 using Colors
 using MeshIO, FileIO
 using Rotations
+using Aqua
+
+Aqua.test_all(MeshCat; deps_compat = false)
 
 include("util.jl")
 
