@@ -145,15 +145,11 @@ include("servers.jl")
 include("assets.jl")
 include("integrations.jl")
 
-const VIEWER_ROOT = joinpath(first(readdir(artifact"meshcat", join=true)), "dist")
+VIEWER_ROOT() = joinpath(first(readdir(artifact"meshcat", join=true)), "dist")
+const MAIN_JS_STRING = read(joinpath(VIEWER_ROOT(), "main.min.js"), String)
+const INDEX_HTML_STRING = read(joinpath(VIEWER_ROOT(), "index.html"), String)
 
 function __init__()
-    main_js = abspath(joinpath(VIEWER_ROOT, "main.min.js"))
-    if !isfile(main_js)
-        error("""
-        main.min.js not found at $main_js.
-        Please build MeshCat using `import Pkg; Pkg.build("MeshCat")`""")
-    end
     setup_integrations()
 end
 

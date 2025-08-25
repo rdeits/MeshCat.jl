@@ -89,7 +89,7 @@ function static_html(core::CoreVisualizer)
                 <div id="meshcat-pane">
                 </div>
                 <script>
-                    $(open(s -> read(s, String), joinpath(VIEWER_ROOT, "main.min.js")))
+                    $(MAIN_JS_STRING)
                 </script>
                 <script>
                     var viewer = new MeshCat.Viewer(document.getElementById("meshcat-pane"));
