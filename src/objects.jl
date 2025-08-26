@@ -71,6 +71,6 @@ LineBasicMaterial(;kw...) = GenericMaterial(_type="LineBasicMaterial"; kw...)
 @with_kw struct PointsMaterial <: AbstractMaterial
     color::RGBA{Float32}=RGB(1., 1., 1.)
     size::Float32 = 0.002
-    vertexColors::Int = 2
+    vertexColors::Int = 0
 end
 
