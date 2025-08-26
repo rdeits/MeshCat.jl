@@ -1,7 +1,7 @@
 name = "MeshCat"
 uuid = "283c5d60-a78f-5afe-a0af-af636b173e11"
 authors = ["Robin Deits <robin.deits@gmail.com>"]
-version = "1.1.0"
+version = "1.1.1"
 
 [deps]
 Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
