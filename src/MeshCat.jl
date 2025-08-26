@@ -32,11 +32,10 @@ using Colors: Color, Colorant, RGB, RGBA, alpha, hex, red, green, blue
 using StaticArrays: StaticVector, SVector, SDiagonal, SMatrix
 using Parameters: @with_kw
 using DocStringExtensions: SIGNATURES, TYPEDSIGNATURES
-using Requires: @require
 using Base.Filesystem: rm
-using UUIDs: UUID, uuid1
+using UUIDs: uuid1
 using LinearAlgebra: UniformScaling, Diagonal, norm
-using Sockets: listen, @ip_str, IPAddr, IPv4, IPv6
+using Sockets: listen, @ip_str, IPAddr
 using Base64: base64encode
 using MsgPack: MsgPack, pack
 using Pkg.Artifacts: @artifact_str
@@ -89,8 +88,7 @@ export PointsMaterial,
        PngImage
 
 export Animation,
-       atframe,
-       @animation
+       atframe
 
 export ArrowVisualizer
 
@@ -143,15 +141,10 @@ include("arrow_visualizer.jl")
 include("render.jl")
 include("servers.jl")
 include("assets.jl")
-include("integrations.jl")
 
 VIEWER_ROOT() = joinpath(first(readdir(artifact"meshcat", join=true)), "dist")
 const MAIN_JS_STRING = read(joinpath(VIEWER_ROOT(), "main.min.js"), String)
 const INDEX_HTML_STRING = read(joinpath(VIEWER_ROOT(), "index.html"), String)
-
-function __init__()
-    setup_integrations()
-end
 
 # Code to "exercise" the package - see https://julialang.github.io/PrecompileTools.jl/stable/
 include("./precompile.jl")
