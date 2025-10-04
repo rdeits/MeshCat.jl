@@ -85,12 +85,13 @@ of GL lines.
 
 # Keyword Arguments
 - `color::RGBA{Float32} = RGB(1., 1., 1.)`: Line color
-- `linewidth::Float64 = 1.0`: Line width in pixels (works in all browsers)
+- `linewidth::Float64 = 1.0`: Line width (in pixels if worldUnits=false, or world units if worldUnits=true)
 - `vertexColors::Bool = false`: Use per-vertex colors from geometry
 - `dashed::Bool = false`: Enable dashed line rendering
 - `dashScale::Float64 = 1.0`: Scale of dashes (only used if dashed=true)
 - `dashSize::Float64 = 1.0`: Length of dashes (only used if dashed=true)
 - `gapSize::Float64 = 1.0`: Length of gaps between dashes (only used if dashed=true)
+- `worldUnits::Bool = false`: If false (default), linewidth is in screen pixels. If true, linewidth is in world units and scales with zoom
 
 # Example
 ```julia
@@ -114,6 +115,7 @@ See also: [`FatLineGeometry`](@ref), [`FatLine`](@ref)
     dashScale::Float64 = 1.0
     dashSize::Float64 = 1.0
     gapSize::Float64 = 1.0
+    worldUnits::Bool = false
 end
 
 """

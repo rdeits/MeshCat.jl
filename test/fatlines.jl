@@ -129,5 +129,14 @@ import MeshCat: threejs_type
         @test lowered_mat_dashed["dashScale"] == 2.0
         @test lowered_mat_dashed["dashSize"] == 3.0
         @test lowered_mat_dashed["gapSize"] == 1.0
+
+        # Test worldUnits material lowering
+        mat_world = FatLineMaterial(worldUnits=true)
+        lowered_mat_world = MeshCat.lower(mat_world)
+        @test lowered_mat_world["worldUnits"] == true
+
+        mat_pixel = FatLineMaterial(worldUnits=false)
+        lowered_mat_pixel = MeshCat.lower(mat_pixel)
+        @test lowered_mat_pixel["worldUnits"] == false
     end
 end

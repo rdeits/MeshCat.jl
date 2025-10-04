@@ -381,6 +381,7 @@ function lower(material::FatLineMaterial)
         "linewidth" => material.linewidth,
         "vertexColors" => material.vertexColors,
         "dashed" => material.dashed,
+        "worldUnits" => material.worldUnits,
     )
     if material.dashed
         data["dashScale"] = material.dashScale

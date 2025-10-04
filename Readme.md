@@ -93,6 +93,17 @@ colors = [RGB(i/20, 0, 1-i/20) for i in 0:20]
 setobject!(vis[:colored_line],
     FatLine(FatLineGeometry(points, colors),
             FatLineMaterial(linewidth=5.0, vertexColors=true)))
+
+# Dashed fat line
+setobject!(vis[:dashed_line],
+    FatLine(points,
+            FatLineMaterial(linewidth=5.0, color=RGB(1, 1, 0),
+                           dashed=true, dashSize=0.1, gapSize=0.05)))
+
+# World-space line width (thickness scales with zoom, false by default uses pixel space)
+setobject!(vis[:world_line],
+    FatLine(points,
+            FatLineMaterial(linewidth=0.02, color=RGB(0, 1, 1), worldUnits=true)))
 ```
 
 ![demo-fat-lines](assets/demo-fat-lines.png)
