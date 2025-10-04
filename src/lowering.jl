@@ -352,3 +352,40 @@ function lower(cmd::SaveImage)
         "type" => "save_image"
     )
 end
+
+# Lowering for FatLineGeometry (Line2 geometry)
+function lower(cloud::FatLineGeometry)
+    attributes = Dict{String, Any}(
+        "position" => lower(convert(Vector{Point3f}, cloud.position)),
+    )
+    if !isempty(cloud.color)
+        attributes["color"] = lower(convert(Vector{RGB{Float32}}, cloud.color))
+    end
+    Dict{String, Any}(
+        "uuid" => string(uuid1()),
+        "type" => "LineGeometry",
+        "data" => Dict(
+            "attributes" => attributes
+        )
+    )
+end
+
+# Lowering for FatLineMaterial (LineMaterial)
+function lower(material::FatLineMaterial)
+    data = Dict{String, Any}(
+        "uuid" => string(uuid1()),
+        "type" => "LineMaterial",
+        "color" => lower(convert(RGB, material.color)),
+        "transparent" => alpha(material.color) != 1,
+        "opacity" => alpha(material.color),
+        "linewidth" => material.linewidth,
+        "vertexColors" => material.vertexColors,
+        "dashed" => material.dashed,
+    )
+    if material.dashed
+        data["dashScale"] = material.dashScale
+        data["dashSize"] = material.dashSize
+        data["gapSize"] = material.gapSize
+    end
+    data
+end
