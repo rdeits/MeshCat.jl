@@ -107,13 +107,14 @@ import MeshCat: threejs_type
         lowered_geom = MeshCat.lower(geom)
         @test lowered_geom["type"] == "LineGeometry"
         @test haskey(lowered_geom, "uuid")
-        @test haskey(lowered_geom["data"], "attributes")
-        @test haskey(lowered_geom["data"]["attributes"], "position")
+        @test haskey(lowered_geom, "position")
+        @test haskey(lowered_geom["position"], "array")
 
         # Test geometry lowering with colors
         geom_colored = FatLineGeometry(points, colors)
         lowered_geom_colored = MeshCat.lower(geom_colored)
-        @test haskey(lowered_geom_colored["data"]["attributes"], "color")
+        @test haskey(lowered_geom_colored, "color")
+        @test haskey(lowered_geom_colored["color"], "array")
 
         # Test material lowering
         mat = FatLineMaterial(linewidth=10.0, color=RGB(1, 0, 0))

@@ -355,19 +355,15 @@ end
 
 # Lowering for FatLineGeometry (Line2 geometry)
 function lower(cloud::FatLineGeometry)
-    attributes = Dict{String, Any}(
+    data = Dict{String, Any}(
+        "uuid" => string(uuid1()),
+        "type" => "LineGeometry",
         "position" => lower(convert(Vector{Point3f}, cloud.position)),
     )
     if !isempty(cloud.color)
-        attributes["color"] = lower(convert(Vector{RGB{Float32}}, cloud.color))
+        data["color"] = lower(convert(Vector{RGB{Float32}}, cloud.color))
     end
-    Dict{String, Any}(
-        "uuid" => string(uuid1()),
-        "type" => "LineGeometry",
-        "data" => Dict(
-            "attributes" => attributes
-        )
-    )
+    data
 end
 
 # Lowering for FatLineMaterial (LineMaterial)
