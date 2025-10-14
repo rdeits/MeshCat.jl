@@ -20,6 +20,7 @@ include("util.jl")
     include("notebook.jl")
     include("scenes.jl")
     include("wait.jl")
+    include("fatlines.jl")
 end
 
 module ModuleTest

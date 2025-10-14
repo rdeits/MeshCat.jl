@@ -50,6 +50,50 @@ end
 
 GeometryBasics.origin(geometry::Cone) = geometry.origin
 
+"""
+    FatLineGeometry(position::AbstractVector{<:AbstractVector}, color::AbstractVector{<:Colorant}=RGB{Float32}[])
+
+Geometry for rendering lines with arbitrary width using Three.js Line2.
+
+This geometry type uses actual mesh geometry instead of GL lines, which allows for
+configurable line width that works across all modern browsers (unlike the deprecated
+GL_LINEWIDTH parameter).
+
+# Arguments
+- `position`: Vector of 3D points defining the line path
+- `color`: Optional vector of colors for per-vertex coloring (must be same length as position if provided)
+
+# Example
+```julia
+using MeshCat
+using GeometryBasics
+using Colors
+
+vis = Visualizer()
+
+# Simple line
+points = [Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0)]
+setobject!(vis[:simple], FatLine(points, FatLineMaterial(linewidth=3.0)))
+
+# Line with vertex colors
+points = [Point(0, 0, i*0.1) for i in 0:10]
+colors = [RGB(i/10, 0, 1-i/10) for i in 0:10]
+setobject!(vis[:colored], FatLine(FatLineGeometry(points, colors),
+                                   FatLineMaterial(linewidth=5.0, vertexColors=true)))
+```
+
+See also: [`FatLineMaterial`](@ref), [`FatLine`](@ref)
+"""
+struct FatLineGeometry{T, PointType <: StaticVector{3, T}, C <: Colorant} <: AbstractGeometry{3, T}
+    position::Vector{PointType}
+    color::Vector{C}
+end
+
+function FatLineGeometry(position::AbstractVector{<:AbstractVector{T}},
+           color::AbstractVector{C}=RGB{Float32}[]) where {T, C <: Colorant}
+    FatLineGeometry{T, Point{3, T}, C}(position, color)
+end
+
 center(geometry::HyperEllipsoid) = origin(geometry)
 center(geometry::HyperRectangle) = minimum(geometry) + 0.5 * widths(geometry)
 center(geometry::HyperSphere) = origin(geometry)

@@ -77,13 +77,16 @@ export Object,
        Points,
        Line,
        LineLoop,
-       LineSegments
+       LineSegments,
+       FatLineGeometry,
+       FatLine
 
 export PointsMaterial,
        MeshLambertMaterial,
        MeshBasicMaterial,
        MeshPhongMaterial,
        LineBasicMaterial,
+       FatLineMaterial,
        Texture,
        PngImage
 
@@ -142,7 +145,7 @@ include("render.jl")
 include("servers.jl")
 include("assets.jl")
 
-VIEWER_ROOT() = joinpath(first(readdir(artifact"meshcat", join=true)), "dist")
+VIEWER_ROOT() = get(ENV, "MESHCAT_LOCAL_VIEWER_PATH", joinpath(first(readdir(artifact"meshcat", join=true)), "dist"))
 const MAIN_JS_STRING = read(joinpath(VIEWER_ROOT(), "main.min.js"), String)
 const INDEX_HTML_STRING = read(joinpath(VIEWER_ROOT(), "index.html"), String)
 

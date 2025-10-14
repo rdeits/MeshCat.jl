@@ -78,6 +78,36 @@ setobject!(vis, PointCloud(verts, colors))
 
 ![demo-points](https://user-images.githubusercontent.com/591886/36703986-3d18e232-1b2c-11e8-8c40-a73e55cc93b6.png)
 
+### Lines with Configurable Width
+
+Modern browsers don't support the GL_LINEWIDTH parameter, so standard `Line` and `LineBasicMaterial` won't show varying line widths. Use `FatLine` instead for lines with configurable width:
+
+```julia
+# Simple fat line with custom width
+points = [Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0), Point(0, 1, 0)]
+setobject!(vis[:thick_line], FatLine(points, FatLineMaterial(linewidth=10.0, color=RGB(1, 0, 0))))
+
+# Fat line with per-vertex colors
+points = [Point(i*0.1, sin(i*0.1), cos(i*0.1)) for i in 0:20]
+colors = [RGB(i/20, 0, 1-i/20) for i in 0:20]
+setobject!(vis[:colored_line],
+    FatLine(FatLineGeometry(points, colors),
+            FatLineMaterial(linewidth=5.0, vertexColors=true)))
+
+# Dashed fat line
+setobject!(vis[:dashed_line],
+    FatLine(points,
+            FatLineMaterial(linewidth=5.0, color=RGB(1, 1, 0),
+                           dashed=true, dashSize=0.1, gapSize=0.05)))
+
+# World-space line width (thickness scales with zoom, false by default uses pixel space)
+setobject!(vis[:world_line],
+    FatLine(points,
+            FatLineMaterial(linewidth=0.02, color=RGB(0, 1, 1), worldUnits=true)))
+```
+
+![demo-fat-lines](assets/demo-fat-lines.png)
+
 ### Contours
 
 ```julia
@@ -125,3 +155,80 @@ Using https://github.com/rdeits/MeshCatMechanisms.jl
 
 ![demo-valkyrie](https://user-images.githubusercontent.com/591886/36703991-41b6991a-1b2c-11e8-8804-24c56ddd94cc.png)
 
+# Development
+
+## Local Development with meshcat Viewer
+
+MeshCat.jl serves the viewer from a Julia artifact (defined in `Artifacts.toml`). For local development where you're making changes to both the viewer (JavaScript) and the Julia bindings, you can override this by setting an environment variable:
+
+```bash
+export MESHCAT_LOCAL_VIEWER_PATH="/path/to/meshcat/dist"
+```
+
+Or set it in Julia before loading the package:
+
+```julia
+ENV["MESHCAT_LOCAL_VIEWER_PATH"] = "/path/to/meshcat/dist"
+using MeshCat
+```
+
+### Development Workflow
+
+1. **Make changes to meshcat viewer**:
+   ```bash
+   cd /path/to/meshcat
+   # Edit src/index.js
+   yarn build  # Rebuild dist/main.min.js (exits when done)
+   # OR use: yarn watch  # Auto-rebuild on changes (keeps running)
+   ```
+
+2. **Test in MeshCat.jl**:
+   - Restart Julia REPL (assets are loaded at precompile time)
+   - Or force rebuild: `using Pkg; Pkg.build("MeshCat")`
+   - Load and test: `using MeshCat; vis = Visualizer(); open(vis)`
+
+3. **Iterate**: Repeat steps 1-2 as needed
+
+Note: The viewer assets (`main.min.js`, `index.html`) are read when the package is loaded, so you must restart Julia or rebuild the package after rebuilding the viewer.
+
+## Updating the Artifact for a New meshcat Release
+
+When you've finished development and pushed changes to the meshcat viewer repository, you need to update `Artifacts.toml` to point to the new version:
+
+1. **Push your meshcat changes and note the commit hash**:
+   ```bash
+   cd /path/to/meshcat
+   git add dist/
+   git commit -m "Description of changes"
+   git push
+   # Note the commit hash, e.g., 2c8a2b897008779cbf877b052526f1e001983270
+   ```
+
+2. **Update Artifacts.toml using the helper script**:
+   ```bash
+   cd /path/to/MeshCat.jl
+   julia --project -e 'include("src/artifact_helper.jl"); artifact_helper("COMMIT_HASH")'
+   ```
+
+   This will output the new artifact configuration. Copy and paste it into `Artifacts.toml`.
+
+   Note: The `artifact_helper.jl` script requires the `Inflate` package. If not installed, run: `julia --project -e 'import Pkg; Pkg.add("Inflate")'`
+
+3. **Install and test the new artifact**:
+   ```bash
+   # Unset local viewer override if set
+   unset MESHCAT_LOCAL_VIEWER_PATH
+
+   # Clear precompiled cache and install artifact
+   rm -rf ~/.julia/compiled/v1.11/MeshCat
+   julia --project -e 'using Pkg; Pkg.instantiate()'
+
+   # Test that it works
+   julia --project -e 'using MeshCat; vis = Visualizer(); open(vis)'
+   ```
+
+4. **Commit the updated Artifacts.toml**:
+   ```bash
+   git add Artifacts.toml
+   git commit -m "Update meshcat artifact to commit COMMIT_HASH"
+   ```
