@@ -23,15 +23,8 @@ StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 Tar = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
 UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
-[weakdeps]
-Electron = "a1bb12fb-d4d1-54b4-b10a-ee7951ef7ad3"
-WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
-
-[extensions]
-ElectronExt = "Electron"
-WebIOExt = "WebIO"
-
 [compat]
+Artifacts = "1.3"
 Colors = "0.9, 0.10, 0.11, 0.12, 0.13"
 CoordinateTransformations = "0.5, 0.6"
 DocStringExtensions = "0.5, 0.6, 0.7, 0.8, 0.9"
@@ -50,6 +43,10 @@ Tar = "1"
 WebIO = "0.8"
 julia = "1.9"
 
+[extensions]
+ElectronExt = "Electron"
+WebIOExt = "WebIO"
+
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 ColorTypes = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
@@ -63,3 +60,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test", "MeshIO", "FileIO", "Meshing", "NBInclude", "Electron", "ColorTypes", "Pkg", "Random", "Aqua"]
+
+[weakdeps]
+Electron = "a1bb12fb-d4d1-54b4-b10a-ee7951ef7ad3"
+WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
