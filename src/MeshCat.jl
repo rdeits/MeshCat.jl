@@ -59,7 +59,8 @@ export setobject!,
        setprop!,
        setanimation!,
        save_image,
-       setvisible!
+       setvisible!,
+       convert_frames_to_gif
 
 export AbstractVisualizer,
        AbstractMaterial,
