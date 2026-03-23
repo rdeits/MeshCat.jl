@@ -13,3 +13,17 @@ using Base.Filesystem: rm
         end
     end
 end
+
+@testset "GIF Generation" begin
+    mktempdir() do tmpdir
+        target = joinpath(tmpdir, "output.gif")
+        
+        # Points to the existing sample data in the test folder
+        input_tar = joinpath(@__DIR__, "data", "frames.tar")
+        
+        convert_frames_to_gif(input_tar, target)
+        
+        @test isfile(target)
+        @test filesize(target) > 0
+    end
+end
