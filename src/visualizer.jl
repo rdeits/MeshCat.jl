@@ -178,6 +178,22 @@ To draw multiple geometries, place them at different paths by using the slicing 
 """
 function setobject!(vis::Visualizer, obj::AbstractObject)
     send(vis.core, SetObject(obj, vis.path))
+    
+    # if within the animation context, we need to adjust the animation itself
+    if !isempty(vis.core.animation_contexts)
+        ctx = vis.core.animation_contexts[end]
+        
+        # If they want it to appear after frame 0, we must hide it at the start
+        if ctx.frame > 0
+            atframe(ctx.animation, 0) do
+                setprop!(vis, "visible", false)
+            end
+        end
+        
+        # Make it pop into existence at the current animation frame
+        setprop!(vis, "visible", true)
+    end
+    
     vis
 end
 
