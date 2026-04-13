@@ -239,6 +239,7 @@ function lower(material::GenericMaterial)
     if material.map !== nothing
         data["map"] = lower(material.map)
     end
+    merge!(data, material.kwargs)
     data
 end
 
@@ -363,6 +364,7 @@ function lower(cloud::FatLineGeometry)
     if !isempty(cloud.color)
         data["color"] = lower(convert(Vector{RGB{Float32}}, cloud.color))
     end
+    merge!(data, cloud.kwargs)
     data
 end
 
@@ -384,5 +386,6 @@ function lower(material::FatLineMaterial)
         data["dashSize"] = material.dashSize
         data["gapSize"] = material.gapSize
     end
+    merge!(data, material.kwargs)
     data
 end
