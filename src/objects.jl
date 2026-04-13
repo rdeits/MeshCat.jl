@@ -45,6 +45,7 @@ PngImage(fname::AbstractString) = PngImage(open(read, fname))
     image::PngImage
     wrap::Tuple{Int, Int} = (1001, 1001)  # TODO: replace with enum
     repeat::Tuple{Int, Int} = (1, 1)      # TODO: what does this mean?
+    kwargs::Dict{String, Any} = Dict{String, Any}()
 end
 
 @with_kw mutable struct GenericMaterial <: AbstractMaterial
@@ -59,6 +60,7 @@ end
     side::Int = 2            # TODO: make an enum https://github.com/mrdoob/three.js/blob/d55897b8e9b2632896d8ac146a05b3b4be3668f8/src/constants.js#L14
     wireframe::Bool = false
     wireframeLinewidth::Float64 = 1
+    kwargs::Dict{String, Any} = Dict{String, Any}()
 end
 
 threejs_type(m::GenericMaterial) = m._type
@@ -72,6 +74,7 @@ LineBasicMaterial(;kw...) = GenericMaterial(_type="LineBasicMaterial"; kw...)
     color::RGBA{Float32}=RGB(1., 1., 1.)
     size::Float32 = 0.002
     vertexColors::Int = 2
+    kwargs::Dict{String, Any} = Dict{String, Any}()
 end
 
 """
@@ -116,6 +119,7 @@ See also: [`FatLineGeometry`](@ref), [`FatLine`](@ref)
     dashSize::Float64 = 1.0
     gapSize::Float64 = 1.0
     worldUnits::Bool = false
+    kwargs::Dict{String, Any} = Dict{String, Any}()
 end
 
 """
