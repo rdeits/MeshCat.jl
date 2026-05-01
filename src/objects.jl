@@ -1,4 +1,7 @@
 const GeometryLike = Union{AbstractGeometry, AbstractMesh, MeshFileGeometry}
+import Luxor
+import Colors
+import GeometryBasics
 
 """
 Represents a three.js Object, consisting of a geometry and a material.
@@ -134,3 +137,57 @@ See also: [`FatLineGeometry`](@ref), [`FatLineMaterial`](@ref)
 FatLine(g::FatLineGeometry, m::FatLineMaterial=FatLineMaterial()) = Object(g, m, "Line2")
 FatLine(points::AbstractVector{<:Point}, m::FatLineMaterial=FatLineMaterial()) = FatLine(FatLineGeometry(points), m)
 
+# --- Sprite & Text Additions ---
+
+@with_kw struct TextTexture
+    text::String
+    font_size::Float64 = 100.0
+    font_face::String = "sans-serif"
+end
+
+@with_kw struct SpriteMaterial <: AbstractMaterial
+    map::Texture  
+    transparent::Bool = true
+    opacity::Float64 = 1.0
+end
+
+struct Sprite{M <: AbstractMaterial} <: AbstractObject
+    material::M
+end
+
+# A friendly constructor so users can just type: Sprite("Hello World")
+Sprite(text::String) = Sprite(SpriteMaterial(map=TextTexture(text=text)))
+
+function make_text_material(my_text::String; font_size=60)
+    w = round(Int, length(my_text) * font_size * 0.7)
+    h = round(Int, font_size * 1.5)
+    tmp_file = tempname() * ".png"
+
+    Luxor.Drawing(w, h, tmp_file)
+    Luxor.background(Colors.RGBA(0, 0, 0, 0)) 
+    Luxor.setcolor("white")              
+    Luxor.fontsize(font_size)
+    Luxor.text(my_text, Luxor.Point(w/2, h/2), halign=:center, valign=:middle)
+    Luxor.finish()
+
+    png_data = read(tmp_file)
+    rm(tmp_file)
+    
+    mat = MeshBasicMaterial(map=Texture(image=MeshCat.PngImage(png_data)))
+    return mat, w/h
+end
+
+"""
+    TextPlane(text::String)
+
+Creates a 3D cardboard plane with the given text rendered as a PNG texture.
+Returns a tuple of (geometry, material) to be passed to `setobject!`.
+"""
+function TextPlane(text::String; font_size=60)
+    mat, aspect = make_text_material(text, font_size=font_size)
+    geom = GeometryBasics.HyperRectangle(
+        GeometryBasics.Point(0.0, 0.0, 0.0), 
+        GeometryBasics.Point(5.0 * aspect, 5.0, 0.001)
+    )
+    return geom, mat
+end
