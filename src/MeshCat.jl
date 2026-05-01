@@ -95,6 +95,8 @@ export Animation,
 
 export ArrowVisualizer
 
+export Sprite, SpriteMaterial, TextTexture, TextPlane
+
 abstract type AbstractObject end
 abstract type AbstractMaterial end
 
