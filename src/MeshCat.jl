@@ -94,6 +94,7 @@ export Animation,
        atframe
 
 export ArrowVisualizer
+export set_chase_camera!
 
 abstract type AbstractObject end
 abstract type AbstractMaterial end
@@ -152,4 +153,20 @@ const INDEX_HTML_STRING = read(joinpath(VIEWER_ROOT(), "index.html"), String)
 # Code to "exercise" the package - see https://julialang.github.io/PrecompileTools.jl/stable/
 include("./precompile.jl")
 
+end
+
+
+"""
+    set_chase_camera!(vis::Visualizer, target_tform::Transformation; offset::Transformation=Translation(0, -5, 2))
+
+Automatically calculates and applies the necessary transformation to the default camera 
+so that it smoothly follows a moving target at a specified offset. 
+Perfect for locking the camera onto drones, vehicles, or end-effectors.
+"""
+function set_chase_camera!(vis::Visualizer, target_tform::Transformation; offset::Transformation=Translation(0.0, -5.0, 2.0))
+    # Combining the target's current position with the desired camera offset
+    cam_tform = target_tform ∘ offset
+    
+    # Applying it to MeshCat's hidden default camera path
+    settransform!(vis["/Cameras/default"], cam_tform)
 end
